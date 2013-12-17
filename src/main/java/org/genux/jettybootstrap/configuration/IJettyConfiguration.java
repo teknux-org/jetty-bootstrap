@@ -46,6 +46,10 @@ public interface IJettyConfiguration {
 
 	void setJettyConnectors(JettyConnector... jettyConnectors);
 
+	boolean isRedirectAllOnSslConnector();
+
+	void setRedirectAllOnSslConnector(boolean redirectAllOnSslConnector);
+
 	String getSSLKeyStorePassword();
 
 	void setSSLKeyStorePassword(String sSLKeyStorePassword);
@@ -61,5 +65,4 @@ public interface IJettyConfiguration {
 	boolean getParentLoaderPriority();
 
 	void setParentLoaderPriority(boolean parentLoaderPriority);
-
 }

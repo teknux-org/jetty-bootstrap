@@ -12,12 +12,16 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
+import org.eclipse.jetty.http.HttpScheme;
+import org.eclipse.jetty.security.ConstraintMapping;
+import org.eclipse.jetty.security.ConstraintSecurityHandler;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.HandlerList;
+import org.eclipse.jetty.util.security.Constraint;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.webapp.WebAppContext;
@@ -82,12 +86,9 @@ public class JettyBootstrap {
 			throw new JettyException("SSLKeyStorePath not specified");
 		}
 
-		if (iJettyConfiguration.hasJettyConnector(JettyConnector.DEFAULT) && iJettyConfiguration.hasJettyConnector(JettyConnector.REDIRECT_DEFAULT_TO_SSL)) {
-			throw new JettyException("You can't choose 'default' connector with 'redirect default to ssl' connector");
-		}
-
-		if (iJettyConfiguration.hasJettyConnector(JettyConnector.REDIRECT_DEFAULT_TO_SSL) && !iJettyConfiguration.hasJettyConnector(JettyConnector.SSL)) {
-			throw new JettyException("You can't choose 'redirect default to ssl' connector without 'ssl' connector");
+		if (iJettyConfiguration.isRedirectAllOnSslConnector() &&
+			(!iJettyConfiguration.hasJettyConnector(JettyConnector.DEFAULT) || !iJettyConfiguration.hasJettyConnector(JettyConnector.SSL))) {
+			throw new JettyException("You can't redirect all on SSL Connector if you don't set default or ssl connector");
 		}
 
 		LOGGER.trace(iJettyConfiguration);
@@ -116,33 +117,30 @@ public class JettyBootstrap {
 			SslContextFactory sslContextFactory = new SslContextFactory(iJettyConfiguration.getSSLKeyStorePath());
 			sslContextFactory.setKeyStorePassword(iJettyConfiguration.getSSLKeyStorePassword());
 			ServerConnector serverConnector = new ServerConnector(server, sslContextFactory);
-			serverConnector.setPort(iJettyConfiguration.getSslPort());
 
 			serverConnector.setIdleTimeout(iJettyConfiguration.getIdleTimeout());
 			serverConnector.setHost(iJettyConfiguration.getHost());
+			serverConnector.setPort(iJettyConfiguration.getSslPort());
 
 			serverConnectors.add(serverConnector);
 		}
 		if (iJettyConfiguration.hasJettyConnector(JettyConnector.DEFAULT)) {
 			LOGGER.trace("Add Default Connector...");
 
-			ServerConnector serverConnector = new ServerConnector(server);
-			serverConnector.setPort(iJettyConfiguration.getPort());
+			ServerConnector serverConnector;
 
+			if (iJettyConfiguration.hasJettyConnector(JettyConnector.SSL)) {
+				HttpConfiguration httpConfiguration = new HttpConfiguration();
+				httpConfiguration.setSecurePort(iJettyConfiguration.getSslPort());
+				httpConfiguration.setSecureScheme(HttpScheme.HTTPS.asString());
+
+				HttpConnectionFactory httpConnectionFactory = new HttpConnectionFactory(httpConfiguration);
+
+				serverConnector = new ServerConnector(server, httpConnectionFactory);
+			} else {
+				serverConnector = new ServerConnector(server);
+			}
 			serverConnector.setIdleTimeout(iJettyConfiguration.getIdleTimeout());
-			serverConnector.setHost(iJettyConfiguration.getHost());
-
-			serverConnectors.add(serverConnector);
-		}
-		if (iJettyConfiguration.hasJettyConnector(JettyConnector.REDIRECT_DEFAULT_TO_SSL)) {
-			LOGGER.trace("Redirect Default Connector on SSL Connector...");
-
-			HttpConfiguration httpConfiguration = new HttpConfiguration();
-			httpConfiguration.setSecurePort(iJettyConfiguration.getSslPort());
-
-			HttpConnectionFactory httpConnectionFactory = new HttpConnectionFactory(httpConfiguration);
-
-			ServerConnector serverConnector = new ServerConnector(server, httpConnectionFactory);
 			serverConnector.setHost(iJettyConfiguration.getHost());
 			serverConnector.setPort(iJettyConfiguration.getPort());
 
@@ -165,7 +163,7 @@ public class JettyBootstrap {
 
 	protected void shutdownHook(IJettyConfiguration iJettyConfiguration) {
 		try {
-			LOGGER.debug("ShutdownHook");
+			LOGGER.debug("Shutdown...");
 			if (iJettyConfiguration.isStopAtShutdown()) {
 				stopJetty();
 			}
@@ -231,6 +229,10 @@ public class JettyBootstrap {
 		LOGGER.debug(MessageFormat.format("Deploy war [{0}] on context path [{1}] (Temp Directory : [{2}])...", warFile, contextPath, tempDirectory));
 
 		WebAppContext webAppContext = new WebAppContext(warFile.getPath(), contextPath);
+
+		if (iJettyConfiguration.isRedirectAllOnSslConnector()) {
+			webAppContext.setSecurityHandler(getConstraintSecurityHandlerConfidential());
+		}
 
 		webAppContext.setTempDirectory(tempDirectory);
 		webAppContext.setParentLoaderPriority(iJettyConfiguration.getParentLoaderPriority());
@@ -298,5 +300,19 @@ public class JettyBootstrap {
 
 	public Server getServer() {
 		return server;
+	}
+
+	private ConstraintSecurityHandler getConstraintSecurityHandlerConfidential() {
+		Constraint constraint = new Constraint();
+		constraint.setDataConstraint(Constraint.DC_CONFIDENTIAL);
+
+		ConstraintMapping constraintMapping = new ConstraintMapping();
+		constraintMapping.setConstraint(constraint);
+		constraintMapping.setPathSpec("/*");
+
+		ConstraintSecurityHandler constraintSecurityHandler = new ConstraintSecurityHandler();
+		constraintSecurityHandler.addConstraintMapping(constraintMapping);
+
+		return constraintSecurityHandler;
 	}
 }

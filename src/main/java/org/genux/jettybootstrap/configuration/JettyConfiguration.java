@@ -23,6 +23,7 @@ public class JettyConfiguration implements
 	private int sslPort = 8443;
 
 	private Set<JettyConnector> jettyConnectors = new HashSet<JettyConnector>(Arrays.asList(JettyConnector.DEFAULT));
+	private boolean redirectAllOnSslConnector = false;
 	private String SSLKeyStorePassword = null;
 	private String SSLKeyStorePath = null;
 
@@ -122,6 +123,16 @@ public class JettyConfiguration implements
 	@Override
 	public void setJettyConnectors(JettyConnector... jettyConnectors) {
 		this.jettyConnectors = new HashSet<JettyConnector>(Arrays.asList(jettyConnectors));
+	}
+
+	@Override
+	public boolean isRedirectAllOnSslConnector() {
+		return redirectAllOnSslConnector;
+	}
+
+	@Override
+	public void setRedirectAllOnSslConnector(boolean redirectAllOnSslConnector) {
+		this.redirectAllOnSslConnector = redirectAllOnSslConnector;
 	}
 
 	@Override
