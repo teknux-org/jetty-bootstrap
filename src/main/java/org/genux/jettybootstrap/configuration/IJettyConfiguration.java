@@ -1,15 +1,12 @@
 package org.genux.jettybootstrap.configuration;
 
 import java.io.File;
+import java.util.Set;
 
-import org.genux.jettybootstrap.JettyConnectors;
+import org.genux.jettybootstrap.JettyConnector;
 
 
 public interface IJettyConfiguration {
-
-	boolean isStopOnShutdownHook();
-
-	void setStopOnShutdownHook(boolean stopOnShutdownHook);
 
 	boolean isAutoJoinOnStart();
 
@@ -21,7 +18,7 @@ public interface IJettyConfiguration {
 
 	boolean isStopAtShutdown();
 
-	//	void setStopAtShutdown(boolean stopAtShutdown);
+	void setStopAtShutdown(boolean stopAtShutdown);
 
 	long getStopTimeout();
 
@@ -43,9 +40,11 @@ public interface IJettyConfiguration {
 
 	void setSslPort(int sslPort);
 
-	JettyConnectors getJettyConnectors();
+	boolean hasJettyConnector(JettyConnector jettyConnector);
 
-	void setJettyConnectors(JettyConnectors jettyConnectors);
+	Set<JettyConnector> getJettyConnectors();
+
+	void setJettyConnectors(JettyConnector... jettyConnectors);
 
 	String getSSLKeyStorePassword();
 

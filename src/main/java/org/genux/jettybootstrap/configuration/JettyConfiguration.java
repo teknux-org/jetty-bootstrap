@@ -1,14 +1,16 @@
 package org.genux.jettybootstrap.configuration;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
-import org.genux.jettybootstrap.JettyConnectors;
+import org.genux.jettybootstrap.JettyConnector;
 
 
 public class JettyConfiguration implements
 		IJettyConfiguration {
 
-	private boolean stopOnShutdownHook = true;
 	private boolean autoJoinOnStart = true;
 
 	private int maxThreads = 128;
@@ -20,22 +22,12 @@ public class JettyConfiguration implements
 	private int port = 8080;
 	private int sslPort = 8443;
 
-	private JettyConnectors jettyConnectors = JettyConnectors.DEFAULT;
+	private Set<JettyConnector> jettyConnectors = new HashSet<JettyConnector>(Arrays.asList(JettyConnector.DEFAULT));
 	private String SSLKeyStorePassword = null;
 	private String SSLKeyStorePath = null;
 
 	private File tempDirectory = null;
 	private boolean parentLoaderPriority = true;
-
-	@Override
-	public boolean isStopOnShutdownHook() {
-		return stopOnShutdownHook;
-	}
-
-	@Override
-	public void setStopOnShutdownHook(boolean stopOnShutdownHook) {
-		this.stopOnShutdownHook = stopOnShutdownHook;
-	}
 
 	@Override
 	public boolean isAutoJoinOnStart() {
@@ -62,12 +54,10 @@ public class JettyConfiguration implements
 		return stopAtShutdown;
 	}
 
-	//	Not permit to change this native jetty param because shutdown has been reimplemented
-	//	Use @setStopOnShutdownHook instead
-	//	@Override
-	//	public void setStopAtShutdown(boolean stopAtShutdown) {
-	//		this.stopAtShutdown = stopAtShutdown;
-	//	}
+	@Override
+	public void setStopAtShutdown(boolean stopAtShutdown) {
+		this.stopAtShutdown = stopAtShutdown;
+	}
 
 	@Override
 	public long getStopTimeout() {
@@ -120,13 +110,18 @@ public class JettyConfiguration implements
 	}
 
 	@Override
-	public JettyConnectors getJettyConnectors() {
+	public boolean hasJettyConnector(JettyConnector jettyConnector) {
+		return (jettyConnectors.contains(jettyConnector));
+	}
+
+	@Override
+	public Set<JettyConnector> getJettyConnectors() {
 		return jettyConnectors;
 	}
 
 	@Override
-	public void setJettyConnectors(JettyConnectors jettyConnectors) {
-		this.jettyConnectors = jettyConnectors;
+	public void setJettyConnectors(JettyConnector... jettyConnectors) {
+		this.jettyConnectors = new HashSet<JettyConnector>(Arrays.asList(jettyConnectors));
 	}
 
 	@Override
@@ -171,9 +166,8 @@ public class JettyConfiguration implements
 
 	@Override
 	public String toString() {
-		return "JettyConfiguration [stopOnShutdownHook=" + stopOnShutdownHook + ", autoJoinOnStart=" + autoJoinOnStart + ", maxThreads=" + maxThreads + ", stopAtShutdown=" +
-			stopAtShutdown + ", stopTimeout=" + stopTimeout + ", idleTimeout=" + idleTimeout + ", host=" + host + ", port=" + port + ", sslPort=" + sslPort + ", jettyConnectors=" +
-			jettyConnectors + ", SSLKeyStorePassword=" + SSLKeyStorePassword + ", SSLKeyStorePath=" + SSLKeyStorePath + ", tempDirectory=" + tempDirectory +
-			", parentLoaderPriority=" + parentLoaderPriority + "]";
+		return "JettyConfiguration [autoJoinOnStart=" + autoJoinOnStart + ", maxThreads=" + maxThreads + ", stopAtShutdown=" + stopAtShutdown + ", stopTimeout=" + stopTimeout +
+			", idleTimeout=" + idleTimeout + ", host=" + host + ", port=" + port + ", sslPort=" + sslPort + ", jettyConnectors=" + jettyConnectors + ", SSLKeyStorePassword=" +
+			SSLKeyStorePassword + ", SSLKeyStorePath=" + SSLKeyStorePath + ", tempDirectory=" + tempDirectory + ", parentLoaderPriority=" + parentLoaderPriority + "]";
 	}
 }

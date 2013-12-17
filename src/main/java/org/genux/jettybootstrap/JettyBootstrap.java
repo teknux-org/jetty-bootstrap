@@ -78,9 +78,16 @@ public class JettyBootstrap {
 			throw new JettyException("Host not specified");
 		}
 
-		if (iJettyConfiguration.getJettyConnectors().has(IJettyConnector.SSL) &&
-			(iJettyConfiguration.getSSLKeyStorePath() == null || iJettyConfiguration.getSSLKeyStorePath().isEmpty())) {
+		if (iJettyConfiguration.hasJettyConnector(JettyConnector.SSL) && (iJettyConfiguration.getSSLKeyStorePath() == null || iJettyConfiguration.getSSLKeyStorePath().isEmpty())) {
 			throw new JettyException("SSLKeyStorePath not specified");
+		}
+
+		if (iJettyConfiguration.hasJettyConnector(JettyConnector.DEFAULT) && iJettyConfiguration.hasJettyConnector(JettyConnector.REDIRECT_DEFAULT_TO_SSL)) {
+			throw new JettyException("You can't choose 'default' connector with 'redirect default to ssl' connector");
+		}
+
+		if (iJettyConfiguration.hasJettyConnector(JettyConnector.REDIRECT_DEFAULT_TO_SSL) && !iJettyConfiguration.hasJettyConnector(JettyConnector.SSL)) {
+			throw new JettyException("You can't choose 'redirect default to ssl' connector without 'ssl' connector");
 		}
 
 		LOGGER.trace(iJettyConfiguration);
@@ -92,7 +99,7 @@ public class JettyBootstrap {
 		LOGGER.trace("Create Jetty Server...");
 
 		Server server = new Server(new QueuedThreadPool(iJettyConfiguration.getMaxThreads()));
-		server.setStopAtShutdown(iJettyConfiguration.isStopAtShutdown());
+		server.setStopAtShutdown(false); //Reimplemented
 		server.setStopTimeout(iJettyConfiguration.getStopTimeout());
 
 		return server;
@@ -103,7 +110,7 @@ public class JettyBootstrap {
 
 		List<Connector> serverConnectors = new ArrayList<Connector>();
 
-		if (iJettyConfiguration.getJettyConnectors().has(IJettyConnector.SSL)) {
+		if (iJettyConfiguration.hasJettyConnector(JettyConnector.SSL)) {
 			LOGGER.trace("Add SSL Connector...");
 
 			SslContextFactory sslContextFactory = new SslContextFactory(iJettyConfiguration.getSSLKeyStorePath());
@@ -116,57 +123,60 @@ public class JettyBootstrap {
 
 			serverConnectors.add(serverConnector);
 		}
-		if (iJettyConfiguration.getJettyConnectors().has(IJettyConnector.DEFAULT)) {
-			if (iJettyConfiguration.getJettyConnectors().has(IJettyConnector.SSL) && iJettyConfiguration.getJettyConnectors().has(IJettyConnector.REDIRECT_DEFAULT_TO_SSL)) {
-				LOGGER.trace("Redirect Default Connector on SSL Connector...");
+		if (iJettyConfiguration.hasJettyConnector(JettyConnector.DEFAULT)) {
+			LOGGER.trace("Add Default Connector...");
 
-				HttpConfiguration httpConfiguration = new HttpConfiguration();
-				httpConfiguration.setSecurePort(iJettyConfiguration.getSslPort());
+			ServerConnector serverConnector = new ServerConnector(server);
+			serverConnector.setPort(iJettyConfiguration.getPort());
 
-				HttpConnectionFactory httpConnectionFactory = new HttpConnectionFactory(httpConfiguration);
+			serverConnector.setIdleTimeout(iJettyConfiguration.getIdleTimeout());
+			serverConnector.setHost(iJettyConfiguration.getHost());
 
-				ServerConnector serverConnector = new ServerConnector(server, httpConnectionFactory);
-				serverConnector.setHost(iJettyConfiguration.getHost());
-				serverConnector.setPort(iJettyConfiguration.getPort());
+			serverConnectors.add(serverConnector);
+		}
+		if (iJettyConfiguration.hasJettyConnector(JettyConnector.REDIRECT_DEFAULT_TO_SSL)) {
+			LOGGER.trace("Redirect Default Connector on SSL Connector...");
 
-				serverConnectors.add(serverConnector);
-			} else {
-				LOGGER.trace("Add Default Connector...");
+			HttpConfiguration httpConfiguration = new HttpConfiguration();
+			httpConfiguration.setSecurePort(iJettyConfiguration.getSslPort());
 
-				ServerConnector serverConnector = new ServerConnector(server);
-				serverConnector.setPort(iJettyConfiguration.getPort());
+			HttpConnectionFactory httpConnectionFactory = new HttpConnectionFactory(httpConfiguration);
 
-				serverConnector.setIdleTimeout(iJettyConfiguration.getIdleTimeout());
-				serverConnector.setHost(iJettyConfiguration.getHost());
+			ServerConnector serverConnector = new ServerConnector(server, httpConnectionFactory);
+			serverConnector.setHost(iJettyConfiguration.getHost());
+			serverConnector.setPort(iJettyConfiguration.getPort());
 
-				serverConnectors.add(serverConnector);
-			}
+			serverConnectors.add(serverConnector);
 		}
 
 		return serverConnectors.toArray(new Connector[serverConnectors.size()]);
 	}
 
-	protected void createShutdownHook(final IJettyConfiguration iJettyConfiguration) {
+	private void createShutdownHook(final IJettyConfiguration iJettyConfiguration) {
 		LOGGER.trace("Create Jetty ShutdownHook...");
 
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 
 			public void run() {
-				try {
-					LOGGER.debug("ShutdownHook");
-					if (iJettyConfiguration.isStopOnShutdownHook()) {
-						stopJetty();
-					}
-
-					LOGGER.trace("Delete Temp Directory...");
-					FileUtils.deleteDirectory(iJettyConfiguration.getTempDirectory());
-				} catch (IOException e) {
-					e.printStackTrace();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+				shutdownHook(iJettyConfiguration);
 			}
 		});
+	}
+
+	protected void shutdownHook(IJettyConfiguration iJettyConfiguration) {
+		try {
+			LOGGER.debug("ShutdownHook");
+			if (iJettyConfiguration.isStopAtShutdown()) {
+				stopJetty();
+			}
+
+			LOGGER.trace("Delete Temp Directory...");
+			FileUtils.deleteDirectory(iJettyConfiguration.getTempDirectory());
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void deployResource(String resource) throws JettyException {
@@ -285,7 +295,7 @@ public class JettyBootstrap {
 	private static File getJarDir() {
 		return new File(JettyBootstrap.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getParentFile();
 	}
-	
+
 	public Server getServer() {
 		return server;
 	}
