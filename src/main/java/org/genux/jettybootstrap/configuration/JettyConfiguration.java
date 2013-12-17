@@ -1,6 +1,8 @@
-package org.genux.jettybootstrap;
+package org.genux.jettybootstrap.configuration;
 
 import java.io.File;
+
+import org.genux.jettybootstrap.JettyConnectors;
 
 
 public class JettyConfiguration implements

@@ -12,7 +12,6 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
-import org.eclipse.jdt.internal.compiler.batch.Main;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
@@ -22,6 +21,7 @@ import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.webapp.WebAppContext;
+import org.genux.jettybootstrap.configuration.IJettyConfiguration;
 
 
 public class JettyBootstrap {
@@ -34,7 +34,7 @@ public class JettyBootstrap {
 	private static final String RESOURCEWAR_PREFIX_FILENAME = "war";
 
 	private static final String TEMP_DIRECTORY_NAME = ".jettyTemp";
-	public static final File TEMP_DIRECTORY_JARDIR = new File(getJarDir().toPath() + File.separator + TEMP_DIRECTORY_NAME);
+	public static final File TEMP_DIRECTORY_JARDIR = new File(getJarDir().getPath() + File.separator + TEMP_DIRECTORY_NAME);
 	public static final File TEMP_DIRECTORY_SYSTEMP = new File(System.getProperty("java.io.tmpdir") + File.separator + TEMP_DIRECTORY_NAME);
 	protected static final File TEMP_DIRECTORY_DEFAULT = TEMP_DIRECTORY_JARDIR;
 
@@ -174,9 +174,9 @@ public class JettyBootstrap {
 	}
 
 	public void deployResource(String resource, String contextPath) throws JettyException {
-		File resourcewarDirectory = new File(iJettyConfiguration.getTempDirectory().toPath() + File.separator + RESOURCEWAR_DIRECTORY_NAME);
+		File resourcewarDirectory = new File(iJettyConfiguration.getTempDirectory().getPath() + File.separator + RESOURCEWAR_DIRECTORY_NAME);
 
-		LOGGER.trace(MessageFormat.format("Copy war resource [{0}] to directory : [{1}])...", resource, resourcewarDirectory));
+		LOGGER.trace(MessageFormat.format("Copy war resource [{0}] to directory : [{1}]...", resource, resourcewarDirectory));
 
 		if (!resourcewarDirectory.mkdir()) {
 			throw new JettyException("Can't create resource war directory");
@@ -187,7 +187,7 @@ public class JettyBootstrap {
 		InputStream inputStream = null;
 		FileOutputStream fileOutputStream = null;
 		try {
-			inputStream = Main.class.getResourceAsStream(resource);
+			inputStream = JettyBootstrap.class.getResourceAsStream(resource);
 			fileOutputStream = new FileOutputStream(resourcewarFile);
 			IOUtils.copy(inputStream, fileOutputStream);
 		} catch (FileNotFoundException e) {
@@ -215,7 +215,7 @@ public class JettyBootstrap {
 	}
 
 	public void deployWar(File warFile, String contextPath) {
-		File tempDirectory = new File(iJettyConfiguration.getTempDirectory().toPath() + File.separator + APP_DIRECTORY_NAME + File.separator + APP_PREFIX_FILENAME +
+		File tempDirectory = new File(iJettyConfiguration.getTempDirectory().getPath() + File.separator + APP_DIRECTORY_NAME + File.separator + APP_PREFIX_FILENAME +
 			handlerList.getBeans().size());
 
 		LOGGER.debug(MessageFormat.format("Deploy war [{0}] on context path [{1}] (Temp Directory : [{2}])...", warFile, contextPath, tempDirectory));
@@ -284,5 +284,9 @@ public class JettyBootstrap {
 
 	private static File getJarDir() {
 		return new File(JettyBootstrap.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getParentFile();
+	}
+	
+	public Server getServer() {
+		return server;
 	}
 }
