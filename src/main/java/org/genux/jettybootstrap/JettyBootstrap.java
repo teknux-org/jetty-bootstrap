@@ -29,6 +29,9 @@ import org.genux.jettybootstrap.configuration.IJettyConfiguration;
 import org.genux.jettybootstrap.configuration.JettyConnector;
 import org.genux.jettybootstrap.keystore.JettyKeystore;
 import org.genux.jettybootstrap.keystore.JettyKeystoreException;
+import org.genux.jettybootstrap.webApp.IWebApp;
+import org.genux.jettybootstrap.webApp.WebAppResourceWar;
+import org.genux.jettybootstrap.webApp.WebAppWar;
 
 
 public class JettyBootstrap {
@@ -55,22 +58,152 @@ public class JettyBootstrap {
 	private static final String WEB_ROOT = "/";
 
 	private IJettyConfiguration iJettyConfiguration;
-	private Server server;
+	private Server server = null;
 	private HandlerList handlerList = new HandlerList();
 
-	public JettyBootstrap(IJettyConfiguration iJettyConfiguration) throws JettyException {
-		init(iJettyConfiguration);
+	private List<IWebApp> webApps = new ArrayList<IWebApp>();
+
+	public JettyBootstrap(IJettyConfiguration iJettyConfiguration) {
+		this.iJettyConfiguration = iJettyConfiguration;
+	}
+
+	/**
+	 * Start Jetty
+	 * 
+	 * @throws JettyException
+	 */
+	public void startJetty() throws JettyException {
+		try {
+			startJetty(iJettyConfiguration.isAutoJoinOnStart());
+		} catch (Exception e) {
+			throw new JettyException(e);
+		}
+	}
+
+	/**
+	 * Start Jetty
+	 * 
+	 * @param join
+	 * @throws JettyException
+	 */
+	public void startJetty(boolean join) throws JettyException {
+		if (server == null) {
+			init(iJettyConfiguration);
+		}
+		addWebApps();
+
+		LOGGER.info("Start Jetty...");
+		try {
+			server.start();
+		} catch (Exception e) {
+			throw new JettyException(e);
+		}
+
+		if (join) {
+			joinJetty();
+		}
+	}
+
+	/**
+	 * Join Jetty
+	 * 
+	 * @throws JettyException
+	 */
+	public void joinJetty() throws JettyException {
+		LOGGER.debug("Join Jetty...");
+
+		try {
+			server.join();
+		} catch (InterruptedException e) {
+			throw new JettyException(e);
+		}
+	}
+
+	/**
+	 * Stop Jetty
+	 * 
+	 * @throws JettyException
+	 */
+	public void stopJetty() throws JettyException {
+		try {
+			handlerList.stop();
+
+			if (server.isStarted()) {
+				LOGGER.info("Stop Jetty...");
+
+				server.stop();
+			} else {
+				LOGGER.warn("Can't stop Jetty. Already stopped");
+			}
+		} catch (Exception e) {
+			throw new JettyException(e);
+		}
+	}
+
+	/**
+	 * Add War
+	 * 
+	 * @param resource
+	 */
+	public void addWar(File warFile) {
+		addWar(warFile, WEB_ROOT);
+	}
+
+	/**
+	 * Add War
+	 * 
+	 * @param resource
+	 * @param contextPath
+	 */
+	public void addWar(File warFile, String contextPath) {
+		WebAppWar webAppWar = new WebAppWar();
+		webAppWar.setWarFile(warFile);
+		webAppWar.setContextPath(contextPath);
+
+		webApps.add(webAppWar);
+	}
+
+	/**
+	 * Add ResourceWar
+	 * 
+	 * @param resource
+	 */
+	public void addResourceWar(String resource) {
+		addResourceWar(resource, WEB_ROOT);
+	}
+
+	/**
+	 * Add ResourceWar
+	 * 
+	 * @param resource
+	 * @param contextPath
+	 */
+	public void addResourceWar(String resource, String contextPath) {
+		WebAppResourceWar webAppResourceWar = new WebAppResourceWar();
+		webAppResourceWar.setResource(resource);
+		webAppResourceWar.setContextPath(contextPath);
+
+		webApps.add(webAppResourceWar);
+	}
+
+	/**
+	 * Get Jetty Server Object
+	 * 
+	 * @return
+	 */
+	public Server getServer() {
+		return server;
 	}
 
 	protected void init(IJettyConfiguration iJettyConfiguration) throws JettyException {
 		this.iJettyConfiguration = initConfiguration(iJettyConfiguration);
 
-		server = createServer(this.iJettyConfiguration);
-		server.setConnectors(createConnectors(this.iJettyConfiguration, server));
+		server = createServer(iJettyConfiguration);
+		server.setConnectors(createConnectors(iJettyConfiguration, server));
 
 		server.setHandler(handlerList);
 
-		createShutdownHook(this.iJettyConfiguration);
+		createShutdownHook(iJettyConfiguration);
 	}
 
 	protected IJettyConfiguration initConfiguration(IJettyConfiguration iJettyConfiguration) throws JettyException {
@@ -163,6 +296,126 @@ public class JettyBootstrap {
 		return serverConnectors.toArray(new Connector[serverConnectors.size()]);
 	}
 
+	protected void shutdown(IJettyConfiguration iJettyConfiguration) {
+		try {
+			LOGGER.debug("Shutdown...");
+			if (iJettyConfiguration.isStopAtShutdown()) {
+				stopJetty();
+			}
+
+			if (iJettyConfiguration.isDeleteTempDirAtShutdown()) {
+				LOGGER.trace("Delete Temp Directory...");
+
+				FileUtils.deleteDirectory(iJettyConfiguration.getTempDirectory());
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Add War WebApp to Jetty
+	 * 
+	 * @param webAppWar
+	 * @throws JettyException
+	 */
+	private void addWebAppWar(WebAppWar webAppWar) {
+		File tempDirectory = new File(iJettyConfiguration.getTempDirectory().getPath() + File.separator + APP_DIRECTORY_NAME + File.separator + APP_PREFIX_FILENAME +
+			handlerList.getBeans().size());
+
+		LOGGER.debug(MessageFormat.format("Deploy war [{0}] on context path [{1}] (Temp Directory : [{2}])...", webAppWar.getWarFile(), webAppWar.getContextPath(), tempDirectory));
+
+		WebAppContext webAppContext = new WebAppContext(webAppWar.getWarFile().getPath(), webAppWar.getContextPath());
+
+		if (iJettyConfiguration.isRedirectAllOnSslConnector()) {
+			webAppContext.setSecurityHandler(getConstraintSecurityHandlerConfidential());
+		}
+
+		webAppContext.setTempDirectory(tempDirectory);
+		webAppContext.setParentLoaderPriority(iJettyConfiguration.getParentLoaderPriority());
+
+		handlerList.addHandler(webAppContext);
+	}
+
+	/**
+	 * Add ResourceWar WebApp to Jetty
+	 * 
+	 * @param webAppResourceWar
+	 * @throws JettyException
+	 */
+	private void addWebAppResourceWar(WebAppResourceWar webAppResourceWar) throws JettyException {
+		File resourcewarDirectory = new File(iJettyConfiguration.getTempDirectory().getPath() + File.separator + RESOURCEWAR_DIRECTORY_NAME);
+
+		File resourcewarFile = new File(resourcewarDirectory.getPath() + File.separator + RESOURCEWAR_PREFIX_FILENAME + handlerList.getBeans().size() + WAR_EXTENSION);
+
+		if (resourcewarFile.exists()) {
+			LOGGER.trace(MessageFormat.format("War resource already exists in directory : [{0}], don't copy", resourcewarDirectory));
+		} else {
+			LOGGER.trace(MessageFormat.format("Copy war resource [{0}] to directory : [{1}]...", webAppResourceWar.getResource(), resourcewarDirectory));
+
+			InputStream inputStream = null;
+			FileOutputStream fileOutputStream = null;
+			try {
+				inputStream = JettyBootstrap.class.getResourceAsStream(webAppResourceWar.getResource());
+				fileOutputStream = new FileOutputStream(resourcewarFile);
+				IOUtils.copy(inputStream, fileOutputStream);
+			} catch (FileNotFoundException e) {
+				throw new JettyException(e);
+			} catch (IOException e) {
+				throw new JettyException(e);
+			} finally {
+				try {
+					if (inputStream != null) {
+						inputStream.close();
+					}
+					if (fileOutputStream != null) {
+						fileOutputStream.close();
+					}
+				} catch (IOException e) {
+					LOGGER.error("Can't closed streams ond deployResource", e);
+				}
+			}
+		}
+
+		WebAppWar webAppWar = new WebAppWar();
+		webAppWar.setContextPath(webAppResourceWar.getContextPath());
+		webAppWar.setWarFile(resourcewarFile);
+
+		addWebAppWar(webAppWar);
+	}
+
+	/**
+	 * Add WebApps to jetty
+	 * 
+	 * @throws JettyException
+	 */
+	private void addWebApps() throws JettyException {
+		handlerList.removeBeans();
+
+		if (webApps.size() == 0) {
+			throw new JettyException("No handlers. Can't start Jetty");
+		}
+
+		for (IWebApp webApp : webApps) {
+			if (webApp instanceof WebAppResourceWar) {
+				addWebAppResourceWar((WebAppResourceWar) webApp);
+			} else if (webApp instanceof WebAppWar) {
+				addWebAppWar((WebAppWar) webApp);
+			} else {
+				throw new JettyException("Unknown WebApp object");
+			}
+		}
+	}
+
+	/**
+	 * Creation of the necessary directories of the
+	 * application
+	 * 
+	 * @param iJettyConfiguration
+	 * @throws JettyException
+	 */
 	private void createDirectories(IJettyConfiguration iJettyConfiguration) throws JettyException {
 		LOGGER.trace("Create Directories...");
 
@@ -187,161 +440,27 @@ public class JettyBootstrap {
 		}
 	}
 
+	/**
+	 * Create Shutdown Hook.
+	 * 
+	 * @param iJettyConfiguration
+	 */
 	private void createShutdownHook(final IJettyConfiguration iJettyConfiguration) {
 		LOGGER.trace("Create Jetty ShutdownHook...");
 
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 
 			public void run() {
-				shutdownHook(iJettyConfiguration);
+				shutdown(iJettyConfiguration);
 			}
 		});
 	}
 
-	protected void shutdownHook(IJettyConfiguration iJettyConfiguration) {
-		try {
-			LOGGER.debug("Shutdown...");
-			if (iJettyConfiguration.isStopAtShutdown()) {
-				stopJetty();
-			}
-
-			if (iJettyConfiguration.isDeleteTempDirAtShutdown()) {
-				LOGGER.trace("Delete Temp Directory...");
-
-				FileUtils.deleteDirectory(iJettyConfiguration.getTempDirectory());
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	public void deployResource(String resource) throws JettyException {
-		deployResource(resource, WEB_ROOT);
-	}
-
-	public void deployResource(String resource, String contextPath) throws JettyException {
-		File resourcewarDirectory = new File(iJettyConfiguration.getTempDirectory().getPath() + File.separator + RESOURCEWAR_DIRECTORY_NAME);
-
-		File resourcewarFile = new File(resourcewarDirectory.getPath() + File.separator + RESOURCEWAR_PREFIX_FILENAME + handlerList.getBeans().size() + WAR_EXTENSION);
-
-		if (resourcewarFile.exists()) {
-			LOGGER.trace(MessageFormat.format("War resource already exists in directory : [{0}], don't copy", resourcewarDirectory));
-		} else {
-			LOGGER.trace(MessageFormat.format("Copy war resource [{0}] to directory : [{1}]...", resource, resourcewarDirectory));
-
-			InputStream inputStream = null;
-			FileOutputStream fileOutputStream = null;
-			try {
-				inputStream = JettyBootstrap.class.getResourceAsStream(resource);
-				fileOutputStream = new FileOutputStream(resourcewarFile);
-				IOUtils.copy(inputStream, fileOutputStream);
-			} catch (FileNotFoundException e) {
-				throw new JettyException(e);
-			} catch (IOException e) {
-				throw new JettyException(e);
-			} finally {
-				try {
-					if (inputStream != null) {
-						inputStream.close();
-					}
-					if (fileOutputStream != null) {
-						fileOutputStream.close();
-					}
-				} catch (IOException e) {
-					LOGGER.error("Can't closed streams ond deployResource", e);
-				}
-			}
-		}
-
-		deployWar(resourcewarFile, contextPath);
-	}
-
-	public void deployWar(File warFile) {
-		deployWar(warFile, WEB_ROOT);
-	}
-
-	public void deployWar(File warFile, String contextPath) {
-		File tempDirectory = new File(iJettyConfiguration.getTempDirectory().getPath() + File.separator + APP_DIRECTORY_NAME + File.separator + APP_PREFIX_FILENAME +
-			handlerList.getBeans().size());
-
-		LOGGER.debug(MessageFormat.format("Deploy war [{0}] on context path [{1}] (Temp Directory : [{2}])...", warFile, contextPath, tempDirectory));
-
-		WebAppContext webAppContext = new WebAppContext(warFile.getPath(), contextPath);
-
-		if (iJettyConfiguration.isRedirectAllOnSslConnector()) {
-			webAppContext.setSecurityHandler(getConstraintSecurityHandlerConfidential());
-		}
-
-		webAppContext.setTempDirectory(tempDirectory);
-		webAppContext.setParentLoaderPriority(iJettyConfiguration.getParentLoaderPriority());
-
-		handlerList.addHandler(webAppContext);
-	}
-
-	public void startJetty() throws JettyException {
-		try {
-			startJetty(iJettyConfiguration.isAutoJoinOnStart());
-		} catch (Exception e) {
-			throw new JettyException(e);
-		}
-	}
-
-	public void startJetty(boolean join) throws JettyException {
-		if (handlerList.getHandlers().length == 0) {
-			throw new JettyException("No handlers. Can't start Jetty");
-		}
-		if (server.isStopped()) {
-			LOGGER.info("Start Jetty...");
-			try {
-				server.start();
-			} catch (Exception e) {
-				throw new JettyException(e);
-			}
-
-			if (join) {
-				joinJetty();
-			}
-		} else {
-			LOGGER.debug("Can't start Jetty. Already started");
-		}
-	}
-
-	public void joinJetty() throws JettyException {
-		LOGGER.debug("Join Jetty...");
-
-		try {
-			server.join();
-		} catch (InterruptedException e) {
-			throw new JettyException(e);
-		}
-	}
-
-	public void stopJetty() throws JettyException {
-		try {
-			handlerList.stop();
-
-			if (server.isStarted()) {
-				LOGGER.info("Stop Jetty...");
-
-				server.stop();
-			} else {
-				LOGGER.warn("Can't stop Jetty. Already stopped");
-			}
-		} catch (Exception e) {
-			throw new JettyException(e);
-		}
-	}
-
-	private static File getJarDir() {
-		return new File(JettyBootstrap.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getParentFile();
-	}
-
-	public Server getServer() {
-		return server;
-	}
-
+	/**
+	 * Create constraint which redirect to Secure Port
+	 * 
+	 * @return @ConstraintSecurityHandler
+	 */
 	private ConstraintSecurityHandler getConstraintSecurityHandlerConfidential() {
 		Constraint constraint = new Constraint();
 		constraint.setDataConstraint(Constraint.DC_CONFIDENTIAL);
@@ -354,5 +473,14 @@ public class JettyBootstrap {
 		constraintSecurityHandler.addConstraintMapping(constraintMapping);
 
 		return constraintSecurityHandler;
+	}
+
+	/**
+	 * Get directory location of Jar
+	 * 
+	 * @return @File
+	 */
+	private static File getJarDir() {
+		return new File(JettyBootstrap.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getParentFile();
 	}
 }
