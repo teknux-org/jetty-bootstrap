@@ -27,6 +27,7 @@ import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.genux.jettybootstrap.configuration.IJettyConfiguration;
 import org.genux.jettybootstrap.configuration.JettyConnector;
+import org.genux.jettybootstrap.configuration.PropertiesJettyConfiguration;
 import org.genux.jettybootstrap.keystore.JettyKeystore;
 import org.genux.jettybootstrap.keystore.JettyKeystoreException;
 import org.genux.jettybootstrap.webApp.IWebApp;
@@ -62,6 +63,10 @@ public class JettyBootstrap {
 	private HandlerList handlerList = new HandlerList();
 
 	private List<IWebApp> webApps = new ArrayList<IWebApp>();
+	
+	public JettyBootstrap() throws JettyException {
+		this(new PropertiesJettyConfiguration());
+	}
 
 	public JettyBootstrap(IJettyConfiguration iJettyConfiguration) {
 		this.iJettyConfiguration = iJettyConfiguration;
