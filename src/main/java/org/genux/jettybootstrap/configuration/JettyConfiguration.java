@@ -5,8 +5,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.genux.jettybootstrap.JettyConnector;
-
 
 public class JettyConfiguration implements
 		IJettyConfiguration {
@@ -18,7 +16,7 @@ public class JettyConfiguration implements
 	private long stopTimeout = 5000;
 
 	private long idleTimeout = 30000;
-	private String host = "localhost";
+	private String host = "0.0.0.0";
 	private int port = 8080;
 	private int sslPort = 8443;
 
@@ -28,6 +26,7 @@ public class JettyConfiguration implements
 	private String SSLKeyStorePath = null;
 
 	private File tempDirectory = null;
+	private boolean deleteTempDirAtShutdown = false;
 	private boolean parentLoaderPriority = true;
 
 	@Override
@@ -166,6 +165,16 @@ public class JettyConfiguration implements
 	}
 
 	@Override
+	public boolean isDeleteTempDirAtShutdown() {
+		return deleteTempDirAtShutdown;
+	}
+
+	@Override
+	public void setDeleteTempDirAtShutdown(boolean deleteTempDirAtShutdown) {
+		this.deleteTempDirAtShutdown = deleteTempDirAtShutdown;
+	}
+
+	@Override
 	public boolean getParentLoaderPriority() {
 		return parentLoaderPriority;
 	}
@@ -178,7 +187,8 @@ public class JettyConfiguration implements
 	@Override
 	public String toString() {
 		return "JettyConfiguration [autoJoinOnStart=" + autoJoinOnStart + ", maxThreads=" + maxThreads + ", stopAtShutdown=" + stopAtShutdown + ", stopTimeout=" + stopTimeout +
-			", idleTimeout=" + idleTimeout + ", host=" + host + ", port=" + port + ", sslPort=" + sslPort + ", jettyConnectors=" + jettyConnectors + ", SSLKeyStorePassword=" +
-			SSLKeyStorePassword + ", SSLKeyStorePath=" + SSLKeyStorePath + ", tempDirectory=" + tempDirectory + ", parentLoaderPriority=" + parentLoaderPriority + "]";
+			", idleTimeout=" + idleTimeout + ", host=" + host + ", port=" + port + ", sslPort=" + sslPort + ", jettyConnectors=" + jettyConnectors +
+			", redirectAllOnSslConnector=" + redirectAllOnSslConnector + ", SSLKeyStorePassword=" + SSLKeyStorePassword + ", SSLKeyStorePath=" + SSLKeyStorePath +
+			", tempDirectory=" + tempDirectory + ", deleteTempDirAtShutdown=" + deleteTempDirAtShutdown + ", parentLoaderPriority=" + parentLoaderPriority + "]";
 	}
 }

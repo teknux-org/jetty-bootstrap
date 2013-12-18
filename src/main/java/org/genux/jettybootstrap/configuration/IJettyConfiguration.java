@@ -3,7 +3,6 @@ package org.genux.jettybootstrap.configuration;
 import java.io.File;
 import java.util.Set;
 
-import org.genux.jettybootstrap.JettyConnector;
 
 
 public interface IJettyConfiguration {
@@ -61,6 +60,10 @@ public interface IJettyConfiguration {
 	File getTempDirectory();
 
 	void setTempDirectory(File tempDirectory);
+
+	boolean isDeleteTempDirAtShutdown();
+
+	void setDeleteTempDirAtShutdown(boolean deleteTempDirAtShutdown);
 
 	boolean getParentLoaderPriority();
 

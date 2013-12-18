@@ -26,6 +26,9 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.genux.jettybootstrap.configuration.IJettyConfiguration;
+import org.genux.jettybootstrap.configuration.JettyConnector;
+import org.genux.jettybootstrap.keystore.JettyKeystore;
+import org.genux.jettybootstrap.keystore.JettyKeystoreException;
 
 
 public class JettyBootstrap {
@@ -33,11 +36,18 @@ public class JettyBootstrap {
 	private static final Logger LOGGER = Logger.getLogger(JettyBootstrap.class);
 
 	private static final String APP_DIRECTORY_NAME = "deploy";
-	private static final String APP_PREFIX_FILENAME = "deploy";
+	private static final String APP_PREFIX_FILENAME = "deploy-";
 	private static final String RESOURCEWAR_DIRECTORY_NAME = "war";
-	private static final String RESOURCEWAR_PREFIX_FILENAME = "war";
+	private static final String RESOURCEWAR_PREFIX_FILENAME = "war-";
 
-	private static final String TEMP_DIRECTORY_NAME = ".jettyTemp";
+	private static final String KEYSTORE_FILENAME = "application.keystore";
+	private static final String KEYSTORE_DOMAINNAME = "unknown";
+	private static final String KEYSTORE_ALIAS = "jettybootstrap";
+	private static final String KEYSTORE_PASSWORD = "jettybootstrap";
+
+	private static final String WAR_EXTENSION = ".war";
+
+	private static final String TEMP_DIRECTORY_NAME = ".jettyBootstrap";
 	public static final File TEMP_DIRECTORY_JARDIR = new File(getJarDir().getPath() + File.separator + TEMP_DIRECTORY_NAME);
 	public static final File TEMP_DIRECTORY_SYSTEMP = new File(System.getProperty("java.io.tmpdir") + File.separator + TEMP_DIRECTORY_NAME);
 	protected static final File TEMP_DIRECTORY_DEFAULT = TEMP_DIRECTORY_JARDIR;
@@ -60,14 +70,6 @@ public class JettyBootstrap {
 
 		server.setHandler(handlerList);
 
-		if (this.iJettyConfiguration.getTempDirectory().exists()) {
-			throw new JettyException(MessageFormat.format("Temporary directory already exists. Delete directory [{0}] manually", this.iJettyConfiguration.getTempDirectory()));
-		}
-
-		if (!new File(this.iJettyConfiguration.getTempDirectory() + File.separator + APP_DIRECTORY_NAME).mkdirs()) {
-			throw new JettyException("Can't create temporary directory");
-		}
-
 		createShutdownHook(this.iJettyConfiguration);
 	}
 
@@ -77,13 +79,24 @@ public class JettyBootstrap {
 		if (iJettyConfiguration.getTempDirectory() == null) {
 			iJettyConfiguration.setTempDirectory(TEMP_DIRECTORY_DEFAULT);
 		}
+		createDirectories(iJettyConfiguration);
 
 		if (iJettyConfiguration.getHost() == null || iJettyConfiguration.getHost().isEmpty()) {
 			throw new JettyException("Host not specified");
 		}
 
 		if (iJettyConfiguration.hasJettyConnector(JettyConnector.SSL) && (iJettyConfiguration.getSSLKeyStorePath() == null || iJettyConfiguration.getSSLKeyStorePath().isEmpty())) {
-			throw new JettyException("SSLKeyStorePath not specified");
+			File keystoreFile = new File(iJettyConfiguration.getTempDirectory().getPath() + File.separator + KEYSTORE_FILENAME);
+
+			if (!keystoreFile.exists()) {
+				try {
+					JettyKeystore.generateKeystoreAndSave(KEYSTORE_DOMAINNAME, KEYSTORE_ALIAS, KEYSTORE_PASSWORD, keystoreFile);
+				} catch (JettyKeystoreException e) {
+					throw new JettyException("Can't generate keyStore", e);
+				}
+			}
+			iJettyConfiguration.setSSLKeyStorePath(keystoreFile.getPath());
+			iJettyConfiguration.setSSLKeyStorePassword(KEYSTORE_PASSWORD);
 		}
 
 		if (iJettyConfiguration.isRedirectAllOnSslConnector() &&
@@ -150,6 +163,30 @@ public class JettyBootstrap {
 		return serverConnectors.toArray(new Connector[serverConnectors.size()]);
 	}
 
+	private void createDirectories(IJettyConfiguration iJettyConfiguration) throws JettyException {
+		LOGGER.trace("Create Directories...");
+
+		if (!iJettyConfiguration.getTempDirectory().exists()) {
+			if (!iJettyConfiguration.getTempDirectory().mkdirs()) {
+				throw new JettyException("Can't create temporary directory");
+			}
+		}
+
+		File appDirectory = new File(iJettyConfiguration.getTempDirectory() + File.separator + APP_DIRECTORY_NAME);
+		if (!appDirectory.exists()) {
+			if (!appDirectory.mkdir()) {
+				throw new JettyException("Can't create temporary application directory");
+			}
+		}
+
+		File resourcewarDirectory = new File(iJettyConfiguration.getTempDirectory().getPath() + File.separator + RESOURCEWAR_DIRECTORY_NAME);
+		if (!resourcewarDirectory.exists()) {
+			if (!resourcewarDirectory.mkdir()) {
+				throw new JettyException("Can't create resource war directory");
+			}
+		}
+	}
+
 	private void createShutdownHook(final IJettyConfiguration iJettyConfiguration) {
 		LOGGER.trace("Create Jetty ShutdownHook...");
 
@@ -168,8 +205,11 @@ public class JettyBootstrap {
 				stopJetty();
 			}
 
-			LOGGER.trace("Delete Temp Directory...");
-			FileUtils.deleteDirectory(iJettyConfiguration.getTempDirectory());
+			if (iJettyConfiguration.isDeleteTempDirAtShutdown()) {
+				LOGGER.trace("Delete Temp Directory...");
+
+				FileUtils.deleteDirectory(iJettyConfiguration.getTempDirectory());
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (Exception e) {
@@ -184,34 +224,34 @@ public class JettyBootstrap {
 	public void deployResource(String resource, String contextPath) throws JettyException {
 		File resourcewarDirectory = new File(iJettyConfiguration.getTempDirectory().getPath() + File.separator + RESOURCEWAR_DIRECTORY_NAME);
 
-		LOGGER.trace(MessageFormat.format("Copy war resource [{0}] to directory : [{1}]...", resource, resourcewarDirectory));
+		File resourcewarFile = new File(resourcewarDirectory.getPath() + File.separator + RESOURCEWAR_PREFIX_FILENAME + handlerList.getBeans().size() + WAR_EXTENSION);
 
-		if (!resourcewarDirectory.mkdir()) {
-			throw new JettyException("Can't create resource war directory");
-		}
+		if (resourcewarFile.exists()) {
+			LOGGER.trace(MessageFormat.format("War resource already exists in directory : [{0}], don't copy", resourcewarDirectory));
+		} else {
+			LOGGER.trace(MessageFormat.format("Copy war resource [{0}] to directory : [{1}]...", resource, resourcewarDirectory));
 
-		File resourcewarFile = new File(resourcewarDirectory.getPath() + File.separator + RESOURCEWAR_PREFIX_FILENAME + handlerList.getBeans().size() + ".war");
-
-		InputStream inputStream = null;
-		FileOutputStream fileOutputStream = null;
-		try {
-			inputStream = JettyBootstrap.class.getResourceAsStream(resource);
-			fileOutputStream = new FileOutputStream(resourcewarFile);
-			IOUtils.copy(inputStream, fileOutputStream);
-		} catch (FileNotFoundException e) {
-			throw new JettyException(e);
-		} catch (IOException e) {
-			throw new JettyException(e);
-		} finally {
+			InputStream inputStream = null;
+			FileOutputStream fileOutputStream = null;
 			try {
-				if (inputStream != null) {
-					inputStream.close();
-				}
-				if (fileOutputStream != null) {
-					fileOutputStream.close();
-				}
+				inputStream = JettyBootstrap.class.getResourceAsStream(resource);
+				fileOutputStream = new FileOutputStream(resourcewarFile);
+				IOUtils.copy(inputStream, fileOutputStream);
+			} catch (FileNotFoundException e) {
+				throw new JettyException(e);
 			} catch (IOException e) {
-				LOGGER.error("Can't closed streams ond deployResource", e);
+				throw new JettyException(e);
+			} finally {
+				try {
+					if (inputStream != null) {
+						inputStream.close();
+					}
+					if (fileOutputStream != null) {
+						fileOutputStream.close();
+					}
+				} catch (IOException e) {
+					LOGGER.error("Can't closed streams ond deployResource", e);
+				}
 			}
 		}
 
