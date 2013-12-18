@@ -26,7 +26,7 @@ public class JettyConfiguration implements
 	private String SSLKeyStorePath = null;
 
 	private File tempDirectory = null;
-	private boolean deleteTempDirAtShutdown = false;
+	private boolean cleanTempDir = false;
 	private boolean parentLoaderPriority = true;
 
 	@Override
@@ -165,13 +165,13 @@ public class JettyConfiguration implements
 	}
 
 	@Override
-	public boolean isDeleteTempDirAtShutdown() {
-		return deleteTempDirAtShutdown;
+	public boolean isCleanTempDir() {
+		return cleanTempDir;
 	}
 
 	@Override
-	public void setDeleteTempDirAtShutdown(boolean deleteTempDirAtShutdown) {
-		this.deleteTempDirAtShutdown = deleteTempDirAtShutdown;
+	public void setCleanTempDir(boolean cleanTempDir) {
+		this.cleanTempDir = cleanTempDir;
 	}
 
 	@Override
@@ -189,6 +189,6 @@ public class JettyConfiguration implements
 		return "JettyConfiguration [autoJoinOnStart=" + autoJoinOnStart + ", maxThreads=" + maxThreads + ", stopAtShutdown=" + stopAtShutdown + ", stopTimeout=" + stopTimeout +
 			", idleTimeout=" + idleTimeout + ", host=" + host + ", port=" + port + ", sslPort=" + sslPort + ", jettyConnectors=" + jettyConnectors +
 			", redirectAllOnSslConnector=" + redirectAllOnSslConnector + ", SSLKeyStorePassword=" + SSLKeyStorePassword + ", SSLKeyStorePath=" + SSLKeyStorePath +
-			", tempDirectory=" + tempDirectory + ", deleteTempDirAtShutdown=" + deleteTempDirAtShutdown + ", parentLoaderPriority=" + parentLoaderPriority + "]";
+			", tempDirectory=" + tempDirectory + ", cleanTempDir=" + cleanTempDir + ", parentLoaderPriority=" + parentLoaderPriority + "]";
 	}
 }

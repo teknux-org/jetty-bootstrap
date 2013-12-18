@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.Set;
 
 
-
 public interface IJettyConfiguration {
 
 	boolean isAutoJoinOnStart();
@@ -61,9 +60,9 @@ public interface IJettyConfiguration {
 
 	void setTempDirectory(File tempDirectory);
 
-	boolean isDeleteTempDirAtShutdown();
+	boolean isCleanTempDir();
 
-	void setDeleteTempDirAtShutdown(boolean deleteTempDirAtShutdown);
+	void setCleanTempDir(boolean cleanTempDir);
 
 	boolean getParentLoaderPriority();
 

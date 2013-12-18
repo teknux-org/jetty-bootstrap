@@ -38,9 +38,9 @@ public class JettyBootstrap {
 
 	private static final Logger LOGGER = Logger.getLogger(JettyBootstrap.class);
 
-	private static final String APP_DIRECTORY_NAME = "deploy";
-	private static final String APP_PREFIX_FILENAME = "deploy-";
-	private static final String RESOURCEWAR_DIRECTORY_NAME = "war";
+	private static final String APP_DIRECTORY_NAME = "apps";
+	private static final String APP_PREFIX_FILENAME = "app-";
+	private static final String RESOURCEWAR_DIRECTORY_NAME = "wars";
 	private static final String RESOURCEWAR_PREFIX_FILENAME = "war-";
 
 	private static final String KEYSTORE_FILENAME = "application.keystore";
@@ -50,7 +50,7 @@ public class JettyBootstrap {
 
 	private static final String WAR_EXTENSION = ".war";
 
-	private static final String TEMP_DIRECTORY_NAME = ".jettyBootstrap";
+	private static final String TEMP_DIRECTORY_NAME = ".temp";
 	public static final File TEMP_DIRECTORY_JARDIR = new File(getJarDir().getPath() + File.separator + TEMP_DIRECTORY_NAME);
 	public static final File TEMP_DIRECTORY_SYSTEMP = new File(System.getProperty("java.io.tmpdir") + File.separator + TEMP_DIRECTORY_NAME);
 	protected static final File TEMP_DIRECTORY_DEFAULT = TEMP_DIRECTORY_JARDIR;
@@ -302,16 +302,8 @@ public class JettyBootstrap {
 			if (iJettyConfiguration.isStopAtShutdown()) {
 				stopJetty();
 			}
-
-			if (iJettyConfiguration.isDeleteTempDirAtShutdown()) {
-				LOGGER.trace("Delete Temp Directory...");
-
-				FileUtils.deleteDirectory(iJettyConfiguration.getTempDirectory());
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOGGER.error(e);
 		}
 	}
 
@@ -419,10 +411,17 @@ public class JettyBootstrap {
 	private void createDirectories(IJettyConfiguration iJettyConfiguration) throws JettyException {
 		LOGGER.trace("Create Directories...");
 
-		if (!iJettyConfiguration.getTempDirectory().exists()) {
-			if (!iJettyConfiguration.getTempDirectory().mkdirs()) {
-				throw new JettyException("Can't create temporary directory");
+		if (iJettyConfiguration.getTempDirectory().exists() && iJettyConfiguration.isCleanTempDir()) {
+			LOGGER.trace("Clean Temp Directory...");
+
+			try {
+				FileUtils.deleteDirectory(iJettyConfiguration.getTempDirectory());
+			} catch (IOException e) {
+				throw new JettyException("Can't clean temporary directory");
 			}
+		}
+		if (!iJettyConfiguration.getTempDirectory().exists() && !iJettyConfiguration.getTempDirectory().mkdirs()) {
+			throw new JettyException("Can't create temporary directory");
 		}
 
 		File appDirectory = new File(iJettyConfiguration.getTempDirectory() + File.separator + APP_DIRECTORY_NAME);
