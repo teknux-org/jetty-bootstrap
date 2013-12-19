@@ -20,12 +20,13 @@ public class JettyConfiguration implements
 	private int port = 8080;
 	private int sslPort = 8443;
 
-	private Set<JettyConnector> jettyConnectors = new HashSet<JettyConnector>(Arrays.asList(JettyConnector.DEFAULT));
-	private boolean redirectAllOnSslConnector = false;
+	private Set<JettyConnector> jettyConnectors = new HashSet<JettyConnector>(Arrays.asList(JettyConnector.HTTP));
+	private boolean redirectWebAppsOnHttpsConnector = false;
 	private String SSLKeyStorePassword = null;
 	private String SSLKeyStorePath = null;
 
 	private File tempDirectory = null;
+	private boolean persistAppTempDirectories = false;
 	private boolean cleanTempDir = false;
 	private boolean parentLoaderPriority = true;
 
@@ -125,13 +126,13 @@ public class JettyConfiguration implements
 	}
 
 	@Override
-	public boolean isRedirectAllOnSslConnector() {
-		return redirectAllOnSslConnector;
+	public boolean isRedirectWebAppsOnHttpsConnector() {
+		return redirectWebAppsOnHttpsConnector;
 	}
 
 	@Override
-	public void setRedirectAllOnSslConnector(boolean redirectAllOnSslConnector) {
-		this.redirectAllOnSslConnector = redirectAllOnSslConnector;
+	public void setRedirectWebAppsOnHttpsConnector(boolean redirectWebAppsOnHttpsConnector) {
+		this.redirectWebAppsOnHttpsConnector = redirectWebAppsOnHttpsConnector;
 	}
 
 	@Override
@@ -165,6 +166,16 @@ public class JettyConfiguration implements
 	}
 
 	@Override
+	public boolean isPersistAppTempDirectories() {
+		return persistAppTempDirectories;
+	}
+
+	@Override
+	public void setPersistAppTempDirectories(boolean persistAppTempDirectories) {
+		this.persistAppTempDirectories = persistAppTempDirectories;
+	}
+
+	@Override
 	public boolean isCleanTempDir() {
 		return cleanTempDir;
 	}
@@ -175,7 +186,7 @@ public class JettyConfiguration implements
 	}
 
 	@Override
-	public boolean getParentLoaderPriority() {
+	public boolean isParentLoaderPriority() {
 		return parentLoaderPriority;
 	}
 
@@ -188,7 +199,7 @@ public class JettyConfiguration implements
 	public String toString() {
 		return "JettyConfiguration [autoJoinOnStart=" + autoJoinOnStart + ", maxThreads=" + maxThreads + ", stopAtShutdown=" + stopAtShutdown + ", stopTimeout=" + stopTimeout +
 			", idleTimeout=" + idleTimeout + ", host=" + host + ", port=" + port + ", sslPort=" + sslPort + ", jettyConnectors=" + jettyConnectors +
-			", redirectAllOnSslConnector=" + redirectAllOnSslConnector + ", SSLKeyStorePassword=" + SSLKeyStorePassword + ", SSLKeyStorePath=" + SSLKeyStorePath +
+			", redirectWebAppsOnHttpsConnector=" + redirectWebAppsOnHttpsConnector + ", SSLKeyStorePassword=" + SSLKeyStorePassword + ", SSLKeyStorePath=" + SSLKeyStorePath +
 			", tempDirectory=" + tempDirectory + ", cleanTempDir=" + cleanTempDir + ", parentLoaderPriority=" + parentLoaderPriority + "]";
 	}
 }

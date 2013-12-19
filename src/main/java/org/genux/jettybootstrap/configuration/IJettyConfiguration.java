@@ -44,9 +44,9 @@ public interface IJettyConfiguration {
 
 	void setJettyConnectors(JettyConnector... jettyConnectors);
 
-	boolean isRedirectAllOnSslConnector();
+	boolean isRedirectWebAppsOnHttpsConnector();
 
-	void setRedirectAllOnSslConnector(boolean redirectAllOnSslConnector);
+	void setRedirectWebAppsOnHttpsConnector(boolean redirectWebAppsOnHttpsConnector);
 
 	String getSSLKeyStorePassword();
 
@@ -60,11 +60,15 @@ public interface IJettyConfiguration {
 
 	void setTempDirectory(File tempDirectory);
 
+	boolean isPersistAppTempDirectories();
+
+	void setPersistAppTempDirectories(boolean persistTempDirectory);
+
 	boolean isCleanTempDir();
 
 	void setCleanTempDir(boolean cleanTempDir);
 
-	boolean getParentLoaderPriority();
+	boolean isParentLoaderPriority();
 
 	void setParentLoaderPriority(boolean parentLoaderPriority);
 }
