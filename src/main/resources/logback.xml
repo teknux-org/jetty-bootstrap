@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration>
+    <property name="logback.pattern.light" value="[%d{HH:mm:ss}] [%-5p] %msg %ex%n" />
+    <property name="logback.pattern.full" value="[%d{yy-MM-dd HH:mm:ss.SSS}] [%-5p] (%-25c{0} %3L\\) %msg %ex%n" />
+    
+    <property name="logback.path" value="${logback.path:-logs}" />
+    
+    <property name="logback.level.stdout" value="${logback.level.stdout:-INFO}" />
+    <property name="logback.level.file" value="${logback.level.file:-DEBUG}" />
+    <property name="logback.level.root" value="${logback.level.root:-${logback.level.file}}" />
+    <property name="logback.stdout.pattern" value="${logback.stdout.pattern:-LIGHT}" />
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>${logback.level.stdout}</level>
+        </filter>
+        
+        <encoder>
+	        <if condition='property("logback.stdout.pattern").contains("LIGHT")'>
+	            <then>
+	                <pattern>${logback.pattern.light}</pattern>
+	            </then>
+	            <else>
+	                <pattern>${logback.pattern.full}</pattern>
+	            </else>
+	        </if>
+        </encoder>
+    </appender>
+
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logback.path}/server.log</file>       
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${logback.path}/server_%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>${logback.level.file}</level>
+        </filter>
+
+        <encoder>
+            <pattern>${logback.pattern.full}</pattern>
+        </encoder>
+    </appender>  
+    
+    <logger name="org.eclipse.jetty" level="ERROR" />
+   
+    <root level="${logback.level.root}">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="FILE" />
+    </root>
+</configuration>

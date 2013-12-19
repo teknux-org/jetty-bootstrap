@@ -6,9 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Logger;
 import org.eclipse.jetty.http.HttpScheme;
 import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.Server;
@@ -20,15 +20,18 @@ import org.genux.jettybootstrap.configuration.IJettyConfiguration;
 import org.genux.jettybootstrap.configuration.JettyConnector;
 import org.genux.jettybootstrap.configuration.PropertiesJettyConfiguration;
 import org.genux.jettybootstrap.handler.IJettyHandler;
+import org.genux.jettybootstrap.handler.JettyHandler;
 import org.genux.jettybootstrap.handler.WebAppResourceWarJettyHandler;
 import org.genux.jettybootstrap.handler.WebAppWarJettyHandler;
 import org.genux.jettybootstrap.keystore.JettyKeystore;
 import org.genux.jettybootstrap.keystore.JettyKeystoreException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class JettyBootstrap {
 
-	private static final Logger LOGGER = Logger.getLogger(JettyBootstrap.class);
+	private final Logger logger = LoggerFactory.getLogger(JettyBootstrap.class);
 
 	private static final String KEYSTORE_FILENAME = "application.keystore";
 	private static final String KEYSTORE_DOMAINNAME = "unknown";
@@ -60,14 +63,10 @@ public class JettyBootstrap {
 	 * Start Jetty
 	 * 
 	 * @return
-	 * @throws JettyException
+	 * @throws JettyBootstrapException
 	 */
-	public JettyBootstrap startJetty() throws JettyException {
-		try {
-			return startJetty(iJettyConfiguration.isAutoJoinOnStart());
-		} catch (Exception e) {
-			throw new JettyException(e);
-		}
+	public JettyBootstrap startJetty() throws JettyBootstrapException {
+		return startJetty(iJettyConfiguration.isAutoJoinOnStart());
 	}
 
 	/**
@@ -75,19 +74,19 @@ public class JettyBootstrap {
 	 * 
 	 * @param join
 	 * @return
-	 * @throws JettyException
+	 * @throws JettyBootstrapException
 	 */
-	public JettyBootstrap startJetty(boolean join) throws JettyException {
+	public JettyBootstrap startJetty(boolean join) throws JettyBootstrapException {
 		if (server == null) {
 			init(iJettyConfiguration);
 		}
 		addHandlers();
 
-		LOGGER.info("Start Jetty...");
+		logger.info("Start Jetty...");
 		try {
 			server.start();
 		} catch (Exception e) {
-			throw new JettyException(e);
+			throw new JettyBootstrapException(e);
 		}
 
 		if (join) {
@@ -101,15 +100,15 @@ public class JettyBootstrap {
 	 * Join Jetty
 	 * 
 	 * @return
-	 * @throws JettyException
+	 * @throws JettyBootstrapException
 	 */
-	public JettyBootstrap joinJetty() throws JettyException {
-		LOGGER.debug("Join Jetty...");
+	public JettyBootstrap joinJetty() throws JettyBootstrapException {
+		logger.debug("Join Jetty...");
 
 		try {
 			server.join();
 		} catch (InterruptedException e) {
-			throw new JettyException(e);
+			throw new JettyBootstrapException(e);
 		}
 
 		return this;
@@ -119,21 +118,21 @@ public class JettyBootstrap {
 	 * Stop Jetty
 	 * 
 	 * @return
-	 * @throws JettyException
+	 * @throws JettyBootstrapException
 	 */
-	public JettyBootstrap stopJetty() throws JettyException {
+	public JettyBootstrap stopJetty() throws JettyBootstrapException {
 		try {
 			handlers.stop();
 
 			if (server.isStarted()) {
-				LOGGER.info("Stop Jetty...");
+				logger.info("Stop Jetty...");
 
 				server.stop();
 			} else {
-				LOGGER.warn("Can't stop Jetty. Already stopped");
+				logger.warn("Can't stop Jetty. Already stopped");
 			}
 		} catch (Exception e) {
-			throw new JettyException(e);
+			throw new JettyBootstrapException(e);
 		}
 
 		return this;
@@ -194,19 +193,34 @@ public class JettyBootstrap {
 	}
 
 	/**
+	 * Add Handler
+	 * 
+	 * @param handler
+	 * @return
+	 */
+	public JettyBootstrap addHandler(Handler handler) {
+		JettyHandler jettyHandler = new JettyHandler();
+		jettyHandler.setHandler(handler);
+
+		jettyHandlers.add(jettyHandler);
+
+		return this;
+	}
+
+	/**
 	 * Get Jetty Server Object
 	 * 
 	 * @return
-	 * @throws JettyException
+	 * @throws JettyBootstrapException
 	 */
-	public Server getServer() throws JettyException {
+	public Server getServer() throws JettyBootstrapException {
 		if (server == null) {
 			init(iJettyConfiguration);
 		}
 		return server;
 	}
 
-	protected void init(IJettyConfiguration iJettyConfiguration) throws JettyException {
+	protected void init(IJettyConfiguration iJettyConfiguration) throws JettyBootstrapException {
 		this.iJettyConfiguration = initConfiguration(iJettyConfiguration);
 
 		server = createServer(iJettyConfiguration);
@@ -217,33 +231,33 @@ public class JettyBootstrap {
 		createShutdownHook(iJettyConfiguration);
 	}
 
-	protected IJettyConfiguration initConfiguration(IJettyConfiguration iJettyConfiguration) throws JettyException {
-		LOGGER.debug("Init Configuration...");
+	protected IJettyConfiguration initConfiguration(IJettyConfiguration iJettyConfiguration) throws JettyBootstrapException {
+		logger.debug("Init Configuration...");
 
-		LOGGER.trace("Check Temp Directory...");
+		logger.trace("Check Temp Directory...");
 		if (iJettyConfiguration.getTempDirectory() == null) {
 			iJettyConfiguration.setTempDirectory(TEMP_DIRECTORY_DEFAULT);
 		}
 
 		if (iJettyConfiguration.getTempDirectory().exists() && iJettyConfiguration.isCleanTempDir()) {
-			LOGGER.trace("Clean Temp Directory...");
+			logger.trace("Clean Temp Directory...");
 
 			try {
 				FileUtils.deleteDirectory(iJettyConfiguration.getTempDirectory());
 			} catch (IOException e) {
-				throw new JettyException("Can't clean temporary directory");
+				throw new JettyBootstrapException("Can't clean temporary directory");
 			}
 		}
 		if (!iJettyConfiguration.getTempDirectory().exists() && !iJettyConfiguration.getTempDirectory().mkdirs()) {
-			throw new JettyException("Can't create temporary directory");
+			throw new JettyBootstrapException("Can't create temporary directory");
 		}
 
-		LOGGER.trace("Check required properties...");
+		logger.trace("Check required properties...");
 		if (iJettyConfiguration.getHost() == null || iJettyConfiguration.getHost().isEmpty()) {
-			throw new JettyException("Host not specified");
+			throw new JettyBootstrapException("Host not specified");
 		}
 
-		LOGGER.trace("Check connectors...");
+		logger.trace("Check connectors...");
 		if (iJettyConfiguration.hasJettyConnector(JettyConnector.HTTPS) && (iJettyConfiguration.getSSLKeyStorePath() == null || iJettyConfiguration.getSSLKeyStorePath().isEmpty())) {
 			File keystoreFile = new File(iJettyConfiguration.getTempDirectory().getPath() + File.separator + KEYSTORE_FILENAME);
 
@@ -251,7 +265,7 @@ public class JettyBootstrap {
 				try {
 					JettyKeystore.generateKeystoreAndSave(KEYSTORE_DOMAINNAME, KEYSTORE_ALIAS, KEYSTORE_PASSWORD, keystoreFile);
 				} catch (JettyKeystoreException e) {
-					throw new JettyException("Can't generate keyStore", e);
+					throw new JettyBootstrapException("Can't generate keyStore", e);
 				}
 			}
 			iJettyConfiguration.setSSLKeyStorePath(keystoreFile.getPath());
@@ -260,16 +274,16 @@ public class JettyBootstrap {
 
 		if (iJettyConfiguration.isRedirectWebAppsOnHttpsConnector() &&
 			(!iJettyConfiguration.hasJettyConnector(JettyConnector.HTTP) || !iJettyConfiguration.hasJettyConnector(JettyConnector.HTTPS))) {
-			throw new JettyException("You can't redirect all from HTTP to HTTPS Connector if both connectors are not setted");
+			throw new JettyBootstrapException("You can't redirect all from HTTP to HTTPS Connector if both connectors are not setted");
 		}
 
-		LOGGER.trace(iJettyConfiguration);
+		logger.trace("Configuration : {}", iJettyConfiguration);
 
 		return iJettyConfiguration;
 	}
 
 	protected Server createServer(IJettyConfiguration iJettyConfiguration) {
-		LOGGER.trace("Create Jetty Server...");
+		logger.trace("Create Jetty Server...");
 
 		Server server = new Server(new QueuedThreadPool(iJettyConfiguration.getMaxThreads()));
 		server.setStopAtShutdown(false); //Reimplemented. See @IJettyConfiguration.stopAtShutdown
@@ -279,12 +293,12 @@ public class JettyBootstrap {
 	}
 
 	protected Connector[] createConnectors(IJettyConfiguration iJettyConfiguration, Server server) {
-		LOGGER.trace("Create Jetty Connectors...");
+		logger.trace("Create Jetty Connectors...");
 
 		List<Connector> connectors = new ArrayList<Connector>();
 
 		if (iJettyConfiguration.hasJettyConnector(JettyConnector.HTTP)) {
-			LOGGER.trace("Add HTTP Connector...");
+			logger.trace("Add HTTP Connector...");
 
 			ServerConnector serverConnector;
 
@@ -306,7 +320,7 @@ public class JettyBootstrap {
 			connectors.add(serverConnector);
 		}
 		if (iJettyConfiguration.hasJettyConnector(JettyConnector.HTTPS)) {
-			LOGGER.trace("Add HTTPS Connector...");
+			logger.trace("Add HTTPS Connector...");
 
 			SslContextFactory sslContextFactory = new SslContextFactory(iJettyConfiguration.getSSLKeyStorePath());
 			sslContextFactory.setKeyStorePassword(iJettyConfiguration.getSSLKeyStorePassword());
@@ -324,21 +338,21 @@ public class JettyBootstrap {
 
 	protected void shutdown(IJettyConfiguration iJettyConfiguration) {
 		try {
-			LOGGER.debug("Shutdown...");
+			logger.debug("Shutdown...");
 			if (iJettyConfiguration.isStopAtShutdown()) {
 				stopJetty();
 			}
 		} catch (Exception e) {
-			LOGGER.error(e);
+			logger.error("Shutdown", e);
 		}
 	}
 
 	/**
 	 * Add Handlers to jetty
 	 * 
-	 * @throws JettyException
+	 * @throws JettyBootstrapException
 	 */
-	private void addHandlers() throws JettyException {
+	private void addHandlers() throws JettyBootstrapException {
 		if (jettyHandlers.size() == 0) {
 			return;
 		}
@@ -363,7 +377,7 @@ public class JettyBootstrap {
 	 * @param iJettyConfiguration
 	 */
 	private void createShutdownHook(final IJettyConfiguration iJettyConfiguration) {
-		LOGGER.trace("Create Jetty ShutdownHook...");
+		logger.trace("Create Jetty ShutdownHook...");
 
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 

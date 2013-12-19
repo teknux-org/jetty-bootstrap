@@ -5,19 +5,19 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.MessageFormat;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
 import org.eclipse.jetty.server.Handler;
 import org.genux.jettybootstrap.JettyBootstrap;
-import org.genux.jettybootstrap.JettyException;
+import org.genux.jettybootstrap.JettyBootstrapException;
 import org.genux.jettybootstrap.utils.Md5;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class WebAppResourceWarJettyHandler extends WebAppWarJettyHandler {
 
-	private static final Logger LOGGER = Logger.getLogger(WebAppResourceWarJettyHandler.class);
+	private final Logger logger = LoggerFactory.getLogger(WebAppResourceWarJettyHandler.class);
 
 	private static final String RESOURCEWAR_DIRECTORY_NAME = "war";
 	private static final String WAR_EXTENSION = ".war";
@@ -33,22 +33,20 @@ public class WebAppResourceWarJettyHandler extends WebAppWarJettyHandler {
 	}
 
 	@Override
-	public Handler getHandler() throws JettyException {
+	public Handler getHandler() throws JettyBootstrapException {
 		File resourcesWarDirectory = new File(getTempDirectory().getPath() + File.separator + RESOURCEWAR_DIRECTORY_NAME);
 
-		if (!resourcesWarDirectory.exists()) {
-			if (!resourcesWarDirectory.mkdir()) {
-				throw new JettyException("Can't create temporary resources war directory");
-			}
+		if (!resourcesWarDirectory.exists() && !resourcesWarDirectory.mkdir()) {
+			throw new JettyBootstrapException("Can't create temporary resources war directory");
 		}
 
 		String fileName = Md5.hash(getResource()) + WAR_EXTENSION;
 		File resourceWarFile = new File(resourcesWarDirectory.getPath() + File.separator + fileName);
 
 		if (resourceWarFile.exists()) {
-			LOGGER.trace(MessageFormat.format("War resource already exists in directory : [{0}], don't copy", resourcesWarDirectory));
+			logger.trace("War resource already exists in directory : [{}], don't copy", resourcesWarDirectory);
 		} else {
-			LOGGER.trace(MessageFormat.format("Copy war resource [{0}] to directory : [{1}]...", getResource(), resourcesWarDirectory));
+			logger.trace("Copy war resource [{}] to directory : [{}]...", getResource(), resourcesWarDirectory);
 
 			InputStream inputStream = null;
 			FileOutputStream fileOutputStream = null;
@@ -57,9 +55,9 @@ public class WebAppResourceWarJettyHandler extends WebAppWarJettyHandler {
 				fileOutputStream = new FileOutputStream(resourceWarFile);
 				IOUtils.copy(inputStream, fileOutputStream);
 			} catch (FileNotFoundException e) {
-				throw new JettyException(e);
+				throw new JettyBootstrapException(e);
 			} catch (IOException e) {
-				throw new JettyException(e);
+				throw new JettyBootstrapException(e);
 			} finally {
 				try {
 					if (inputStream != null) {
@@ -69,7 +67,7 @@ public class WebAppResourceWarJettyHandler extends WebAppWarJettyHandler {
 						fileOutputStream.close();
 					}
 				} catch (IOException e) {
-					LOGGER.error("Can't closed streams on deployResource", e);
+					logger.error("Can't closed streams on deployResource", e);
 				}
 			}
 		}

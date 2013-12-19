@@ -7,7 +7,7 @@ import org.eclipse.jetty.security.ConstraintSecurityHandler;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.util.security.Constraint;
 import org.eclipse.jetty.webapp.WebAppContext;
-import org.genux.jettybootstrap.JettyException;
+import org.genux.jettybootstrap.JettyBootstrapException;
 import org.genux.jettybootstrap.utils.Md5;
 
 
@@ -72,13 +72,11 @@ public class WebAppWarJettyHandler implements
 	}
 
 	@Override
-	public Handler getHandler() throws JettyException {
+	public Handler getHandler() throws JettyBootstrapException {
 		File appsTempDirectory = new File(getTempDirectory() + File.separator + APP_DIRECTORY_NAME);
 
-		if (!appsTempDirectory.exists()) {
-			if (!appsTempDirectory.mkdir()) {
-				throw new JettyException("Can't create temporary applications directory");
-			}
+		if (!appsTempDirectory.exists() && !appsTempDirectory.mkdir()) {
+			throw new JettyBootstrapException("Can't create temporary applications directory");
 		}
 
 		String dirName = Md5.hash(getWarFile().getPath());

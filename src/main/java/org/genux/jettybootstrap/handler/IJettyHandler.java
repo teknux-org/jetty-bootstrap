@@ -1,10 +1,10 @@
 package org.genux.jettybootstrap.handler;
 
 import org.eclipse.jetty.server.Handler;
-import org.genux.jettybootstrap.JettyException;
+import org.genux.jettybootstrap.JettyBootstrapException;
 
 
 public interface IJettyHandler {
 
-	Handler getHandler() throws JettyException;
+	Handler getHandler() throws JettyBootstrapException;
 }

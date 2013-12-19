@@ -12,7 +12,7 @@ public class JettyConfiguration implements
 	private boolean autoJoinOnStart = true;
 
 	private int maxThreads = 128;
-	private boolean stopAtShutdown = false;
+	private boolean stopAtShutdown = true;
 	private long stopTimeout = 5000;
 
 	private long idleTimeout = 30000;
