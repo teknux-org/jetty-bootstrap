@@ -33,10 +33,12 @@ public class PropertiesJettyConfiguration extends JettyConfiguration {
 	public static final String KEY_PORT = "port";
 	public static final String KEY_SSL_PORT = "sslPort";
 	public static final String KEY_CONNECTORS = "connectors";
-	public static final String KEY_REDIRECT_ALL_ON_SSL = "redirectAllOnSslConnector";
+	public static final String KEY_REDIRECT_WEBAPPS_ON_HTTPS = "redirectWebAppsOnHttpsConnector";
 	public static final String KEY_SSL_KEYSTORE_PASSWORD = "sslKeystorePassword";
 	public static final String KEY_SSL_KEYSTORE_PATH = "sslKeystorePath";
 	public static final String KEY_TEMP_DIR = "tempDirectory";
+	public static final String KEY_PERSIST_APP_TEMP_DIR = "persistAppTempDirectories";
+	public static final String KEY_CLEAN_TEMP_DIR = "cleanTempDir";
 	public static final String KEY_PARENT_LOADER_PRIORITY = "parentLoaderPriority";
 
 	/**
@@ -125,9 +127,9 @@ public class PropertiesJettyConfiguration extends JettyConfiguration {
 			setJettyConnectors(connectors);
 		}
 
-		Boolean redirectOnSSL = PropertiesUtils.parseBoolean(properties, KEY_REDIRECT_ALL_ON_SSL);
+		Boolean redirectOnSSL = PropertiesUtils.parseBoolean(properties, KEY_REDIRECT_WEBAPPS_ON_HTTPS);
 		if (redirectOnSSL != null) {
-			setRedirectAllOnSslConnector(redirectOnSSL);
+			setRedirectWebAppsOnHttpsConnector(redirectOnSSL);
 		}
 
 		String sslKeystorePath = properties.getProperty(KEY_SSL_KEYSTORE_PATH);
@@ -143,6 +145,16 @@ public class PropertiesJettyConfiguration extends JettyConfiguration {
 		String tempDir = properties.getProperty(KEY_TEMP_DIR);
 		if (tempDir != null) {
 			setTempDirectory(new File(tempDir));
+		}
+
+		Boolean persistAppTempDir = PropertiesUtils.parseBoolean(properties, KEY_PERSIST_APP_TEMP_DIR);
+		if (persistAppTempDir != null) {
+			setPersistAppTempDirectories(persistAppTempDir);
+		}
+
+		Boolean cleanTempDir = PropertiesUtils.parseBoolean(properties, KEY_CLEAN_TEMP_DIR);
+		if (cleanTempDir != null) {
+			setCleanTempDir(cleanTempDir);
 		}
 
 		Boolean parentLoaderPriority = PropertiesUtils.parseBoolean(properties, KEY_PARENT_LOADER_PRIORITY);

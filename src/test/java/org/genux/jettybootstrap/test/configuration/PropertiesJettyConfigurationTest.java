@@ -14,10 +14,9 @@ public class PropertiesJettyConfigurationTest {
 	@Test
 	public void parseJettyConnetorsTest() {
 		Assert.assertArrayEquals(null, PropertiesJettyConfiguration.parseConnectors(new String[] { "ef", "SeSL" }));
-		Assert.assertArrayEquals(new JettyConnector[] { JettyConnector.SSL }, PropertiesJettyConfiguration.parseConnectors(new String[] { "ef", "SSL" }));
-		Assert.assertArrayEquals(new JettyConnector[] { JettyConnector.DEFAULT }, PropertiesJettyConfiguration.parseConnectors(new String[] { "DEFAULT" }));
-		Assert.assertArrayEquals(new JettyConnector[] { JettyConnector.DEFAULT, JettyConnector.SSL },
-				PropertiesJettyConfiguration.parseConnectors(new String[] { "DEFAULT", "SSL" }));
+		Assert.assertArrayEquals(new JettyConnector[] { JettyConnector.HTTPS }, PropertiesJettyConfiguration.parseConnectors(new String[] { "ef", "HTTPS" }));
+		Assert.assertArrayEquals(new JettyConnector[] { JettyConnector.HTTP }, PropertiesJettyConfiguration.parseConnectors(new String[] { "HTTP" }));
+		Assert.assertArrayEquals(new JettyConnector[] { JettyConnector.HTTP, JettyConnector.HTTPS }, PropertiesJettyConfiguration.parseConnectors(new String[] { "HTTP", "HTTPS" }));
 	}
 
 	@Test
@@ -31,11 +30,13 @@ public class PropertiesJettyConfigurationTest {
 		System.setProperty(PropertiesJettyConfiguration.KEY_HOST, "localhost1");
 		System.setProperty(PropertiesJettyConfiguration.KEY_PORT, "4444");
 		System.setProperty(PropertiesJettyConfiguration.KEY_SSL_PORT, "5555");
-		System.setProperty(PropertiesJettyConfiguration.KEY_CONNECTORS, "SSL");
-		System.setProperty(PropertiesJettyConfiguration.KEY_REDIRECT_ALL_ON_SSL, "false");
+		System.setProperty(PropertiesJettyConfiguration.KEY_CONNECTORS, "HTTPS");
+		System.setProperty(PropertiesJettyConfiguration.KEY_REDIRECT_WEBAPPS_ON_HTTPS, "false");
 		System.setProperty(PropertiesJettyConfiguration.KEY_SSL_KEYSTORE_PASSWORD, "pwd1");
 		System.setProperty(PropertiesJettyConfiguration.KEY_SSL_KEYSTORE_PATH, "./keystore1");
 		System.setProperty(PropertiesJettyConfiguration.KEY_TEMP_DIR, "/tmp1");
+		System.setProperty(PropertiesJettyConfiguration.KEY_PERSIST_APP_TEMP_DIR, "false");
+		System.setProperty(PropertiesJettyConfiguration.KEY_CLEAN_TEMP_DIR, "false");
 		System.setProperty(PropertiesJettyConfiguration.KEY_PARENT_LOADER_PRIORITY, "true");
 
 		//test sys prop config only
@@ -49,12 +50,14 @@ public class PropertiesJettyConfigurationTest {
 		Assert.assertEquals(4444, cfg.getPort());
 		Assert.assertEquals(5555, cfg.getSslPort());
 		Assert.assertTrue(cfg.getJettyConnectors().size() == 1);
-		Assert.assertTrue(cfg.getJettyConnectors().contains(JettyConnector.SSL));
-		Assert.assertEquals(false, cfg.isRedirectAllOnSslConnector());
+		Assert.assertTrue(cfg.getJettyConnectors().contains(JettyConnector.HTTPS));
+		Assert.assertEquals(false, cfg.isRedirectWebAppsOnHttpsConnector());
 		Assert.assertEquals("pwd1", cfg.getSSLKeyStorePassword());
 		Assert.assertEquals("./keystore1", cfg.getSSLKeyStorePath());
 		Assert.assertEquals(new File("/tmp1"), cfg.getTempDirectory());
-		Assert.assertEquals(true, cfg.getParentLoaderPriority());
+		Assert.assertEquals(false, cfg.isPersistAppTempDirectories());
+		Assert.assertEquals(false, cfg.isCleanTempDir());
+		Assert.assertEquals(true, cfg.isParentLoaderPriority());
 
 		//custom properties
 		final Properties properties = new Properties();
@@ -66,11 +69,13 @@ public class PropertiesJettyConfigurationTest {
 		properties.setProperty(PropertiesJettyConfiguration.KEY_HOST, "localhost11");
 		properties.setProperty(PropertiesJettyConfiguration.KEY_PORT, "8080");
 		properties.setProperty(PropertiesJettyConfiguration.KEY_SSL_PORT, "8443");
-		properties.setProperty(PropertiesJettyConfiguration.KEY_CONNECTORS, "DEFAULT,SSL");
-		properties.setProperty(PropertiesJettyConfiguration.KEY_REDIRECT_ALL_ON_SSL, "true");
+		properties.setProperty(PropertiesJettyConfiguration.KEY_CONNECTORS, "HTTP,HTTPS");
+		properties.setProperty(PropertiesJettyConfiguration.KEY_REDIRECT_WEBAPPS_ON_HTTPS, "true");
 		properties.setProperty(PropertiesJettyConfiguration.KEY_SSL_KEYSTORE_PASSWORD, "pwd2");
 		properties.setProperty(PropertiesJettyConfiguration.KEY_SSL_KEYSTORE_PATH, "./keystore2");
 		properties.setProperty(PropertiesJettyConfiguration.KEY_TEMP_DIR, "/tmp2");
+		System.setProperty(PropertiesJettyConfiguration.KEY_PERSIST_APP_TEMP_DIR, "true");
+		properties.setProperty(PropertiesJettyConfiguration.KEY_CLEAN_TEMP_DIR, "true");
 		properties.setProperty(PropertiesJettyConfiguration.KEY_PARENT_LOADER_PRIORITY, "false");
 
 		//test given prop config only
@@ -84,13 +89,15 @@ public class PropertiesJettyConfigurationTest {
 		Assert.assertEquals(8080, cfg.getPort());
 		Assert.assertEquals(8443, cfg.getSslPort());
 		Assert.assertTrue(cfg.getJettyConnectors().size() == 2);
-		Assert.assertTrue(cfg.getJettyConnectors().contains(JettyConnector.SSL));
-		Assert.assertTrue(cfg.getJettyConnectors().contains(JettyConnector.DEFAULT));
-		Assert.assertEquals(true, cfg.isRedirectAllOnSslConnector());
+		Assert.assertTrue(cfg.getJettyConnectors().contains(JettyConnector.HTTPS));
+		Assert.assertTrue(cfg.getJettyConnectors().contains(JettyConnector.HTTP));
+		Assert.assertEquals(true, cfg.isRedirectWebAppsOnHttpsConnector());
 		Assert.assertEquals("pwd2", cfg.getSSLKeyStorePassword());
 		Assert.assertEquals("./keystore2", cfg.getSSLKeyStorePath());
 		Assert.assertEquals(new File("/tmp2"), cfg.getTempDirectory());
-		Assert.assertEquals(false, cfg.getParentLoaderPriority());
+		Assert.assertEquals(false, cfg.isPersistAppTempDirectories());
+		Assert.assertEquals(true, cfg.isCleanTempDir());
+		Assert.assertEquals(false, cfg.isParentLoaderPriority());
 
 		//test sys prop and custom config with system having higher priority
 		cfg = new PropertiesJettyConfiguration(properties);
@@ -103,12 +110,13 @@ public class PropertiesJettyConfigurationTest {
 		Assert.assertEquals(4444, cfg.getPort());
 		Assert.assertEquals(5555, cfg.getSslPort());
 		Assert.assertTrue(cfg.getJettyConnectors().size() == 1);
-		Assert.assertTrue(cfg.getJettyConnectors().contains(JettyConnector.SSL));
-		Assert.assertEquals(false, cfg.isRedirectAllOnSslConnector());
+		Assert.assertTrue(cfg.getJettyConnectors().contains(JettyConnector.HTTPS));
+		Assert.assertEquals(false, cfg.isRedirectWebAppsOnHttpsConnector());
 		Assert.assertEquals("pwd1", cfg.getSSLKeyStorePassword());
 		Assert.assertEquals("./keystore1", cfg.getSSLKeyStorePath());
 		Assert.assertEquals(new File("/tmp1"), cfg.getTempDirectory());
-		Assert.assertEquals(true, cfg.getParentLoaderPriority());
+		Assert.assertEquals(true, cfg.isPersistAppTempDirectories());
+		Assert.assertEquals(false, cfg.isCleanTempDir());
+		Assert.assertEquals(true, cfg.isParentLoaderPriority());
 	}
-
 }
