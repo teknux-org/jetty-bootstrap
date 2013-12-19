@@ -9,6 +9,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.eclipse.jetty.http.HttpScheme;
 import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.Server;
@@ -20,6 +21,7 @@ import org.genux.jettybootstrap.configuration.IJettyConfiguration;
 import org.genux.jettybootstrap.configuration.JettyConnector;
 import org.genux.jettybootstrap.configuration.PropertiesJettyConfiguration;
 import org.genux.jettybootstrap.handler.IJettyHandler;
+import org.genux.jettybootstrap.handler.JettyHandler;
 import org.genux.jettybootstrap.handler.WebAppResourceWarJettyHandler;
 import org.genux.jettybootstrap.handler.WebAppWarJettyHandler;
 import org.genux.jettybootstrap.keystore.JettyKeystore;
@@ -189,6 +191,21 @@ public class JettyBootstrap {
 		webAppResourceWarJettyHandler.setContextPath(contextPath);
 
 		jettyHandlers.add(webAppResourceWarJettyHandler);
+
+		return this;
+	}
+
+	/**
+	 * Add Handler
+	 * 
+	 * @param handler
+	 * @return
+	 */
+	public JettyBootstrap addHandler(Handler handler) {
+		JettyHandler jettyHandler = new JettyHandler();
+		jettyHandler.setHandler(handler);
+
+		jettyHandlers.add(jettyHandler);
 
 		return this;
 	}
