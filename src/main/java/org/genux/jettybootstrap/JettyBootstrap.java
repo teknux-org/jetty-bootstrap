@@ -33,10 +33,10 @@ public class JettyBootstrap {
 
 	private final Logger logger = LoggerFactory.getLogger(JettyBootstrap.class);
 
-	private static final String KEYSTORE_FILENAME = "application.keystore";
-	private static final String KEYSTORE_DOMAINNAME = "unknown";
-	private static final String KEYSTORE_ALIAS = "jettybootstrap";
-	private static final String KEYSTORE_PASSWORD = "jettybootstrap";
+	private static final String DEFAULT_KEYSTORE_FILENAME = "default.keystore";
+	private static final String DEFAULT_KEYSTORE_DOMAINNAME = "unknown";
+	private static final String DEFAULT_KEYSTORE_ALIAS = "jettybootstrap";
+	private static final String DEFAULT_KEYSTORE_PASSWORD = "jettybootstrap";
 
 	private static final String TEMP_DIRECTORY_NAME = ".temp";
 	public static final File TEMP_DIRECTORY_JARDIR = new File(getJarDir().getPath() + File.separator + TEMP_DIRECTORY_NAME);
@@ -80,7 +80,7 @@ public class JettyBootstrap {
 		if (server == null) {
 			init(iJettyConfiguration);
 		}
-		addHandlers();
+		setHandlers();
 
 		logger.info("Start Jetty...");
 		try {
@@ -259,17 +259,17 @@ public class JettyBootstrap {
 
 		logger.trace("Check connectors...");
 		if (iJettyConfiguration.hasJettyConnector(JettyConnector.HTTPS) && (iJettyConfiguration.getSSLKeyStorePath() == null || iJettyConfiguration.getSSLKeyStorePath().isEmpty())) {
-			File keystoreFile = new File(iJettyConfiguration.getTempDirectory().getPath() + File.separator + KEYSTORE_FILENAME);
+			File keystoreFile = new File(iJettyConfiguration.getTempDirectory().getPath() + File.separator + DEFAULT_KEYSTORE_FILENAME);
 
 			if (!keystoreFile.exists()) {
 				try {
-					JettyKeystore.generateKeystoreAndSave(KEYSTORE_DOMAINNAME, KEYSTORE_ALIAS, KEYSTORE_PASSWORD, keystoreFile);
+					JettyKeystore.generateKeystoreAndSave(DEFAULT_KEYSTORE_DOMAINNAME, DEFAULT_KEYSTORE_ALIAS, DEFAULT_KEYSTORE_PASSWORD, keystoreFile);
 				} catch (JettyKeystoreException e) {
 					throw new JettyBootstrapException("Can't generate keyStore", e);
 				}
 			}
 			iJettyConfiguration.setSSLKeyStorePath(keystoreFile.getPath());
-			iJettyConfiguration.setSSLKeyStorePassword(KEYSTORE_PASSWORD);
+			iJettyConfiguration.setSSLKeyStorePassword(DEFAULT_KEYSTORE_PASSWORD);
 		}
 
 		if (iJettyConfiguration.isRedirectWebAppsOnHttpsConnector() &&
@@ -348,11 +348,11 @@ public class JettyBootstrap {
 	}
 
 	/**
-	 * Add Handlers to jetty
+	 * Set Handlers to jetty
 	 * 
 	 * @throws JettyBootstrapException
 	 */
-	private void addHandlers() throws JettyBootstrapException {
+	private void setHandlers() throws JettyBootstrapException {
 		if (jettyHandlers.size() == 0) {
 			return;
 		}
