@@ -103,10 +103,14 @@ public class JettyBootstrap {
 	 * @throws JettyBootstrapException
 	 */
 	public JettyBootstrap joinJetty() throws JettyBootstrapException {
-		logger.debug("Join Jetty...");
-
 		try {
-			server.join();
+			if (server != null && server.isStarted()) {
+				logger.debug("Join Jetty...");
+
+				server.join();
+			} else {
+				logger.warn("Can't join Jetty. Not started");
+			}
 		} catch (InterruptedException e) {
 			throw new JettyBootstrapException(e);
 		}
@@ -124,7 +128,7 @@ public class JettyBootstrap {
 		try {
 			handlers.stop();
 
-			if (server.isStarted()) {
+			if (server != null && server.isStarted()) {
 				logger.info("Stop Jetty...");
 
 				server.stop();
