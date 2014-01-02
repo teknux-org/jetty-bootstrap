@@ -22,6 +22,7 @@ import org.genux.jettybootstrap.configuration.PropertiesJettyConfiguration;
 import org.genux.jettybootstrap.handler.AbstractWebAppJettyHandler;
 import org.genux.jettybootstrap.handler.IJettyHandler;
 import org.genux.jettybootstrap.handler.JettyHandler;
+import org.genux.jettybootstrap.handler.WebAppJettyHandler;
 import org.genux.jettybootstrap.handler.WebAppResourceWarJettyHandler;
 import org.genux.jettybootstrap.handler.WebAppStaticJettyHandler;
 import org.genux.jettybootstrap.handler.WebAppWarJettyHandler;
@@ -249,6 +250,67 @@ public class JettyBootstrap {
 		webAppStaticJettyHandler.setContextPath(contextPath);
 
 		jettyHandlers.add(webAppStaticJettyHandler);
+
+		return this;
+	}
+
+	/**
+	 * Add Application from Directory in Root Context
+	 * 
+	 * @param contentDir
+	 * @param descriptor
+	 * @return
+	 */
+	public JettyBootstrap add(File contentDir, String descriptor) {
+		return add(contentDir, descriptor, CONTEXT_PATH_ROOT);
+	}
+
+	/**
+	 * Add Application from Directory
+	 * 
+	 * @param contentDir
+	 * @param descriptor
+	 * @param contextPath
+	 * @return
+	 */
+	public JettyBootstrap add(File contentDir, String descriptor, String contextPath) {
+		WebAppJettyHandler webAppJettyHandler = new WebAppJettyHandler();
+		webAppJettyHandler.setResourceBase(contentDir);
+		webAppJettyHandler.setDescriptor(descriptor);
+		webAppJettyHandler.setContextPath(contextPath);
+
+		jettyHandlers.add(webAppJettyHandler);
+
+		return this;
+	}
+
+	/**
+	 * Add Application from Resource Directory
+	 * 
+	 * @param contentDir
+	 * @param descriptor
+	 * @return
+	 */
+	public JettyBootstrap add(String contentDir, String descriptor) {
+		return add(contentDir, descriptor, CONTEXT_PATH_ROOT);
+	}
+
+	/**
+	 * Add Application from Resource Directory in Root
+	 * Context
+	 * 
+	 * @param contentDir
+	 * @param descriptor
+	 * @param contextPath
+	 * @return
+	 */
+	public JettyBootstrap add(String contentDir, String descriptor, String contextPath) {
+		WebAppJettyHandler webAppJettyHandler = new WebAppJettyHandler();
+		webAppJettyHandler.setResourceBase(contentDir);
+		webAppJettyHandler.setDescriptor(descriptor);
+		webAppJettyHandler.setContextPath(contextPath);
+
+		jettyHandlers.add(webAppJettyHandler);
 
 		return this;
 	}
