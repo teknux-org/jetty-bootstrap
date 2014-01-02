@@ -1,6 +1,9 @@
 package org.genux.jettybootstrap.test.jettybootstrap;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -8,6 +11,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
 import org.genux.jettybootstrap.JettyBootstrap;
 import org.genux.jettybootstrap.JettyBootstrapException;
 import org.genux.jettybootstrap.configuration.JettyConfiguration;
@@ -79,19 +84,66 @@ public class JettyBootstrapTest {
 	}
 
 	@Test
-	public void do01StaticTest() throws IllegalStateException, IOException, JettyBootstrapException {
-		jettyBootstrap.addResourceWar("/static.war", "/static").startJetty();
+	public void do01StaticResourceWarTest() throws IllegalStateException, IOException, JettyBootstrapException {
+		jettyBootstrap.addResourceWar("/static.war", "/staticWar").startJetty();
 
-		Assert.assertEquals(new SimpleResponse(200, "test1content\n"), get("/static/test1.html"));
-		Assert.assertEquals(new SimpleResponse(200, "test2content\n"), get("/static/test2.html"));
+		Assert.assertEquals(new SimpleResponse(200, "test1content\n"), get("/staticWar/test1.html"));
+		Assert.assertEquals(new SimpleResponse(200, "test2content\n"), get("/staticWar/test2.html"));
 		Assert.assertEquals(new Integer(404), get("/test3.html").getStatusCode());
 	}
 
 	@Test
-	public void do02SservletTest() throws IllegalStateException, IOException, JettyBootstrapException {
-		jettyBootstrap.addResourceWar("/servlet.war", "/servlet").startJetty();
+	public void do02ServletResourceWarTest() throws IllegalStateException, IOException, JettyBootstrapException {
+		jettyBootstrap.addResourceWar("/servlet.war", "/servletWar").startJetty();
 
-		Assert.assertEquals(new SimpleResponse(200, "Value=value1\n"), get("/servlet?value=value1"));
-		Assert.assertEquals(new SimpleResponse(200, "Value=value2\n"), get("/servlet?value=value2"));
+		Assert.assertEquals(new SimpleResponse(200, "Value=value1\n"), get("/servletWar?value=value1"));
+		Assert.assertEquals(new SimpleResponse(200, "Value=value2\n"), get("/servletWar?value=value2"));
+	}
+
+	@Test
+	public void do03StaticResourceTest() throws IllegalStateException, IOException, JettyBootstrapException {
+		jettyBootstrap.addStaticContent("/staticres", "/staticresres").startJetty();
+
+		Assert.assertEquals(new SimpleResponse(200, "StaticResContent\n"), get("/staticresres/index.html"));
+	}
+
+	@Test
+	public void do04StaticTest() throws IllegalStateException, IOException, JettyBootstrapException {
+		File file = temporaryFolder.newFolder();
+		copyResourceToFile("/staticres/index.html", new File(file.getPath() + File.separator + "index.html"));
+
+		jettyBootstrap.addStaticContent(file, "/staticres").startJetty();
+
+		Assert.assertEquals(new SimpleResponse(200, "StaticResContent\n"), get("/staticres/index.html"));
+	}
+
+	@Test
+	public void do06HandlerTest() throws IllegalStateException, IOException, JettyBootstrapException {
+		ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
+		context.setContextPath("/servlet");
+		context.addServlet(new ServletHolder(new TestServlet()), "/*");
+
+		jettyBootstrap.addHandler(context).startJetty();
+
+		Assert.assertEquals(new SimpleResponse(200, "ServletTestContent\n"), get("/servlet"));
+	}
+
+	private File copyResourceToFile(String resource, File file) throws IOException {
+		InputStream inputStream = null;
+		FileOutputStream fileOutputStream = null;
+		try {
+			inputStream = JettyBootstrapTest.class.getResourceAsStream(resource);
+			fileOutputStream = new FileOutputStream(file);
+			IOUtils.copy(inputStream, fileOutputStream);
+
+			return file;
+		} finally {
+			if (inputStream != null) {
+				inputStream.close();
+			}
+			if (fileOutputStream != null) {
+				fileOutputStream.close();
+			}
+		}
 	}
 }

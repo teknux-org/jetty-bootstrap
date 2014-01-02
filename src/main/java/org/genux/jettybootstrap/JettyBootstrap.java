@@ -19,9 +19,11 @@ import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.genux.jettybootstrap.configuration.IJettyConfiguration;
 import org.genux.jettybootstrap.configuration.JettyConnector;
 import org.genux.jettybootstrap.configuration.PropertiesJettyConfiguration;
+import org.genux.jettybootstrap.handler.AbstractWebAppJettyHandler;
 import org.genux.jettybootstrap.handler.IJettyHandler;
 import org.genux.jettybootstrap.handler.JettyHandler;
 import org.genux.jettybootstrap.handler.WebAppResourceWarJettyHandler;
+import org.genux.jettybootstrap.handler.WebAppStaticJettyHandler;
 import org.genux.jettybootstrap.handler.WebAppWarJettyHandler;
 import org.genux.jettybootstrap.keystore.JettyKeystore;
 import org.genux.jettybootstrap.keystore.JettyKeystoreException;
@@ -143,7 +145,7 @@ public class JettyBootstrap {
 	}
 
 	/**
-	 * Add War
+	 * Add War Application in Root Context
 	 * 
 	 * @param warFile
 	 * @return
@@ -153,7 +155,7 @@ public class JettyBootstrap {
 	}
 
 	/**
-	 * Add War
+	 * Add War Application
 	 * 
 	 * @param warFile
 	 * @param contextPath
@@ -170,7 +172,7 @@ public class JettyBootstrap {
 	}
 
 	/**
-	 * Add ResourceWar
+	 * Add War Application from Resource in Root Context
 	 * 
 	 * @param resource
 	 * @return
@@ -180,7 +182,7 @@ public class JettyBootstrap {
 	}
 
 	/**
-	 * Add ResourceWar
+	 * Add War Application from Resource
 	 * 
 	 * @param resource
 	 * @param contextPath
@@ -192,6 +194,61 @@ public class JettyBootstrap {
 		webAppResourceWarJettyHandler.setContextPath(contextPath);
 
 		jettyHandlers.add(webAppResourceWarJettyHandler);
+
+		return this;
+	}
+
+	/**
+	 * Add Static Application from Directory in Root Context
+	 * 
+	 * @param contentDir
+	 * @return
+	 */
+	public JettyBootstrap addStaticContent(File contentDir) {
+		return addStaticContent(contentDir, CONTEXT_PATH_ROOT);
+	}
+
+	/**
+	 * Add Static Application from Directory
+	 * 
+	 * @param contentDir
+	 * @param contextPath
+	 * @return
+	 */
+	public JettyBootstrap addStaticContent(File contentDir, String contextPath) {
+		WebAppStaticJettyHandler webAppStaticJettyHandler = new WebAppStaticJettyHandler();
+		webAppStaticJettyHandler.setResourceBase(contentDir);
+		webAppStaticJettyHandler.setContextPath(contextPath);
+
+		jettyHandlers.add(webAppStaticJettyHandler);
+
+		return this;
+	}
+
+	/**
+	 * Add Static Application from Resource Directory in
+	 * Root Context
+	 * 
+	 * @param resource
+	 * @return
+	 */
+	public JettyBootstrap addStaticContent(String resource) {
+		return addStaticContent(resource, CONTEXT_PATH_ROOT);
+	}
+
+	/**
+	 * Add Static Application from Resource Directory
+	 * 
+	 * @param resource
+	 * @param contextPath
+	 * @return
+	 */
+	public JettyBootstrap addStaticContent(String resource, String contextPath) {
+		WebAppStaticJettyHandler webAppStaticJettyHandler = new WebAppStaticJettyHandler();
+		webAppStaticJettyHandler.setResourceBase(resource);
+		webAppStaticJettyHandler.setContextPath(contextPath);
+
+		jettyHandlers.add(webAppStaticJettyHandler);
 
 		return this;
 	}
@@ -364,11 +421,11 @@ public class JettyBootstrap {
 		handlers.removeBeans();
 
 		for (IJettyHandler jettyHandler : jettyHandlers) {
-			if (jettyHandler instanceof WebAppWarJettyHandler) {
-				WebAppWarJettyHandler webAppWarJettyHandler = (WebAppWarJettyHandler) jettyHandler;
-				webAppWarJettyHandler.setTempDirectory(iJettyConfiguration.getTempDirectory());
-				webAppWarJettyHandler.setPersistTempDirectory(iJettyConfiguration.isPersistAppTempDirectories());
-				webAppWarJettyHandler.setRedirectOnHttpsConnector(iJettyConfiguration.isRedirectWebAppsOnHttpsConnector());
+			if (jettyHandler instanceof AbstractWebAppJettyHandler) {
+				AbstractWebAppJettyHandler abstractWebAppJettyHandler = (AbstractWebAppJettyHandler) jettyHandler;
+				abstractWebAppJettyHandler.setTempDirectory(iJettyConfiguration.getTempDirectory());
+				abstractWebAppJettyHandler.setPersistTempDirectory(iJettyConfiguration.isPersistAppTempDirectories());
+				abstractWebAppJettyHandler.setRedirectOnHttpsConnector(iJettyConfiguration.isRedirectWebAppsOnHttpsConnector());
 			}
 
 			handlers.addHandler(jettyHandler.getHandler());

@@ -16,6 +16,19 @@
 					<target>1.6</target>
 				</configuration>
 			</plugin>
+			<plugin>
+			        <groupId>org.apache.rat</groupId>
+				<artifactId>apache-rat-plugin</artifactId>
+				<version>0.7</version>
+				<executions>
+				        <execution>
+					        <phase>verify</phase>
+						<goals>
+						        <goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 
