@@ -46,6 +46,7 @@ public class JettyBootstrap {
 	public static final File TEMP_DIRECTORY_SYSTEMP = new File(System.getProperty("java.io.tmpdir") + File.separator + TEMP_DIRECTORY_NAME);
 	protected static final File TEMP_DIRECTORY_DEFAULT = TEMP_DIRECTORY_JARDIR;
 
+	private static final String RESOURCE_WEBAPP = "/webapp";
 	private static final String CONTEXT_PATH_ROOT = "/";
 
 	private IJettyConfiguration iJettyConfiguration;
@@ -53,6 +54,16 @@ public class JettyBootstrap {
 
 	private Server server = null;
 	private HandlerList handlers = new HandlerList();
+
+	/**
+	 * Quick Start
+	 * 
+	 * @return
+	 * @throws JettyBootstrapException
+	 */
+	public static JettyBootstrap startMyself() throws JettyBootstrapException {
+		return new JettyBootstrap().addMyself().startJetty();
+	}
 
 	public JettyBootstrap() {
 		this(new PropertiesJettyConfiguration());
@@ -233,8 +244,8 @@ public class JettyBootstrap {
 	 * @param resource
 	 * @return
 	 */
-	public JettyBootstrap addStaticContent(String resource) {
-		return addStaticContent(resource, CONTEXT_PATH_ROOT);
+	public JettyBootstrap addResourceStaticContent(String resource) {
+		return addResourceStaticContent(resource, CONTEXT_PATH_ROOT);
 	}
 
 	/**
@@ -244,7 +255,7 @@ public class JettyBootstrap {
 	 * @param contextPath
 	 * @return
 	 */
-	public JettyBootstrap addStaticContent(String resource, String contextPath) {
+	public JettyBootstrap addResourceStaticContent(String resource, String contextPath) {
 		WebAppStaticJettyHandler webAppStaticJettyHandler = new WebAppStaticJettyHandler();
 		webAppStaticJettyHandler.setResourceBase(resource);
 		webAppStaticJettyHandler.setContextPath(contextPath);
@@ -291,8 +302,8 @@ public class JettyBootstrap {
 	 * @param descriptor
 	 * @return
 	 */
-	public JettyBootstrap add(String contentDir, String descriptor) {
-		return add(contentDir, descriptor, CONTEXT_PATH_ROOT);
+	public JettyBootstrap addResource(String contentDir, String descriptor) {
+		return addResource(contentDir, descriptor, CONTEXT_PATH_ROOT);
 	}
 
 	/**
@@ -304,7 +315,7 @@ public class JettyBootstrap {
 	 * @param contextPath
 	 * @return
 	 */
-	public JettyBootstrap add(String contentDir, String descriptor, String contextPath) {
+	public JettyBootstrap addResource(String contentDir, String descriptor, String contextPath) {
 		WebAppJettyHandler webAppJettyHandler = new WebAppJettyHandler();
 		webAppJettyHandler.setResourceBase(contentDir);
 		webAppJettyHandler.setDescriptor(descriptor);
@@ -313,6 +324,25 @@ public class JettyBootstrap {
 		jettyHandlers.add(webAppJettyHandler);
 
 		return this;
+	}
+
+	/**
+	 * Add Application from Myself in Root Context
+	 * 
+	 * @return
+	 */
+	public JettyBootstrap addMyself() {
+		return addResource(RESOURCE_WEBAPP, null);
+	}
+
+	/**
+	 * Add Application from Myself
+	 * 
+	 * @param contextPath
+	 * @return
+	 */
+	public JettyBootstrap addMyself(String contextPath) {
+		return addResource(RESOURCE_WEBAPP, null, contextPath);
 	}
 
 	/**

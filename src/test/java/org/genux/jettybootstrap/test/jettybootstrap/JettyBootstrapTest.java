@@ -102,7 +102,7 @@ public class JettyBootstrapTest {
 
 	@Test
 	public void do03StaticResourceTest() throws IllegalStateException, IOException, JettyBootstrapException {
-		jettyBootstrap.addStaticContent("/staticres", "/staticresres").startJetty();
+		jettyBootstrap.addResourceStaticContent("/staticres", "/staticresres").startJetty();
 
 		Assert.assertEquals(new SimpleResponse(200, "StaticResContent\n"), get("/staticresres/index.html"));
 	}
