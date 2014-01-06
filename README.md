@@ -8,7 +8,7 @@ In case you have your war file on the file system (e.g. /tmp/webapp.war), it is 
 ```java
 JettyBootstrap bootstrap = new JettyBootstrap();
 bootstrap.addWar("/tmp/webapp.war", "/contextName");
-bootstrap.startJetty();
+bootstrap.startServer();
 ```
 
 Maven dependency to include on your project
