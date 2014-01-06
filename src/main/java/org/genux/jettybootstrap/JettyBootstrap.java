@@ -24,7 +24,7 @@ import org.genux.jettybootstrap.handler.IJettyHandler;
 import org.genux.jettybootstrap.handler.JettyHandler;
 import org.genux.jettybootstrap.handler.WebAppJettyHandler;
 import org.genux.jettybootstrap.handler.WebAppResourceWarJettyHandler;
-import org.genux.jettybootstrap.handler.WebAppStaticJettyHandler;
+import org.genux.jettybootstrap.handler.WebAppStaticContentJettyHandler;
 import org.genux.jettybootstrap.handler.WebAppWarJettyHandler;
 import org.genux.jettybootstrap.keystore.JettyKeystore;
 import org.genux.jettybootstrap.keystore.JettyKeystoreException;
@@ -61,8 +61,8 @@ public class JettyBootstrap {
 	 * @return
 	 * @throws JettyBootstrapException
 	 */
-	public static JettyBootstrap startMyself() throws JettyBootstrapException {
-		return new JettyBootstrap().addMyself().startJetty();
+	public static JettyBootstrap startSelf() throws JettyBootstrapException {
+		return new JettyBootstrap().addSelf().startServer();
 	}
 
 	public JettyBootstrap() {
@@ -74,29 +74,29 @@ public class JettyBootstrap {
 	}
 
 	/**
-	 * Start Jetty
+	 * Start Jetty Server
 	 * 
 	 * @return
 	 * @throws JettyBootstrapException
 	 */
-	public JettyBootstrap startJetty() throws JettyBootstrapException {
-		return startJetty(iJettyConfiguration.isAutoJoinOnStart());
+	public JettyBootstrap startServer() throws JettyBootstrapException {
+		return startServer(iJettyConfiguration.isAutoJoinOnStart());
 	}
 
 	/**
-	 * Start Jetty
+	 * Start Jetty Server
 	 * 
 	 * @param join
 	 * @return
 	 * @throws JettyBootstrapException
 	 */
-	public JettyBootstrap startJetty(boolean join) throws JettyBootstrapException {
+	public JettyBootstrap startServer(boolean join) throws JettyBootstrapException {
 		if (server == null) {
 			init(iJettyConfiguration);
 		}
 		setHandlers();
 
-		logger.info("Start Jetty...");
+		logger.info("Start Jetty Server...");
 		try {
 			server.start();
 		} catch (Exception e) {
@@ -104,26 +104,26 @@ public class JettyBootstrap {
 		}
 
 		if (join) {
-			joinJetty();
+			joinServer();
 		}
 
 		return this;
 	}
 
 	/**
-	 * Join Jetty
+	 * Join Jetty Server
 	 * 
 	 * @return
 	 * @throws JettyBootstrapException
 	 */
-	public JettyBootstrap joinJetty() throws JettyBootstrapException {
+	public JettyBootstrap joinServer() throws JettyBootstrapException {
 		try {
 			if (server != null && server.isStarted()) {
-				logger.debug("Join Jetty...");
+				logger.debug("Join Jetty Server...");
 
 				server.join();
 			} else {
-				logger.warn("Can't join Jetty. Not started");
+				logger.warn("Can't join Jetty Server. Not started");
 			}
 		} catch (InterruptedException e) {
 			throw new JettyBootstrapException(e);
@@ -133,21 +133,21 @@ public class JettyBootstrap {
 	}
 
 	/**
-	 * Stop Jetty
+	 * Stop Jetty Server
 	 * 
 	 * @return
 	 * @throws JettyBootstrapException
 	 */
-	public JettyBootstrap stopJetty() throws JettyBootstrapException {
+	public JettyBootstrap stopServer() throws JettyBootstrapException {
 		try {
 			handlers.stop();
 
 			if (server != null && server.isStarted()) {
-				logger.info("Stop Jetty...");
+				logger.info("Stop Jetty Server...");
 
 				server.stop();
 			} else {
-				logger.warn("Can't stop Jetty. Already stopped");
+				logger.warn("Can't stop Jetty Server. Already stopped");
 			}
 		} catch (Exception e) {
 			throw new JettyBootstrapException(e);
@@ -162,7 +162,7 @@ public class JettyBootstrap {
 	 * @param warFile
 	 * @return
 	 */
-	public JettyBootstrap addWar(File warFile) {
+	public JettyBootstrap addWar(String warFile) {
 		return addWar(warFile, CONTEXT_PATH_ROOT);
 	}
 
@@ -173,7 +173,7 @@ public class JettyBootstrap {
 	 * @param contextPath
 	 * @return
 	 */
-	public JettyBootstrap addWar(File warFile, String contextPath) {
+	public JettyBootstrap addWar(String warFile, String contextPath) {
 		WebAppWarJettyHandler webAppWarJettyHandler = new WebAppWarJettyHandler();
 		webAppWarJettyHandler.setWarFile(warFile);
 		webAppWarJettyHandler.setContextPath(contextPath);
@@ -186,23 +186,23 @@ public class JettyBootstrap {
 	/**
 	 * Add War Application from Resource in Root Context
 	 * 
-	 * @param resource
+	 * @param resourceWar
 	 * @return
 	 */
-	public JettyBootstrap addResourceWar(String resource) {
-		return addResourceWar(resource, CONTEXT_PATH_ROOT);
+	public JettyBootstrap addResourceWar(String resourceWar) {
+		return addResourceWar(resourceWar, CONTEXT_PATH_ROOT);
 	}
 
 	/**
 	 * Add War Application from Resource
 	 * 
-	 * @param resource
+	 * @param resourceWar
 	 * @param contextPath
 	 * @return
 	 */
-	public JettyBootstrap addResourceWar(String resource, String contextPath) {
+	public JettyBootstrap addResourceWar(String resourceWar, String contextPath) {
 		WebAppResourceWarJettyHandler webAppResourceWarJettyHandler = new WebAppResourceWarJettyHandler();
-		webAppResourceWarJettyHandler.setResource(resource);
+		webAppResourceWarJettyHandler.setResourceWar(resourceWar);
 		webAppResourceWarJettyHandler.setContextPath(contextPath);
 
 		jettyHandlers.add(webAppResourceWarJettyHandler);
@@ -213,23 +213,23 @@ public class JettyBootstrap {
 	/**
 	 * Add Static Application from Directory in Root Context
 	 * 
-	 * @param contentDir
+	 * @param webAppBase
 	 * @return
 	 */
-	public JettyBootstrap addStaticContent(File contentDir) {
-		return addStaticContent(contentDir, CONTEXT_PATH_ROOT);
+	public JettyBootstrap addStaticContent(String webAppBase) {
+		return addStaticContent(webAppBase, CONTEXT_PATH_ROOT);
 	}
 
 	/**
 	 * Add Static Application from Directory
 	 * 
-	 * @param contentDir
+	 * @param webAppBase
 	 * @param contextPath
 	 * @return
 	 */
-	public JettyBootstrap addStaticContent(File contentDir, String contextPath) {
-		WebAppStaticJettyHandler webAppStaticJettyHandler = new WebAppStaticJettyHandler();
-		webAppStaticJettyHandler.setResourceBase(contentDir);
+	public JettyBootstrap addStaticContent(String webAppBase, String contextPath) {
+		WebAppStaticContentJettyHandler webAppStaticJettyHandler = new WebAppStaticContentJettyHandler();
+		webAppStaticJettyHandler.setWebAppBase(webAppBase);
 		webAppStaticJettyHandler.setContextPath(contextPath);
 
 		jettyHandlers.add(webAppStaticJettyHandler);
@@ -241,23 +241,23 @@ public class JettyBootstrap {
 	 * Add Static Application from Resource Directory in
 	 * Root Context
 	 * 
-	 * @param resource
+	 * @param webAppResourceBase
 	 * @return
 	 */
-	public JettyBootstrap addResourceStaticContent(String resource) {
-		return addResourceStaticContent(resource, CONTEXT_PATH_ROOT);
+	public JettyBootstrap addResourceStaticContent(String webAppResourceBase) {
+		return addResourceStaticContent(webAppResourceBase, CONTEXT_PATH_ROOT);
 	}
 
 	/**
 	 * Add Static Application from Resource Directory
 	 * 
-	 * @param resource
+	 * @param webAppResourceBase
 	 * @param contextPath
 	 * @return
 	 */
-	public JettyBootstrap addResourceStaticContent(String resource, String contextPath) {
-		WebAppStaticJettyHandler webAppStaticJettyHandler = new WebAppStaticJettyHandler();
-		webAppStaticJettyHandler.setResourceBase(resource);
+	public JettyBootstrap addResourceStaticContent(String webAppResourceBase, String contextPath) {
+		WebAppStaticContentJettyHandler webAppStaticJettyHandler = new WebAppStaticContentJettyHandler();
+		webAppStaticJettyHandler.setWebAppResourceBase(webAppResourceBase);
 		webAppStaticJettyHandler.setContextPath(contextPath);
 
 		jettyHandlers.add(webAppStaticJettyHandler);
@@ -268,25 +268,25 @@ public class JettyBootstrap {
 	/**
 	 * Add Application from Directory in Root Context
 	 * 
-	 * @param contentDir
+	 * @param webAppBase
 	 * @param descriptor
 	 * @return
 	 */
-	public JettyBootstrap add(File contentDir, String descriptor) {
-		return add(contentDir, descriptor, CONTEXT_PATH_ROOT);
+	public JettyBootstrap add(String webAppBase, String descriptor) {
+		return add(webAppBase, descriptor, CONTEXT_PATH_ROOT);
 	}
 
 	/**
 	 * Add Application from Directory
 	 * 
-	 * @param contentDir
+	 * @param webAppBase
 	 * @param descriptor
 	 * @param contextPath
 	 * @return
 	 */
-	public JettyBootstrap add(File contentDir, String descriptor, String contextPath) {
+	public JettyBootstrap add(String webAppBase, String descriptor, String contextPath) {
 		WebAppJettyHandler webAppJettyHandler = new WebAppJettyHandler();
-		webAppJettyHandler.setResourceBase(contentDir);
+		webAppJettyHandler.setWebAppBase(webAppBase);
 		webAppJettyHandler.setDescriptor(descriptor);
 		webAppJettyHandler.setContextPath(contextPath);
 
@@ -298,26 +298,26 @@ public class JettyBootstrap {
 	/**
 	 * Add Application from Resource Directory
 	 * 
-	 * @param contentDir
+	 * @param webAppResourceBase
 	 * @param descriptor
 	 * @return
 	 */
-	public JettyBootstrap addResource(String contentDir, String descriptor) {
-		return addResource(contentDir, descriptor, CONTEXT_PATH_ROOT);
+	public JettyBootstrap addResource(String webAppResourceBase, String descriptor) {
+		return addResource(webAppResourceBase, descriptor, CONTEXT_PATH_ROOT);
 	}
 
 	/**
 	 * Add Application from Resource Directory in Root
 	 * Context
 	 * 
-	 * @param contentDir
+	 * @param webAppResourceBase
 	 * @param descriptor
 	 * @param contextPath
 	 * @return
 	 */
-	public JettyBootstrap addResource(String contentDir, String descriptor, String contextPath) {
+	public JettyBootstrap addResource(String webAppResourceBase, String descriptor, String contextPath) {
 		WebAppJettyHandler webAppJettyHandler = new WebAppJettyHandler();
-		webAppJettyHandler.setResourceBase(contentDir);
+		webAppJettyHandler.setWebAppResourceBase(webAppResourceBase);
 		webAppJettyHandler.setDescriptor(descriptor);
 		webAppJettyHandler.setContextPath(contextPath);
 
@@ -331,7 +331,7 @@ public class JettyBootstrap {
 	 * 
 	 * @return
 	 */
-	public JettyBootstrap addMyself() {
+	public JettyBootstrap addSelf() {
 		return addResource(RESOURCE_WEBAPP, null);
 	}
 
@@ -341,7 +341,7 @@ public class JettyBootstrap {
 	 * @param contextPath
 	 * @return
 	 */
-	public JettyBootstrap addMyself(String contextPath) {
+	public JettyBootstrap addSelf(String contextPath) {
 		return addResource(RESOURCE_WEBAPP, null, contextPath);
 	}
 
@@ -411,7 +411,7 @@ public class JettyBootstrap {
 		}
 
 		logger.trace("Check connectors...");
-		if (iJettyConfiguration.hasJettyConnector(JettyConnector.HTTPS) && (iJettyConfiguration.getSSLKeyStorePath() == null || iJettyConfiguration.getSSLKeyStorePath().isEmpty())) {
+		if (iJettyConfiguration.hasJettyConnector(JettyConnector.HTTPS) && (iJettyConfiguration.getSslKeyStorePath() == null || iJettyConfiguration.getSslKeyStorePath().isEmpty())) {
 			File keystoreFile = new File(iJettyConfiguration.getTempDirectory().getPath() + File.separator + DEFAULT_KEYSTORE_FILENAME);
 
 			if (!keystoreFile.exists()) {
@@ -421,8 +421,8 @@ public class JettyBootstrap {
 					throw new JettyBootstrapException("Can't generate keyStore", e);
 				}
 			}
-			iJettyConfiguration.setSSLKeyStorePath(keystoreFile.getPath());
-			iJettyConfiguration.setSSLKeyStorePassword(DEFAULT_KEYSTORE_PASSWORD);
+			iJettyConfiguration.setSslKeyStorePath(keystoreFile.getPath());
+			iJettyConfiguration.setSslKeyStorePassword(DEFAULT_KEYSTORE_PASSWORD);
 		}
 
 		if (iJettyConfiguration.isRedirectWebAppsOnHttpsConnector() &&
@@ -475,8 +475,8 @@ public class JettyBootstrap {
 		if (iJettyConfiguration.hasJettyConnector(JettyConnector.HTTPS)) {
 			logger.trace("Add HTTPS Connector...");
 
-			SslContextFactory sslContextFactory = new SslContextFactory(iJettyConfiguration.getSSLKeyStorePath());
-			sslContextFactory.setKeyStorePassword(iJettyConfiguration.getSSLKeyStorePassword());
+			SslContextFactory sslContextFactory = new SslContextFactory(iJettyConfiguration.getSslKeyStorePath());
+			sslContextFactory.setKeyStorePassword(iJettyConfiguration.getSslKeyStorePassword());
 			ServerConnector serverConnector = new ServerConnector(server, sslContextFactory);
 
 			serverConnector.setIdleTimeout(iJettyConfiguration.getIdleTimeout());
@@ -493,7 +493,7 @@ public class JettyBootstrap {
 		try {
 			logger.debug("Shutdown...");
 			if (iJettyConfiguration.isStopAtShutdown()) {
-				stopJetty();
+				stopServer();
 			}
 		} catch (Exception e) {
 			logger.error("Shutdown", e);

@@ -1,31 +1,29 @@
 package org.genux.jettybootstrap.handler;
 
-import java.io.File;
-
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.genux.jettybootstrap.utils.Md5;
 
 
 public class WebAppWarJettyHandler extends AbstractWebAppJettyHandler {
 
-	private File warFile = null;
+	private String warFile = null;
 
-	public File getWarFile() {
+	public String getWarFile() {
 		return warFile;
 	}
 
-	public void setWarFile(File warFile) {
+	public void setWarFile(String warFile) {
 		this.warFile = warFile;
 	}
 
 	@Override
 	protected String getAppTempDirName() {
-		return Md5.hash(getWarFile().getPath());
+		return Md5.hash(getWarFile());
 	}
 
 	@Override
 	protected WebAppContext initWebAppContext(WebAppContext webAppContext) {
-		webAppContext.setWar(getWarFile().getPath());
+		webAppContext.setWar(getWarFile());
 
 		return webAppContext;
 	}

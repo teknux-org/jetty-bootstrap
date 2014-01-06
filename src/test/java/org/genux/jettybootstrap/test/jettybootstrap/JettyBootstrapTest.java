@@ -55,7 +55,7 @@ public class JettyBootstrapTest {
 
 	@After
 	public void stopServer() throws JettyBootstrapException {
-		jettyBootstrap.stopJetty();
+		jettyBootstrap.stopServer();
 	}
 
 	private int getPort() throws JettyBootstrapException {
@@ -85,7 +85,7 @@ public class JettyBootstrapTest {
 
 	@Test
 	public void do01StaticResourceWarTest() throws IllegalStateException, IOException, JettyBootstrapException {
-		jettyBootstrap.addResourceWar("/static.war", "/staticWar").startJetty();
+		jettyBootstrap.addResourceWar("/static.war", "/staticWar").startServer();
 
 		Assert.assertEquals(new SimpleResponse(200, "test1content\n"), get("/staticWar/test1.html"));
 		Assert.assertEquals(new SimpleResponse(200, "test2content\n"), get("/staticWar/test2.html"));
@@ -94,7 +94,7 @@ public class JettyBootstrapTest {
 
 	@Test
 	public void do02ServletResourceWarTest() throws IllegalStateException, IOException, JettyBootstrapException {
-		jettyBootstrap.addResourceWar("/servlet.war", "/servletWar").startJetty();
+		jettyBootstrap.addResourceWar("/servlet.war", "/servletWar").startServer();
 
 		Assert.assertEquals(new SimpleResponse(200, "Value=value1\n"), get("/servletWar?value=value1"));
 		Assert.assertEquals(new SimpleResponse(200, "Value=value2\n"), get("/servletWar?value=value2"));
@@ -102,7 +102,7 @@ public class JettyBootstrapTest {
 
 	@Test
 	public void do03StaticResourceTest() throws IllegalStateException, IOException, JettyBootstrapException {
-		jettyBootstrap.addResourceStaticContent("/staticres", "/staticresres").startJetty();
+		jettyBootstrap.addResourceStaticContent("/staticres", "/staticresres").startServer();
 
 		Assert.assertEquals(new SimpleResponse(200, "StaticResContent\n"), get("/staticresres/index.html"));
 	}
@@ -112,7 +112,7 @@ public class JettyBootstrapTest {
 		File file = temporaryFolder.newFolder();
 		copyResourceToFile("/staticres/index.html", new File(file.getPath() + File.separator + "index.html"));
 
-		jettyBootstrap.addStaticContent(file, "/staticres").startJetty();
+		jettyBootstrap.addStaticContent(file.getPath(), "/staticres").startServer();
 
 		Assert.assertEquals(new SimpleResponse(200, "StaticResContent\n"), get("/staticres/index.html"));
 	}
@@ -123,7 +123,7 @@ public class JettyBootstrapTest {
 		context.setContextPath("/servlet");
 		context.addServlet(new ServletHolder(new TestServlet()), "/*");
 
-		jettyBootstrap.addHandler(context).startJetty();
+		jettyBootstrap.addHandler(context).startServer();
 
 		Assert.assertEquals(new SimpleResponse(200, "ServletTestContent\n"), get("/servlet"));
 	}

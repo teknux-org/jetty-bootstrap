@@ -48,13 +48,13 @@ public interface IJettyConfiguration {
 
 	void setRedirectWebAppsOnHttpsConnector(boolean redirectWebAppsOnHttpsConnector);
 
-	String getSSLKeyStorePassword();
+	String getSslKeyStorePassword();
 
-	void setSSLKeyStorePassword(String sSLKeyStorePassword);
+	void setSslKeyStorePassword(String sslKeyStorePassword);
 
-	String getSSLKeyStorePath();
+	String getSslKeyStorePath();
 
-	void setSSLKeyStorePath(String sSLKeyStorePath);
+	void setSslKeyStorePath(String sslKeyStorePath);
 
 	File getTempDirectory();
 

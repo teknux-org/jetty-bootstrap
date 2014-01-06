@@ -52,8 +52,8 @@ public class PropertiesJettyConfigurationTest {
 		Assert.assertTrue(cfg.getJettyConnectors().size() == 1);
 		Assert.assertTrue(cfg.getJettyConnectors().contains(JettyConnector.HTTPS));
 		Assert.assertEquals(false, cfg.isRedirectWebAppsOnHttpsConnector());
-		Assert.assertEquals("pwd1", cfg.getSSLKeyStorePassword());
-		Assert.assertEquals("./keystore1", cfg.getSSLKeyStorePath());
+		Assert.assertEquals("pwd1", cfg.getSslKeyStorePassword());
+		Assert.assertEquals("./keystore1", cfg.getSslKeyStorePath());
 		Assert.assertEquals(new File("/tmp1"), cfg.getTempDirectory());
 		Assert.assertEquals(false, cfg.isPersistAppTempDirectories());
 		Assert.assertEquals(false, cfg.isCleanTempDir());
@@ -92,8 +92,8 @@ public class PropertiesJettyConfigurationTest {
 		Assert.assertTrue(cfg.getJettyConnectors().contains(JettyConnector.HTTPS));
 		Assert.assertTrue(cfg.getJettyConnectors().contains(JettyConnector.HTTP));
 		Assert.assertEquals(true, cfg.isRedirectWebAppsOnHttpsConnector());
-		Assert.assertEquals("pwd2", cfg.getSSLKeyStorePassword());
-		Assert.assertEquals("./keystore2", cfg.getSSLKeyStorePath());
+		Assert.assertEquals("pwd2", cfg.getSslKeyStorePassword());
+		Assert.assertEquals("./keystore2", cfg.getSslKeyStorePath());
 		Assert.assertEquals(new File("/tmp2"), cfg.getTempDirectory());
 		Assert.assertEquals(false, cfg.isPersistAppTempDirectories());
 		Assert.assertEquals(true, cfg.isCleanTempDir());
@@ -112,8 +112,8 @@ public class PropertiesJettyConfigurationTest {
 		Assert.assertTrue(cfg.getJettyConnectors().size() == 1);
 		Assert.assertTrue(cfg.getJettyConnectors().contains(JettyConnector.HTTPS));
 		Assert.assertEquals(false, cfg.isRedirectWebAppsOnHttpsConnector());
-		Assert.assertEquals("pwd1", cfg.getSSLKeyStorePassword());
-		Assert.assertEquals("./keystore1", cfg.getSSLKeyStorePath());
+		Assert.assertEquals("pwd1", cfg.getSslKeyStorePassword());
+		Assert.assertEquals("./keystore1", cfg.getSslKeyStorePath());
 		Assert.assertEquals(new File("/tmp1"), cfg.getTempDirectory());
 		Assert.assertEquals(true, cfg.isPersistAppTempDirectories());
 		Assert.assertEquals(false, cfg.isCleanTempDir());

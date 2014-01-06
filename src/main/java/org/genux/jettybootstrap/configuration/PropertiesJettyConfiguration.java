@@ -134,12 +134,12 @@ public class PropertiesJettyConfiguration extends JettyConfiguration {
 
 		String sslKeystorePath = properties.getProperty(KEY_SSL_KEYSTORE_PATH);
 		if (sslKeystorePath != null) {
-			setSSLKeyStorePath(sslKeystorePath);
+			setSslKeyStorePath(sslKeystorePath);
 		}
 
 		String sslKeystorePwd = properties.getProperty(KEY_SSL_KEYSTORE_PASSWORD);
 		if (sslKeystorePwd != null) {
-			setSSLKeyStorePassword(sslKeystorePwd);
+			setSslKeyStorePassword(sslKeystorePwd);
 		}
 
 		String tempDir = properties.getProperty(KEY_TEMP_DIR);

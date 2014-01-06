@@ -27,7 +27,7 @@ public class WebAppWarJettyHandlerTest {
 		WebAppWarJettyHandler webAppWarJettyHandler = new WebAppWarJettyHandler();
 		webAppWarJettyHandler.setContextPath("myContext");
 		webAppWarJettyHandler.setTempDirectory(tempDir);
-		webAppWarJettyHandler.setWarFile(new File("/tmp/myWarFile.war"));
+		webAppWarJettyHandler.setWarFile("/tmp/myWarFile.war");
 		webAppWarJettyHandler.setPersistTempDirectory(false);
 		webAppWarJettyHandler.setParentLoaderPriority(true);
 

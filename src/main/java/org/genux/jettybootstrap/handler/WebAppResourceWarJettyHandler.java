@@ -24,12 +24,12 @@ public class WebAppResourceWarJettyHandler extends WebAppWarJettyHandler {
 
 	private String resource = null;
 
-	public String getResource() {
+	public String getResourceWar() {
 		return resource;
 	}
 
-	public void setResource(String resource) {
-		this.resource = resource;
+	public void setResourceWar(String resourceWar) {
+		this.resource = resourceWar;
 	}
 
 	@Override
@@ -40,18 +40,18 @@ public class WebAppResourceWarJettyHandler extends WebAppWarJettyHandler {
 			throw new JettyBootstrapException("Can't create temporary resources war directory");
 		}
 
-		String fileName = Md5.hash(getResource()) + WAR_EXTENSION;
+		String fileName = Md5.hash(getResourceWar()) + WAR_EXTENSION;
 		File resourceWarFile = new File(resourcesWarDirectory.getPath() + File.separator + fileName);
 
 		if (resourceWarFile.exists()) {
 			logger.trace("War resource already exists in directory : [{}], don't copy", resourcesWarDirectory);
 		} else {
-			logger.trace("Copy war resource [{}] to directory : [{}]...", getResource(), resourcesWarDirectory);
+			logger.trace("Copy war resource [{}] to directory : [{}]...", getResourceWar(), resourcesWarDirectory);
 
 			InputStream inputStream = null;
 			FileOutputStream fileOutputStream = null;
 			try {
-				inputStream = JettyBootstrap.class.getResourceAsStream(getResource());
+				inputStream = JettyBootstrap.class.getResourceAsStream(getResourceWar());
 				fileOutputStream = new FileOutputStream(resourceWarFile);
 				IOUtils.copy(inputStream, fileOutputStream);
 			} catch (FileNotFoundException e) {
@@ -72,7 +72,7 @@ public class WebAppResourceWarJettyHandler extends WebAppWarJettyHandler {
 			}
 		}
 
-		setWarFile(resourceWarFile);
+		setWarFile(resourceWarFile.getPath());
 
 		return super.getHandler();
 	}

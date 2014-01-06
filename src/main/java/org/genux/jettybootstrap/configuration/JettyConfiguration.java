@@ -22,8 +22,8 @@ public class JettyConfiguration implements
 
 	private Set<JettyConnector> jettyConnectors = new HashSet<JettyConnector>(Arrays.asList(JettyConnector.HTTP));
 	private boolean redirectWebAppsOnHttpsConnector = false;
-	private String SSLKeyStorePassword = null;
-	private String SSLKeyStorePath = null;
+	private String sslKeyStorePassword = null;
+	private String sslKeyStorePath = null;
 
 	private File tempDirectory = null;
 	private boolean persistAppTempDirectories = false;
@@ -136,23 +136,23 @@ public class JettyConfiguration implements
 	}
 
 	@Override
-	public String getSSLKeyStorePassword() {
-		return SSLKeyStorePassword;
+	public String getSslKeyStorePassword() {
+		return sslKeyStorePassword;
 	}
 
 	@Override
-	public void setSSLKeyStorePassword(String sSLKeyStorePassword) {
-		SSLKeyStorePassword = sSLKeyStorePassword;
+	public void setSslKeyStorePassword(String sslKeyStorePassword) {
+		this.sslKeyStorePassword = sslKeyStorePassword;
 	}
 
 	@Override
-	public String getSSLKeyStorePath() {
-		return SSLKeyStorePath;
+	public String getSslKeyStorePath() {
+		return sslKeyStorePath;
 	}
 
 	@Override
-	public void setSSLKeyStorePath(String sSLKeyStorePath) {
-		SSLKeyStorePath = sSLKeyStorePath;
+	public void setSslKeyStorePath(String sslKeyStorePath) {
+		this.sslKeyStorePath = sslKeyStorePath;
 	}
 
 	@Override
@@ -199,7 +199,8 @@ public class JettyConfiguration implements
 	public String toString() {
 		return "JettyConfiguration [autoJoinOnStart=" + autoJoinOnStart + ", maxThreads=" + maxThreads + ", stopAtShutdown=" + stopAtShutdown + ", stopTimeout=" + stopTimeout +
 			", idleTimeout=" + idleTimeout + ", host=" + host + ", port=" + port + ", sslPort=" + sslPort + ", jettyConnectors=" + jettyConnectors +
-			", redirectWebAppsOnHttpsConnector=" + redirectWebAppsOnHttpsConnector + ", SSLKeyStorePassword=" + SSLKeyStorePassword + ", SSLKeyStorePath=" + SSLKeyStorePath +
-			", tempDirectory=" + tempDirectory + ", cleanTempDir=" + cleanTempDir + ", parentLoaderPriority=" + parentLoaderPriority + "]";
+			", redirectWebAppsOnHttpsConnector=" + redirectWebAppsOnHttpsConnector + ", sslKeyStorePassword=" + sslKeyStorePassword + ", sslKeyStorePath=" + sslKeyStorePath +
+			", tempDirectory=" + tempDirectory + ", persistAppTempDirectories=" + persistAppTempDirectories + ", cleanTempDir=" + cleanTempDir + ", parentLoaderPriority=" +
+			parentLoaderPriority + "]";
 	}
 }
