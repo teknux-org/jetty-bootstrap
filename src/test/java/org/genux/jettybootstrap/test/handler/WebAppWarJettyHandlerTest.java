@@ -5,7 +5,7 @@ import java.io.IOException;
 
 import org.eclipse.jetty.server.Handler;
 import org.genux.jettybootstrap.JettyBootstrapException;
-import org.genux.jettybootstrap.handler.WebAppWarJettyHandler;
+import org.genux.jettybootstrap.handler.WarAppJettyHandler;
 import org.junit.Assert;
 import org.junit.FixMethodOrder;
 import org.junit.Rule;
@@ -24,10 +24,10 @@ public class WebAppWarJettyHandlerTest {
 	public void do01WebAppWarJettyHandlerTest() throws JettyBootstrapException, IOException {
 
 		File tempDir = temporaryFolder.newFolder();
-		WebAppWarJettyHandler webAppWarJettyHandler = new WebAppWarJettyHandler();
+		WarAppJettyHandler webAppWarJettyHandler = new WarAppJettyHandler();
 		webAppWarJettyHandler.setContextPath("myContext");
 		webAppWarJettyHandler.setTempDirectory(tempDir);
-		webAppWarJettyHandler.setWarFile("/tmp/myWarFile.war");
+		webAppWarJettyHandler.setWar("/tmp/myWarFile.war");
 		webAppWarJettyHandler.setPersistTempDirectory(false);
 		webAppWarJettyHandler.setParentLoaderPriority(true);
 

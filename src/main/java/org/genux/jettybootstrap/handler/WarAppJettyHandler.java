@@ -4,26 +4,26 @@ import org.eclipse.jetty.webapp.WebAppContext;
 import org.genux.jettybootstrap.utils.Md5;
 
 
-public class WebAppWarJettyHandler extends AbstractWebAppJettyHandler {
+public class WarAppJettyHandler extends AbstractAppJettyHandler {
 
-	private String warFile = null;
+	private String war = null;
 
-	public String getWarFile() {
-		return warFile;
+	public String getWar() {
+		return war;
 	}
 
-	public void setWarFile(String warFile) {
-		this.warFile = warFile;
+	public void setWar(String war) {
+		this.war = war;
 	}
 
 	@Override
 	protected String getAppTempDirName() {
-		return Md5.hash(getWarFile());
+		return Md5.hash(getWar());
 	}
 
 	@Override
 	protected WebAppContext initWebAppContext(WebAppContext webAppContext) {
-		webAppContext.setWar(getWarFile());
+		webAppContext.setWar(getWar());
 
 		return webAppContext;
 	}

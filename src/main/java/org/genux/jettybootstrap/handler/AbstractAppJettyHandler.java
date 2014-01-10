@@ -10,7 +10,7 @@ import org.eclipse.jetty.webapp.WebAppContext;
 import org.genux.jettybootstrap.JettyBootstrapException;
 
 
-abstract public class AbstractWebAppJettyHandler implements
+abstract public class AbstractAppJettyHandler implements
 		IJettyHandler {
 
 	private static final String APP_DIRECTORY_NAME = "apps";

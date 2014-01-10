@@ -3,7 +3,7 @@ package org.genux.jettybootstrap.handler;
 import org.eclipse.jetty.webapp.WebAppContext;
 
 
-public class WebAppJettyHandler extends WebAppStaticContentJettyHandler {
+public class ExplodedWarAppJettyHandler extends StaticResourceAppJettyHandler {
 
 	private String descriptor = null;
 

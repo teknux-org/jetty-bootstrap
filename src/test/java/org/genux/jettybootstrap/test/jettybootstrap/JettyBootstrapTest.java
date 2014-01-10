@@ -122,7 +122,7 @@ public class JettyBootstrapTest {
 		File file = temporaryFolder.newFile();
 		copyResourceToFile("/static.war", file);
 
-		initServer(false).addWar(file.getPath(), "/staticWar").startServer();
+		initServer(false).addWarApp(file.getPath(), "/staticWar").startServer();
 
 		Assert.assertEquals(new SimpleResponse(200, "test1content\n"), get("/staticWar/test1.html"));
 		Assert.assertEquals(new SimpleResponse(200, "test2content\n"), get("/staticWar/test2.html"));
@@ -135,7 +135,7 @@ public class JettyBootstrapTest {
 		File file = temporaryFolder.newFile();
 		copyResourceToFile("/static.war", file);
 
-		initServer(true).addWar(file.getPath(), "/sslStaticWar").startServer();
+		initServer(true).addWarApp(file.getPath(), "/sslStaticWar").startServer();
 
 		Assert.assertEquals(new SimpleResponse(200, "test1content\n"), get("/sslStaticWar/test1.html"));
 		Assert.assertEquals(new SimpleResponse(200, "test2content\n"), get("/sslStaticWar/test2.html"));
@@ -148,7 +148,7 @@ public class JettyBootstrapTest {
 		File file = temporaryFolder.newFile();
 		copyResourceToFile("/servlet.war", file);
 
-		initServer(false).addWar(file.getPath(), "/servletWar").startServer();
+		initServer(false).addWarApp(file.getPath(), "/servletWar").startServer();
 
 		Assert.assertEquals(new SimpleResponse(200, "Value=value1\n"), get("/servletWar?value=value1"));
 		Assert.assertEquals(new SimpleResponse(200, "Value=value2\n"), get("/servletWar?value=value2"));
@@ -160,124 +160,125 @@ public class JettyBootstrapTest {
 		File file = temporaryFolder.newFile();
 		copyResourceToFile("/servlet.war", file);
 
-		initServer(true).addWar(file.getPath(), "/sslServletWar").startServer();
+		initServer(true).addWarApp(file.getPath(), "/sslServletWar").startServer();
 
 		Assert.assertEquals(new SimpleResponse(200, "Value=value1\n"), get("/sslServletWar?value=value1"));
 		Assert.assertEquals(new SimpleResponse(200, "Value=value2\n"), get("/sslServletWar?value=value2"));
 	}
 
 	@Test
-	public void do05StaticResourceWarTest() throws IllegalStateException, IOException, JettyBootstrapException, KeyManagementException, NoSuchAlgorithmException, KeyStoreException {
-		initServer(false).addResourceWar("/static.war", "/staticResourceWar").startServer();
+	public void do05StaticWarFromClasspathTest() throws IllegalStateException, IOException, JettyBootstrapException, KeyManagementException, NoSuchAlgorithmException,
+			KeyStoreException {
+		initServer(false).addWarAppFromClasspath("/static.war", "/staticWarFromClasspath").startServer();
 
-		Assert.assertEquals(new SimpleResponse(200, "test1content\n"), get("/staticResourceWar/test1.html"));
-		Assert.assertEquals(new SimpleResponse(200, "test2content\n"), get("/staticResourceWar/test2.html"));
+		Assert.assertEquals(new SimpleResponse(200, "test1content\n"), get("/staticWarFromClasspath/test1.html"));
+		Assert.assertEquals(new SimpleResponse(200, "test2content\n"), get("/staticWarFromClasspath/test2.html"));
 		Assert.assertEquals(new Integer(404), get("/test3.html").getStatusCode());
 	}
 
 	@Test
-	public void do06SslStaticResourceWarTest() throws IllegalStateException, IOException, JettyBootstrapException, KeyManagementException, NoSuchAlgorithmException,
+	public void do06SslStaticWarFromClasspathTest() throws IllegalStateException, IOException, JettyBootstrapException, KeyManagementException, NoSuchAlgorithmException,
 			KeyStoreException {
-		initServer(true).addResourceWar("/static.war", "/sslStaticResourceWar").startServer();
+		initServer(true).addWarAppFromClasspath("/static.war", "/sslStaticWarFromClasspath").startServer();
 
-		Assert.assertEquals(new SimpleResponse(200, "test1content\n"), get("/sslStaticResourceWar/test1.html"));
-		Assert.assertEquals(new SimpleResponse(200, "test2content\n"), get("/sslStaticResourceWar/test2.html"));
+		Assert.assertEquals(new SimpleResponse(200, "test1content\n"), get("/sslStaticWarFromClasspath/test1.html"));
+		Assert.assertEquals(new SimpleResponse(200, "test2content\n"), get("/sslStaticWarFromClasspath/test2.html"));
 		Assert.assertEquals(new Integer(404), get("/test3.html").getStatusCode());
 	}
 
 	@Test
-	public void do07ServletResourceWarTest() throws IllegalStateException, IOException, JettyBootstrapException, KeyManagementException, NoSuchAlgorithmException,
+	public void do07ServletWarFromClasspathTest() throws IllegalStateException, IOException, JettyBootstrapException, KeyManagementException, NoSuchAlgorithmException,
 			KeyStoreException {
-		initServer(false).addResourceWar("/servlet.war", "/servletResourceWar").startServer();
+		initServer(false).addWarAppFromClasspath("/servlet.war", "/servletWarFromClasspath").startServer();
 
-		Assert.assertEquals(new SimpleResponse(200, "Value=value1\n"), get("/servletResourceWar?value=value1"));
-		Assert.assertEquals(new SimpleResponse(200, "Value=value2\n"), get("/servletResourceWar?value=value2"));
+		Assert.assertEquals(new SimpleResponse(200, "Value=value1\n"), get("/servletWarFromClasspath?value=value1"));
+		Assert.assertEquals(new SimpleResponse(200, "Value=value2\n"), get("/servletWarFromClasspath?value=value2"));
 	}
 
 	@Test
-	public void do08SslServletResourceWarTest() throws IllegalStateException, IOException, JettyBootstrapException, KeyManagementException, NoSuchAlgorithmException,
+	public void do08SslServletWarFromClasspathTest() throws IllegalStateException, IOException, JettyBootstrapException, KeyManagementException, NoSuchAlgorithmException,
 			KeyStoreException {
-		initServer(true).addResourceWar("/servlet.war", "/sslServletResourceWar").startServer();
+		initServer(true).addWarAppFromClasspath("/servlet.war", "/sslServletWarFromClasspath").startServer();
 
-		Assert.assertEquals(new SimpleResponse(200, "Value=value1\n"), get("/sslServletResourceWar?value=value1"));
-		Assert.assertEquals(new SimpleResponse(200, "Value=value2\n"), get("/sslServletResourceWar?value=value2"));
+		Assert.assertEquals(new SimpleResponse(200, "Value=value1\n"), get("/sslServletWarFromClasspath?value=value1"));
+		Assert.assertEquals(new SimpleResponse(200, "Value=value2\n"), get("/sslServletWarFromClasspath?value=value2"));
 	}
 
 	@Test
-	public void do09StaticContentTest() throws IllegalStateException, IOException, JettyBootstrapException, KeyManagementException, NoSuchAlgorithmException, KeyStoreException,
+	public void do09StaticResourceTest() throws IllegalStateException, IOException, JettyBootstrapException, KeyManagementException, NoSuchAlgorithmException, KeyStoreException,
 			URISyntaxException {
 		File folder = temporaryFolder.newFolder();
 		copyResourceToFile("/webapp", folder);
 
-		initServer(false).addStaticContent(folder.getPath(), "/staticContent").startServer();
+		initServer(false).addStaticResource(folder.getPath(), "/staticResource").startServer();
 
-		Assert.assertEquals(new SimpleResponse(200, "StaticResContent\n"), get("/staticContent/index.html"));
+		Assert.assertEquals(new SimpleResponse(200, "StaticResContent\n"), get("/staticResource/index.html"));
 	}
 
 	@Test
-	public void do10SslStaticContentTest() throws IllegalStateException, IOException, JettyBootstrapException, KeyManagementException, NoSuchAlgorithmException, KeyStoreException,
+	public void do10SslStaticResourceTest() throws IllegalStateException, IOException, JettyBootstrapException, KeyManagementException, NoSuchAlgorithmException,
+			KeyStoreException, URISyntaxException {
+		File folder = temporaryFolder.newFolder();
+		copyResourceToFile("/webapp", folder);
+
+		initServer(true).addStaticResource(folder.getPath(), "/sslStaticResource").startServer();
+
+		Assert.assertEquals(new SimpleResponse(200, "StaticResContent\n"), get("/sslStaticResource/index.html"));
+	}
+
+	@Test
+	public void do11StaticResourceFromClasspathTest() throws IllegalStateException, IOException, JettyBootstrapException, KeyManagementException, NoSuchAlgorithmException,
+			KeyStoreException {
+		initServer(false).addStaticResourceFromClasspath("/webapp", "/staticResourceFromClasspath").startServer();
+
+		Assert.assertEquals(new SimpleResponse(200, "StaticResContent\n"), get("/staticResourceFromClasspath/index.html"));
+	}
+
+	@Test
+	public void do12SslStaticResourceFromClasspathTest() throws IllegalStateException, IOException, JettyBootstrapException, KeyManagementException, NoSuchAlgorithmException,
+			KeyStoreException {
+		initServer(true).addStaticResourceFromClasspath("/webapp", "/sslStaticResourceFromClasspath").startServer();
+
+		Assert.assertEquals(new SimpleResponse(200, "StaticResContent\n"), get("/sslStaticResourceFromClasspath/index.html"));
+	}
+
+	@Test
+	public void do13ExplodedWarTest() throws IllegalStateException, IOException, JettyBootstrapException, KeyManagementException, NoSuchAlgorithmException, KeyStoreException,
 			URISyntaxException {
 		File folder = temporaryFolder.newFolder();
 		copyResourceToFile("/webapp", folder);
 
-		initServer(true).addStaticContent(folder.getPath(), "/sslStaticContent").startServer();
-
-		Assert.assertEquals(new SimpleResponse(200, "StaticResContent\n"), get("/sslStaticContent/index.html"));
-	}
-
-	@Test
-	public void do11StaticContentResourceTest() throws IllegalStateException, IOException, JettyBootstrapException, KeyManagementException, NoSuchAlgorithmException,
-			KeyStoreException {
-		initServer(false).addResourceStaticContent("/webapp", "/staticContentResource").startServer();
-
-		Assert.assertEquals(new SimpleResponse(200, "StaticResContent\n"), get("/staticContentResource/index.html"));
-	}
-
-	@Test
-	public void do12SslStaticContentResourceTest() throws IllegalStateException, IOException, JettyBootstrapException, KeyManagementException, NoSuchAlgorithmException,
-			KeyStoreException {
-		initServer(true).addResourceStaticContent("/webapp", "/sslStaticContentResource").startServer();
-
-		Assert.assertEquals(new SimpleResponse(200, "StaticResContent\n"), get("/sslStaticContentResource/index.html"));
-	}
-
-	@Test
-	public void do13Webapp() throws IllegalStateException, IOException, JettyBootstrapException, KeyManagementException, NoSuchAlgorithmException, KeyStoreException,
-			URISyntaxException {
-		File folder = temporaryFolder.newFolder();
-		copyResourceToFile("/webapp", folder);
-
-		initServer(false).add(folder.getPath(), null, "/webapp").startServer();
+		initServer(false).addExplodedWarApp(folder.getPath(), null, "/explodedWar").startServer();
 
 		System.out.println(getPort());
-		Assert.assertEquals(new SimpleResponse(200, "StaticResContent\n"), get("/webapp/index.html"));
+		Assert.assertEquals(new SimpleResponse(200, "StaticResContent\n"), get("/explodedWar/index.html"));
 	}
 
 	@Test
-	public void do14SslWebApp() throws IllegalStateException, IOException, JettyBootstrapException, KeyManagementException, NoSuchAlgorithmException, KeyStoreException,
+	public void do14SslExplodedWarTest() throws IllegalStateException, IOException, JettyBootstrapException, KeyManagementException, NoSuchAlgorithmException, KeyStoreException,
 			URISyntaxException {
 		File folder = temporaryFolder.newFolder();
 		copyResourceToFile("/webapp", folder);
 
-		initServer(true).add(folder.getPath(), null, "/sslWebapp").startServer();
+		initServer(true).addExplodedWarApp(folder.getPath(), null, "/sslExplodedWar").startServer();
 
-		Assert.assertEquals(new SimpleResponse(200, "StaticResContent\n"), get("/sslWebapp/index.html"));
+		Assert.assertEquals(new SimpleResponse(200, "StaticResContent\n"), get("/sslExplodedWar/index.html"));
 	}
 
 	@Test
-	public void do15WebappResource() throws IllegalStateException, IOException, JettyBootstrapException, KeyManagementException, NoSuchAlgorithmException, KeyStoreException,
-			URISyntaxException {
-		initServer(false).addResource("/webapp", null, "/webappResource").startServer();
+	public void do15ExplodedWarFromClasspathTest() throws IllegalStateException, IOException, JettyBootstrapException, KeyManagementException, NoSuchAlgorithmException,
+			KeyStoreException, URISyntaxException {
+		initServer(false).addExplodedWarAppFromClasspath("/webapp", null, "/explodedWarFromClasspath").startServer();
 
-		Assert.assertEquals(new SimpleResponse(200, "StaticResContent\n"), get("/webappResource/index.html"));
+		Assert.assertEquals(new SimpleResponse(200, "StaticResContent\n"), get("/explodedWarFromClasspath/index.html"));
 	}
 
 	@Test
-	public void do16SslWebAppResource() throws IllegalStateException, IOException, JettyBootstrapException, KeyManagementException, NoSuchAlgorithmException, KeyStoreException,
-			URISyntaxException {
-		initServer(true).addResource("/webapp", null, "/sslWebappResource").startServer();
+	public void do16SslExplodedWarFromClasspathTest() throws IllegalStateException, IOException, JettyBootstrapException, KeyManagementException, NoSuchAlgorithmException,
+			KeyStoreException, URISyntaxException {
+		initServer(true).addExplodedWarAppFromClasspath("/webapp", null, "/sslExplodedWarFromClasspath").startServer();
 
-		Assert.assertEquals(new SimpleResponse(200, "StaticResContent\n"), get("/sslWebappResource/index.html"));
+		Assert.assertEquals(new SimpleResponse(200, "StaticResContent\n"), get("/sslExplodedWarFromClasspath/index.html"));
 	}
 
 	@Test
