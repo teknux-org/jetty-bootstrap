@@ -4,6 +4,9 @@ import java.io.File;
 import java.util.Set;
 
 
+/**
+ * This interface represents all the available configuration options for the jetty server
+ */
 public interface IJettyConfiguration {
 
 	boolean isAutoJoinOnStart();

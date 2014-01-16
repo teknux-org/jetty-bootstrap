@@ -32,6 +32,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
+/**
+ * Main class for easily boostrapping jetty.
+ */
 public class JettyBootstrap {
 
 	private final Logger logger = LoggerFactory.getLogger(JettyBootstrap.class);
@@ -49,51 +52,66 @@ public class JettyBootstrap {
 	private static final String RESOURCE_WEBAPP = "/webapp";
 	private static final String CONTEXT_PATH_ROOT = "/";
 
-	private IJettyConfiguration iJettyConfiguration;
+	private IJettyConfiguration jettyConfiguration;
 	private List<IJettyHandler> jettyHandlers = new ArrayList<IJettyHandler>();
 
 	private Server server = null;
 	private HandlerList handlers = new HandlerList();
 
 	/**
-	 * Quick Start : {@link #addSelf()} and
-	 * {@link #startServer()}
+	 * Shortcut to start Jetty when called within a JAR file containing the WEB-INF folder and needed libraries.
+	 * <p>
+	 * Basically uses {@link #addSelf()} and {@link #startServer()}
 	 * 
-	 * @return
+	 * @return a new instance of {@link JettyBootstrap}
 	 * @throws JettyBootstrapException
+	 *             if an error occurs during the startup
 	 */
 	public static JettyBootstrap startSelf() throws JettyBootstrapException {
 		return new JettyBootstrap().addSelf().startServer();
 	}
 
+	/**
+	 * Default constructor using the default {@link PropertiesJettyConfiguration} configuration.
+	 */
 	public JettyBootstrap() {
 		this(new PropertiesJettyConfiguration());
 	}
 
-	public JettyBootstrap(IJettyConfiguration iJettyConfiguration) {
-		this.iJettyConfiguration = iJettyConfiguration;
+	/**
+	 * Constructor specifiying the configuration properties.
+	 * 
+	 * @param configuration
+	 *            the {@link IJettyConfiguration} implementation of the configuration
+	 */
+	public JettyBootstrap(IJettyConfiguration configuration) {
+		this.jettyConfiguration = configuration;
 	}
 
 	/**
-	 * Start Jetty Server
+	 * Starts the Jetty Server and join the calling thread according to {@link IJettyConfiguration#isAutoJoinOnStart()}
 	 * 
-	 * @return
+	 * @return this instance
 	 * @throws JettyBootstrapException
+	 *             if an exception occurs during the initialization
+	 * @see #startServer(boolean)
 	 */
 	public JettyBootstrap startServer() throws JettyBootstrapException {
-		return startServer(iJettyConfiguration.isAutoJoinOnStart());
+		return startServer(jettyConfiguration.isAutoJoinOnStart());
 	}
 
 	/**
-	 * Start Jetty Server
+	 * Starts the Jetty Server and join the calling thread.
 	 * 
 	 * @param join
-	 * @return
+	 *            <code>true</code> to block the calling thread until the server stops. <code>false</code> otherwise
+	 * @return this instance
 	 * @throws JettyBootstrapException
+	 *             if an exception occurs during the initialization
 	 */
 	public JettyBootstrap startServer(boolean join) throws JettyBootstrapException {
 		if (server == null) {
-			init(iJettyConfiguration);
+			init(jettyConfiguration);
 		}
 		setHandlers();
 
@@ -112,10 +130,11 @@ public class JettyBootstrap {
 	}
 
 	/**
-	 * Join Jetty Server
+	 * Blocks the calling thread until the server stops.
 	 * 
-	 * @return
+	 * @return this instance
 	 * @throws JettyBootstrapException
+	 *             if an exception occurs while blocking the thread
 	 */
 	public JettyBootstrap joinServer() throws JettyBootstrapException {
 		try {
@@ -134,10 +153,11 @@ public class JettyBootstrap {
 	}
 
 	/**
-	 * Stop Jetty Server
+	 * Stops the Jetty server.
 	 * 
-	 * @return
+	 * @return this instance
 	 * @throws JettyBootstrapException
+	 *             if an exception occurs while stopping the server or if the server is not started
 	 */
 	public JettyBootstrap stopServer() throws JettyBootstrapException {
 		try {
@@ -158,24 +178,24 @@ public class JettyBootstrap {
 	}
 
 	/**
-	 * Add War Application on ContextPath
-	 * {@value #CONTEXT_PATH_ROOT}
+	 * Add a War application the default context path {@value #CONTEXT_PATH_ROOT}
 	 * 
 	 * @param war
-	 *            FilePath
-	 * @return
+	 *            the path to a war file
+	 * @return this instance
 	 */
 	public JettyBootstrap addWarApp(String war) {
 		return addWarApp(war, CONTEXT_PATH_ROOT);
 	}
 
 	/**
-	 * Add War Application
+	 * Add a War application specifying the context path.
 	 * 
 	 * @param war
-	 *            FilePath
+	 *            the path to a war file
 	 * @param contextPath
-	 * @return
+	 *            the path (base URL) to make the war available
+	 * @return this instance
 	 */
 	public JettyBootstrap addWarApp(String war, String contextPath) {
 		WarAppJettyHandler warAppJettyHandler = new WarAppJettyHandler();
@@ -188,22 +208,24 @@ public class JettyBootstrap {
 	}
 
 	/**
-	 * Add War Application from Classpath on ContextPath
-	 * {@value #CONTEXT_PATH_ROOT}
+	 * Add a War application from the current classpath on the default context path {@value #CONTEXT_PATH_ROOT}
 	 * 
 	 * @param warFromClasspath
-	 * @return
+	 *            the path to a war file in the classpath
+	 * @return this instance
 	 */
 	public JettyBootstrap addWarAppFromClasspath(String warFromClasspath) {
 		return addWarAppFromClasspath(warFromClasspath, CONTEXT_PATH_ROOT);
 	}
 
 	/**
-	 * Add War Application from Classpath
+	 * Add a War application from the current classpath specifying the context path.
 	 * 
 	 * @param warFromClasspath
+	 *            the path to a war file in the classpath
 	 * @param contextPath
-	 * @return
+	 *            the path (base URL) to make the war available
+	 * @return this instance
 	 */
 	public JettyBootstrap addWarAppFromClasspath(String warFromClasspath, String contextPath) {
 		WarAppFromClasspathJettyHandler warAppFromClasspathJettyHandler = new WarAppFromClasspathJettyHandler();
@@ -216,26 +238,28 @@ public class JettyBootstrap {
 	}
 
 	/**
-	 * Add Static Resource on ContextPath
-	 * {@value #CONTEXT_PATH_ROOT}
+	 * Add a static resource on the default context path {@value #CONTEXT_PATH_ROOT}
 	 * 
-	 * @param webAppBase
-	 * @return
+	 * @param resource
+	 *            the static resource (file or directory) to make available
+	 * @return this instance
 	 */
-	public JettyBootstrap addStaticResource(String webAppBase) {
-		return addStaticResource(webAppBase, CONTEXT_PATH_ROOT);
+	public JettyBootstrap addStaticResource(String resource) {
+		return addStaticResource(resource, CONTEXT_PATH_ROOT);
 	}
 
 	/**
-	 * Add Static Resource
+	 * Add a static resource specifying the context path.
 	 * 
-	 * @param webAppBase
+	 * @param resource
+	 *            the static resource (file or directory) to make available
 	 * @param contextPath
-	 * @return
+	 *            the path (base URL) to make the resource available
+	 * @return this instance
 	 */
-	public JettyBootstrap addStaticResource(String webAppBase, String contextPath) {
+	public JettyBootstrap addStaticResource(String resource, String contextPath) {
 		StaticResourceAppJettyHandler staticResourceAppJettyHandler = new StaticResourceAppJettyHandler();
-		staticResourceAppJettyHandler.setWebAppBase(webAppBase);
+		staticResourceAppJettyHandler.setWebAppBase(resource);
 		staticResourceAppJettyHandler.setContextPath(contextPath);
 
 		jettyHandlers.add(staticResourceAppJettyHandler);
@@ -244,26 +268,29 @@ public class JettyBootstrap {
 	}
 
 	/**
-	 * Add Static Resource from Classpath on ContextPath
+	 * Make a static resource from the current classpath available on the default context path
 	 * {@value #CONTEXT_PATH_ROOT}
 	 * 
-	 * @param webAppResourceBase
-	 * @return
+	 * @param resource
+	 *            the static resource (file or directory) to make available
+	 * @return this instance
 	 */
-	public JettyBootstrap addStaticResourceFromClasspath(String webAppResourceBase) {
-		return addStaticResourceFromClasspath(webAppResourceBase, CONTEXT_PATH_ROOT);
+	public JettyBootstrap addStaticResourceFromClasspath(String resource) {
+		return addStaticResourceFromClasspath(resource, CONTEXT_PATH_ROOT);
 	}
 
 	/**
-	 * Add Static Application from Classpath
+	 * Make a static resource from the current classpath available, specifying the context path.
 	 * 
-	 * @param webAppResourceBase
+	 * @param resource
+	 *            the static resource (file or directory) to make available
 	 * @param contextPath
-	 * @return
+	 *            the path (base URL) to make the resource available
+	 * @return this instance
 	 */
-	public JettyBootstrap addStaticResourceFromClasspath(String webAppResourceBase, String contextPath) {
+	public JettyBootstrap addStaticResourceFromClasspath(String resource, String contextPath) {
 		StaticResourceAppJettyHandler staticResourceAppJettyHandler = new StaticResourceAppJettyHandler();
-		staticResourceAppJettyHandler.setWebAppBaseFromClasspath(webAppResourceBase);
+		staticResourceAppJettyHandler.setWebAppBaseFromClasspath(resource);
 		staticResourceAppJettyHandler.setContextPath(contextPath);
 
 		jettyHandlers.add(staticResourceAppJettyHandler);
@@ -272,28 +299,32 @@ public class JettyBootstrap {
 	}
 
 	/**
-	 * Add Exploded War Application on ContextPath
-	 * {@value #CONTEXT_PATH_ROOT}
+	 * Add an exploded (not packaged) War application on the default context path {@value #CONTEXT_PATH_ROOT}
 	 * 
-	 * @param webAppBase
+	 * @param explodedWar
+	 *            the exploded war path
 	 * @param descriptor
-	 * @return
+	 *            the web.xml descriptor path
+	 * @return this instance
 	 */
-	public JettyBootstrap addExplodedWarApp(String webAppBase, String descriptor) {
-		return addExplodedWarApp(webAppBase, descriptor, CONTEXT_PATH_ROOT);
+	public JettyBootstrap addExplodedWarApp(String explodedWar, String descriptor) {
+		return addExplodedWarApp(explodedWar, descriptor, CONTEXT_PATH_ROOT);
 	}
 
 	/**
-	 * Add Exploded War Application
+	 * Add an exploded (not packaged) War application specifying the context path.
 	 * 
-	 * @param webAppBase
+	 * @param explodedWar
+	 *            the exploded war path
 	 * @param descriptor
+	 *            the web.xml descriptor path
 	 * @param contextPath
-	 * @return
+	 *            the path (base URL) to make the resource available
+	 * @return this instance
 	 */
-	public JettyBootstrap addExplodedWarApp(String webAppBase, String descriptor, String contextPath) {
+	public JettyBootstrap addExplodedWarApp(String explodedWar, String descriptor, String contextPath) {
 		ExplodedWarAppJettyHandler explodedWarAppJettyHandler = new ExplodedWarAppJettyHandler();
-		explodedWarAppJettyHandler.setWebAppBase(webAppBase);
+		explodedWarAppJettyHandler.setWebAppBase(explodedWar);
 		explodedWarAppJettyHandler.setDescriptor(descriptor);
 		explodedWarAppJettyHandler.setContextPath(contextPath);
 
@@ -303,28 +334,33 @@ public class JettyBootstrap {
 	}
 
 	/**
-	 * Add Exploded War Application from Classpath on
-	 * ContextPath {@value #CONTEXT_PATH_ROOT}
+	 * Add an exploded (not packaged) War application from the current classpath, on the default context path
+	 * {@value #CONTEXT_PATH_ROOT}
 	 * 
-	 * @param webAppResourceBase
+	 * @param explodedWar
+	 *            the exploded war path
 	 * @param descriptor
-	 * @return
+	 *            the web.xml descriptor path
+	 * @return this instance
 	 */
-	public JettyBootstrap addExplodedWarAppFromClasspath(String webAppResourceBase, String descriptor) {
-		return addExplodedWarAppFromClasspath(webAppResourceBase, descriptor, CONTEXT_PATH_ROOT);
+	public JettyBootstrap addExplodedWarAppFromClasspath(String explodedWar, String descriptor) {
+		return addExplodedWarAppFromClasspath(explodedWar, descriptor, CONTEXT_PATH_ROOT);
 	}
 
 	/**
-	 * Add Exploded War Application from Classpath
+	 * Add an exploded (not packaged) War application from the current classpath, specifying the context path.
 	 * 
-	 * @param webAppResourceBase
+	 * @param explodedWar
+	 *            the exploded war path
 	 * @param descriptor
+	 *            the web.xml descriptor path
 	 * @param contextPath
-	 * @return
+	 *            the path (base URL) to make the resource available
+	 * @return this instance
 	 */
-	public JettyBootstrap addExplodedWarAppFromClasspath(String webAppResourceBase, String descriptor, String contextPath) {
+	public JettyBootstrap addExplodedWarAppFromClasspath(String explodedWar, String descriptor, String contextPath) {
 		ExplodedWarAppJettyHandler explodedWarAppJettyHandler = new ExplodedWarAppJettyHandler();
-		explodedWarAppJettyHandler.setWebAppBaseFromClasspath(webAppResourceBase);
+		explodedWarAppJettyHandler.setWebAppBaseFromClasspath(explodedWar);
 		explodedWarAppJettyHandler.setDescriptor(descriptor);
 		explodedWarAppJettyHandler.setContextPath(contextPath);
 
@@ -334,23 +370,24 @@ public class JettyBootstrap {
 	}
 
 	/**
-	 * Add Application from Myself on ContextPath
-	 * {@value #CONTEXT_PATH_ROOT}
+	 * Add an exploded War application found from {@value #RESOURCE_WEBAPP} in the current classpath on the default
+	 * context path {@value #CONTEXT_PATH_ROOT}
 	 * 
 	 * @see #addExplodedWarAppFromClasspath(String, String)
-	 * @return
+	 * @return this instance
 	 */
 	public JettyBootstrap addSelf() {
 		return addExplodedWarAppFromClasspath(RESOURCE_WEBAPP, null);
 	}
 
 	/**
-	 * Add Application from Myself
+	 * Add an exploded War application found from {@value #RESOURCE_WEBAPP} in the current classpath specifying the
+	 * context path.
 	 * 
-	 * @see #addExplodedWarAppFromClasspath(String, String,
-	 *      String)
+	 * @see #addExplodedWarAppFromClasspath(String, String, String)
 	 * @param contextPath
-	 * @return
+	 *            the path (base URL) to make the resource available
+	 * @return this instance
 	 */
 	public JettyBootstrap addSelf(String contextPath) {
 		return addExplodedWarAppFromClasspath(RESOURCE_WEBAPP, null, contextPath);
@@ -372,20 +409,21 @@ public class JettyBootstrap {
 	}
 
 	/**
-	 * Get Jetty Server Object
+	 * Get the jetty {@link Server} Object. Calls {@link #init(IJettyConfiguration)} if not initialized yet.
 	 * 
-	 * @return
+	 * @return the contained jetty {@link Server} Object.
 	 * @throws JettyBootstrapException
+	 *             if an error occurs during {@link #init(IJettyConfiguration)}
 	 */
 	public Server getServer() throws JettyBootstrapException {
 		if (server == null) {
-			init(iJettyConfiguration);
+			init(jettyConfiguration);
 		}
 		return server;
 	}
 
 	protected void init(IJettyConfiguration iJettyConfiguration) throws JettyBootstrapException {
-		this.iJettyConfiguration = initConfiguration(iJettyConfiguration);
+		this.jettyConfiguration = initConfiguration(iJettyConfiguration);
 
 		server = createServer(iJettyConfiguration);
 		server.setConnectors(createConnectors(iJettyConfiguration, server));
@@ -526,9 +564,9 @@ public class JettyBootstrap {
 		for (IJettyHandler jettyHandler : jettyHandlers) {
 			if (jettyHandler instanceof AbstractAppJettyHandler) {
 				AbstractAppJettyHandler abstractAppJettyHandler = (AbstractAppJettyHandler) jettyHandler;
-				abstractAppJettyHandler.setTempDirectory(iJettyConfiguration.getTempDirectory());
-				abstractAppJettyHandler.setPersistTempDirectory(iJettyConfiguration.isPersistAppTempDirectories());
-				abstractAppJettyHandler.setRedirectOnHttpsConnector(iJettyConfiguration.isRedirectWebAppsOnHttpsConnector());
+				abstractAppJettyHandler.setTempDirectory(jettyConfiguration.getTempDirectory());
+				abstractAppJettyHandler.setPersistTempDirectory(jettyConfiguration.isPersistAppTempDirectories());
+				abstractAppJettyHandler.setRedirectOnHttpsConnector(jettyConfiguration.isRedirectWebAppsOnHttpsConnector());
 			}
 
 			handlers.addHandler(jettyHandler.getHandler());

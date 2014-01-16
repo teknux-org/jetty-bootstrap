@@ -6,6 +6,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 
+/**
+ * Base implementation of the configuration properties holding default values.
+ */
 public class JettyConfiguration implements
 		IJettyConfiguration {
 
