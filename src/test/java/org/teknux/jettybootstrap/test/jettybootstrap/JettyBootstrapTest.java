@@ -250,7 +250,6 @@ public class JettyBootstrapTest {
 
 		initServer(false).addExplodedWarApp(folder.getPath(), null, "/explodedWar").startServer();
 
-		System.out.println(getPort());
 		Assert.assertEquals(new SimpleResponse(200, "StaticResContent\n"), get("/explodedWar/index.html"));
 	}
 
