@@ -13,15 +13,25 @@
 
 	<developers>
 		<developer>
-			<id>teknux</id>
-			<name>teknux</name>
-			<email>contact@teknux.org</email>
+			<id>xes</id>
+			<name>Pierre PINON</name>
+			<email>pinon.pierre@gmail.com</email>
+		</developer>
+		<developer>
+			<id>oeil</id>
+			<name>Francois EYL</name>
+			<email>perso.feyl@gmail.com</email>
+		</developer>
+		<developer>
+			<id>biguphpc</id>
+			<name>Laurent MARCHAL</name>
+			<email>biguphpc@gmail.com</email>
 		</developer>
 	</developers>
 
 	<scm>
-		<url>https://github.com/teknux-org/jetty-bootstrap.git</url>
-		<connection>https://github.com/teknux-org/jetty-bootstrap.git</connection>
+		<url>http://svn.apache.org/viewcvs.cgi/maven</url>
+		<connection>http://svn.apache.org/viewcvs.cgi/maven</connection>
 	</scm>
 
 	<licenses>
@@ -64,6 +74,19 @@
 						<id>attach-javadocs</id>
 						<goals>
 							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>sign-artifacts</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>sign</goal>
 						</goals>
 					</execution>
 				</executions>
