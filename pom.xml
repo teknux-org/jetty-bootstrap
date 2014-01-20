@@ -5,6 +5,32 @@
 	<groupId>org.teknux</groupId>
 	<artifactId>jetty-bootstrap</artifactId>
 	<version>1.0-0-SNAPSHOT</version>
+	<packaging>jar</packaging>
+
+	<name>Jetty Bootstrap</name>
+	<description>The Open Source Jetty starter kit library to quickly build standalone application</description>
+	<url>http://jetty-bootstrap.io</url>
+
+	<developers>
+		<developer>
+			<id>teknux</id>
+			<name>teknux</name>
+			<email>contact@teknux.org</email>
+		</developer>
+	</developers>
+
+	<scm>
+		<url>https://github.com/teknux-org/jetty-bootstrap.git</url>
+		<connection>https://github.com/teknux-org/jetty-bootstrap.git</connection>
+	</scm>
+
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
 
 	<build>
 		<plugins>
@@ -17,14 +43,27 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<groupId>org.apache.rat</groupId>
-				<artifactId>apache-rat-plugin</artifactId>
-				<version>${apache-rat.version}</version>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>2.2.1</version>
 				<executions>
 					<execution>
-						<phase>verify</phase>
+						<id>attach-sources</id>
 						<goals>
-							<goal>check</goal>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.9.1</version>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
 						</goals>
 					</execution>
 				</executions>

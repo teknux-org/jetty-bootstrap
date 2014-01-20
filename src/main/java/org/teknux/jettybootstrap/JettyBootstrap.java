@@ -80,9 +80,11 @@ public class JettyBootstrap {
 	private HandlerList handlers = new HandlerList();
 
 	/**
-	 * Shortcut to start Jetty when called within a JAR file containing the WEB-INF folder and needed libraries.
+	 * Shortcut to start Jetty when called within a JAR file
+	 * containing the WEB-INF folder and needed libraries.
 	 * <p>
-	 * Basically uses {@link #addSelf()} and {@link #startServer()}
+	 * Basically uses {@link #addSelf()} and
+	 * {@link #startServer()}
 	 * 
 	 * @return a new instance of {@link JettyBootstrap}
 	 * @throws JettyBootstrapException
@@ -93,7 +95,8 @@ public class JettyBootstrap {
 	}
 
 	/**
-	 * Default constructor using the default {@link PropertiesJettyConfiguration} configuration.
+	 * Default constructor using the default
+	 * {@link PropertiesJettyConfiguration} configuration.
 	 */
 	public JettyBootstrap() {
 		this(new PropertiesJettyConfiguration());
@@ -103,18 +106,22 @@ public class JettyBootstrap {
 	 * Constructor specifiying the configuration properties.
 	 * 
 	 * @param configuration
-	 *            the {@link IJettyConfiguration} implementation of the configuration
+	 *            the {@link IJettyConfiguration}
+	 *            implementation of the configuration
 	 */
 	public JettyBootstrap(IJettyConfiguration configuration) {
 		this.jettyConfiguration = configuration;
 	}
 
 	/**
-	 * Starts the Jetty Server and join the calling thread according to {@link IJettyConfiguration#isAutoJoinOnStart()}
+	 * Starts the Jetty Server and join the calling thread
+	 * according to
+	 * {@link IJettyConfiguration#isAutoJoinOnStart()}
 	 * 
 	 * @return this instance
 	 * @throws JettyBootstrapException
-	 *             if an exception occurs during the initialization
+	 *             if an exception occurs during the
+	 *             initialization
 	 * @see #startServer(boolean)
 	 */
 	public JettyBootstrap startServer() throws JettyBootstrapException {
@@ -125,10 +132,13 @@ public class JettyBootstrap {
 	 * Starts the Jetty Server and join the calling thread.
 	 * 
 	 * @param join
-	 *            <code>true</code> to block the calling thread until the server stops. <code>false</code> otherwise
+	 *            <code>true</code> to block the calling
+	 *            thread until the server stops.
+	 *            <code>false</code> otherwise
 	 * @return this instance
 	 * @throws JettyBootstrapException
-	 *             if an exception occurs during the initialization
+	 *             if an exception occurs during the
+	 *             initialization
 	 */
 	public JettyBootstrap startServer(boolean join) throws JettyBootstrapException {
 		if (server == null) {
@@ -155,7 +165,8 @@ public class JettyBootstrap {
 	 * 
 	 * @return this instance
 	 * @throws JettyBootstrapException
-	 *             if an exception occurs while blocking the thread
+	 *             if an exception occurs while blocking the
+	 *             thread
 	 */
 	public JettyBootstrap joinServer() throws JettyBootstrapException {
 		try {
@@ -178,7 +189,8 @@ public class JettyBootstrap {
 	 * 
 	 * @return this instance
 	 * @throws JettyBootstrapException
-	 *             if an exception occurs while stopping the server or if the server is not started
+	 *             if an exception occurs while stopping the
+	 *             server or if the server is not started
 	 */
 	public JettyBootstrap stopServer() throws JettyBootstrapException {
 		try {
@@ -199,7 +211,8 @@ public class JettyBootstrap {
 	}
 
 	/**
-	 * Add a War application the default context path {@value #CONTEXT_PATH_ROOT}
+	 * Add a War application the default context path
+	 * {@value #CONTEXT_PATH_ROOT}
 	 * 
 	 * @param war
 	 *            the path to a war file
@@ -215,7 +228,8 @@ public class JettyBootstrap {
 	 * @param war
 	 *            the path to a war file
 	 * @param contextPath
-	 *            the path (base URL) to make the war available
+	 *            the path (base URL) to make the war
+	 *            available
 	 * @return this instance
 	 */
 	public JettyBootstrap addWarApp(String war, String contextPath) {
@@ -229,7 +243,8 @@ public class JettyBootstrap {
 	}
 
 	/**
-	 * Add a War application from the current classpath on the default context path {@value #CONTEXT_PATH_ROOT}
+	 * Add a War application from the current classpath on
+	 * the default context path {@value #CONTEXT_PATH_ROOT}
 	 * 
 	 * @param warFromClasspath
 	 *            the path to a war file in the classpath
@@ -240,12 +255,14 @@ public class JettyBootstrap {
 	}
 
 	/**
-	 * Add a War application from the current classpath specifying the context path.
+	 * Add a War application from the current classpath
+	 * specifying the context path.
 	 * 
 	 * @param warFromClasspath
 	 *            the path to a war file in the classpath
 	 * @param contextPath
-	 *            the path (base URL) to make the war available
+	 *            the path (base URL) to make the war
+	 *            available
 	 * @return this instance
 	 */
 	public JettyBootstrap addWarAppFromClasspath(String warFromClasspath, String contextPath) {
@@ -259,10 +276,12 @@ public class JettyBootstrap {
 	}
 
 	/**
-	 * Add a static resource on the default context path {@value #CONTEXT_PATH_ROOT}
+	 * Add a static resource on the default context path
+	 * {@value #CONTEXT_PATH_ROOT}
 	 * 
 	 * @param resource
-	 *            the static resource (file or directory) to make available
+	 *            the static resource (file or directory) to
+	 *            make available
 	 * @return this instance
 	 */
 	public JettyBootstrap addStaticResource(String resource) {
@@ -273,9 +292,11 @@ public class JettyBootstrap {
 	 * Add a static resource specifying the context path.
 	 * 
 	 * @param resource
-	 *            the static resource (file or directory) to make available
+	 *            the static resource (file or directory) to
+	 *            make available
 	 * @param contextPath
-	 *            the path (base URL) to make the resource available
+	 *            the path (base URL) to make the resource
+	 *            available
 	 * @return this instance
 	 */
 	public JettyBootstrap addStaticResource(String resource, String contextPath) {
@@ -289,11 +310,13 @@ public class JettyBootstrap {
 	}
 
 	/**
-	 * Make a static resource from the current classpath available on the default context path
+	 * Make a static resource from the current classpath
+	 * available on the default context path
 	 * {@value #CONTEXT_PATH_ROOT}
 	 * 
 	 * @param resource
-	 *            the static resource (file or directory) to make available
+	 *            the static resource (file or directory) to
+	 *            make available
 	 * @return this instance
 	 */
 	public JettyBootstrap addStaticResourceFromClasspath(String resource) {
@@ -301,12 +324,15 @@ public class JettyBootstrap {
 	}
 
 	/**
-	 * Make a static resource from the current classpath available, specifying the context path.
+	 * Make a static resource from the current classpath
+	 * available, specifying the context path.
 	 * 
 	 * @param resource
-	 *            the static resource (file or directory) to make available
+	 *            the static resource (file or directory) to
+	 *            make available
 	 * @param contextPath
-	 *            the path (base URL) to make the resource available
+	 *            the path (base URL) to make the resource
+	 *            available
 	 * @return this instance
 	 */
 	public JettyBootstrap addStaticResourceFromClasspath(String resource, String contextPath) {
@@ -320,7 +346,8 @@ public class JettyBootstrap {
 	}
 
 	/**
-	 * Add an exploded (not packaged) War application on the default context path {@value #CONTEXT_PATH_ROOT}
+	 * Add an exploded (not packaged) War application on the
+	 * default context path {@value #CONTEXT_PATH_ROOT}
 	 * 
 	 * @param explodedWar
 	 *            the exploded war path
@@ -333,14 +360,16 @@ public class JettyBootstrap {
 	}
 
 	/**
-	 * Add an exploded (not packaged) War application specifying the context path.
+	 * Add an exploded (not packaged) War application
+	 * specifying the context path.
 	 * 
 	 * @param explodedWar
 	 *            the exploded war path
 	 * @param descriptor
 	 *            the web.xml descriptor path
 	 * @param contextPath
-	 *            the path (base URL) to make the resource available
+	 *            the path (base URL) to make the resource
+	 *            available
 	 * @return this instance
 	 */
 	public JettyBootstrap addExplodedWarApp(String explodedWar, String descriptor, String contextPath) {
@@ -355,7 +384,8 @@ public class JettyBootstrap {
 	}
 
 	/**
-	 * Add an exploded (not packaged) War application from the current classpath, on the default context path
+	 * Add an exploded (not packaged) War application from
+	 * the current classpath, on the default context path
 	 * {@value #CONTEXT_PATH_ROOT}
 	 * 
 	 * @param explodedWar
@@ -369,14 +399,16 @@ public class JettyBootstrap {
 	}
 
 	/**
-	 * Add an exploded (not packaged) War application from the current classpath, specifying the context path.
+	 * Add an exploded (not packaged) War application from
+	 * the current classpath, specifying the context path.
 	 * 
 	 * @param explodedWar
 	 *            the exploded war path
 	 * @param descriptor
 	 *            the web.xml descriptor path
 	 * @param contextPath
-	 *            the path (base URL) to make the resource available
+	 *            the path (base URL) to make the resource
+	 *            available
 	 * @return this instance
 	 */
 	public JettyBootstrap addExplodedWarAppFromClasspath(String explodedWar, String descriptor, String contextPath) {
@@ -391,8 +423,9 @@ public class JettyBootstrap {
 	}
 
 	/**
-	 * Add an exploded War application found from {@value #RESOURCE_WEBAPP} in the current classpath on the default
-	 * context path {@value #CONTEXT_PATH_ROOT}
+	 * Add an exploded War application found from
+	 * {@value #RESOURCE_WEBAPP} in the current classpath on
+	 * the default context path {@value #CONTEXT_PATH_ROOT}
 	 * 
 	 * @see #addExplodedWarAppFromClasspath(String, String)
 	 * @return this instance
@@ -402,12 +435,15 @@ public class JettyBootstrap {
 	}
 
 	/**
-	 * Add an exploded War application found from {@value #RESOURCE_WEBAPP} in the current classpath specifying the
-	 * context path.
+	 * Add an exploded War application found from
+	 * {@value #RESOURCE_WEBAPP} in the current classpath
+	 * specifying the context path.
 	 * 
-	 * @see #addExplodedWarAppFromClasspath(String, String, String)
+	 * @see #addExplodedWarAppFromClasspath(String, String,
+	 *      String)
 	 * @param contextPath
-	 *            the path (base URL) to make the resource available
+	 *            the path (base URL) to make the resource
+	 *            available
 	 * @return this instance
 	 */
 	public JettyBootstrap addSelf(String contextPath) {
@@ -418,7 +454,7 @@ public class JettyBootstrap {
 	 * Add Handler
 	 * 
 	 * @param handler
-	 * @return
+	 * @return this instance
 	 */
 	public JettyBootstrap addHandler(Handler handler) {
 		JettyHandler jettyHandler = new JettyHandler();
@@ -430,11 +466,14 @@ public class JettyBootstrap {
 	}
 
 	/**
-	 * Get the jetty {@link Server} Object. Calls {@link #init(IJettyConfiguration)} if not initialized yet.
+	 * Get the jetty {@link Server} Object. Calls
+	 * {@link #init(IJettyConfiguration)} if not initialized
+	 * yet.
 	 * 
 	 * @return the contained jetty {@link Server} Object.
 	 * @throws JettyBootstrapException
-	 *             if an error occurs during {@link #init(IJettyConfiguration)}
+	 *             if an error occurs during
+	 *             {@link #init(IJettyConfiguration)}
 	 */
 	public Server getServer() throws JettyBootstrapException {
 		if (server == null) {

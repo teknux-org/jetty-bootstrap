@@ -108,7 +108,7 @@ abstract public class AbstractAppJettyHandler implements
 	/**
 	 * The name of Temporary Application directory
 	 * 
-	 * @return
+	 * @return name
 	 */
 	abstract protected String getAppTempDirName();
 
