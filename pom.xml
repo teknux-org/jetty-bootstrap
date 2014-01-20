@@ -30,8 +30,9 @@
 	</developers>
 
 	<scm>
-		<url>http://svn.apache.org/viewcvs.cgi/maven</url>
-		<connection>http://svn.apache.org/viewcvs.cgi/maven</connection>
+        <connection>scm:git:git://github.com/teknux-org/jetty-bootstrap.git</connection>
+        <developerConnection>scm:git:git@github.com:teknux-org/jetty-bootstrap.git</developerConnection>
+        <url>http://github.com/teknux-org/jetty-bootstrap/tree/master</url>
 	</scm>
 
 	<licenses>
@@ -186,4 +187,17 @@
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
+
+	<distributionManagement>
+		<repository>
+			<id>sonatype-nexus-staging</id>
+			<name>Nexus Release Repository</name>
+			<url>http://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
+		<snapshotRepository>
+			<id>sonatype-nexus-snapshots</id>
+			<name>Sonatype Nexus Snapshots</name>
+			<url>http://oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
 </project>
