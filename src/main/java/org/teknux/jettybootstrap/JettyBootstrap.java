@@ -23,6 +23,7 @@ package org.teknux.jettybootstrap;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -141,17 +142,28 @@ public class JettyBootstrap {
 	 *             initialization
 	 */
 	public JettyBootstrap startServer(boolean join) throws JettyBootstrapException {
+		logger.info("Starting Server...");
+
 		if (server == null) {
 			init(jettyConfiguration);
 		}
 		setHandlers();
 
-		logger.info("Start Jetty Server...");
 		try {
 			server.start();
 		} catch (Exception e) {
 			throw new JettyBootstrapException(e);
 		}
+
+		// display server addresses
+		StringBuilder sb = new StringBuilder("Server Started");
+		Connector[] connectors = server.getConnectors();
+		for (Connector connector : connectors) {
+			if (connector instanceof ServerConnector) {
+				sb.append(MessageFormat.format(" http://{0}:{1,number,#}", ((ServerConnector) connector).getHost(), ((ServerConnector) connector).getLocalPort()));
+			}
+		}
+		logger.info(sb.toString());
 
 		if (join) {
 			joinServer();
@@ -171,11 +183,11 @@ public class JettyBootstrap {
 	public JettyBootstrap joinServer() throws JettyBootstrapException {
 		try {
 			if (server != null && server.isStarted()) {
-				logger.debug("Join Jetty Server...");
+				logger.debug("Joining Server...");
 
 				server.join();
 			} else {
-				logger.warn("Can't join Jetty Server. Not started");
+				logger.warn("Can't join Server. Not started");
 			}
 		} catch (InterruptedException e) {
 			throw new JettyBootstrapException(e);
@@ -193,19 +205,20 @@ public class JettyBootstrap {
 	 *             server or if the server is not started
 	 */
 	public JettyBootstrap stopServer() throws JettyBootstrapException {
+		logger.info("Stopping Server...");
 		try {
 			handlers.stop();
 
 			if (server != null && server.isStarted()) {
-				logger.info("Stop Jetty Server...");
-
 				server.stop();
 			} else {
-				logger.warn("Can't stop Jetty Server. Already stopped");
+				logger.warn("Can't stop server. Already stopped");
 			}
 		} catch (Exception e) {
 			throw new JettyBootstrapException(e);
 		}
+
+		logger.info("Server stopped.");
 
 		return this;
 	}
@@ -555,12 +568,12 @@ public class JettyBootstrap {
 	}
 
 	protected Connector[] createConnectors(IJettyConfiguration iJettyConfiguration, Server server) {
-		logger.trace("Create Jetty Connectors...");
+		logger.trace("Creating Jetty Connectors...");
 
 		List<Connector> connectors = new ArrayList<Connector>();
 
 		if (iJettyConfiguration.hasJettyConnector(JettyConnector.HTTP)) {
-			logger.trace("Add HTTP Connector...");
+			logger.trace("Adding HTTP Connector...");
 
 			ServerConnector serverConnector;
 
@@ -582,7 +595,7 @@ public class JettyBootstrap {
 			connectors.add(serverConnector);
 		}
 		if (iJettyConfiguration.hasJettyConnector(JettyConnector.HTTPS)) {
-			logger.trace("Add HTTPS Connector...");
+			logger.trace("Adding HTTPS Connector...");
 
 			SslContextFactory sslContextFactory = new SslContextFactory(iJettyConfiguration.getSslKeyStorePath());
 			sslContextFactory.setKeyStorePassword(iJettyConfiguration.getSslKeyStorePassword());
@@ -598,10 +611,10 @@ public class JettyBootstrap {
 		return connectors.toArray(new Connector[connectors.size()]);
 	}
 
-	protected void shutdown(IJettyConfiguration iJettyConfiguration) {
+	protected void shutdown(IJettyConfiguration configuration) {
 		try {
-			logger.debug("Shutdown...");
-			if (iJettyConfiguration.isStopAtShutdown()) {
+			logger.debug("Shutting Down...");
+			if (configuration.isStopAtShutdown()) {
 				stopServer();
 			}
 		} catch (Exception e) {
@@ -636,15 +649,15 @@ public class JettyBootstrap {
 	/**
 	 * Create Shutdown Hook.
 	 * 
-	 * @param iJettyConfiguration
+	 * @param configuration
 	 */
-	private void createShutdownHook(final IJettyConfiguration iJettyConfiguration) {
-		logger.trace("Create Jetty ShutdownHook...");
+	private void createShutdownHook(final IJettyConfiguration configuration) {
+		logger.trace("Creating Jetty ShutdownHook...");
 
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 
 			public void run() {
-				shutdown(iJettyConfiguration);
+				shutdown(configuration);
 			}
 		});
 	}
