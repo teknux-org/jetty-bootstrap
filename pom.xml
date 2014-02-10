@@ -30,9 +30,9 @@
 	</developers>
 
 	<scm>
-        <connection>scm:git:git://github.com/teknux-org/jetty-bootstrap.git</connection>
-        <developerConnection>scm:git:git@github.com:teknux-org/jetty-bootstrap.git</developerConnection>
-        <url>http://github.com/teknux-org/jetty-bootstrap/tree/master</url>
+		<connection>scm:git:git://github.com/teknux-org/jetty-bootstrap.git</connection>
+		<developerConnection>scm:git:git@github.com:teknux-org/jetty-bootstrap.git</developerConnection>
+		<url>http://github.com/teknux-org/jetty-bootstrap/tree/master</url>
 	</scm>
 
 	<licenses>
@@ -122,6 +122,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-gpg-plugin</artifactId>
+				<version>1.4</version>
 				<executions>
 					<execution>
 						<id>sign-artifacts</id>
@@ -192,7 +193,7 @@
 		</dependency>
 		<!-- For generate certificate of Keystore -->
 		<dependency>
-			<groupId>org.codehaus.xfire</groupId>
+			<groupId>org.bouncycastle</groupId>
 			<artifactId>bcprov-jdk15</artifactId>
 			<version>${bcprov-jdk15.version}</version>
 		</dependency>
@@ -223,7 +224,7 @@
 		<janino.version>2.6.1</janino.version>
 
 		<commons-io.version>2.4</commons-io.version>
-		<bcprov-jdk15.version>133</bcprov-jdk15.version>
+		<bcprov-jdk15.version>1.46</bcprov-jdk15.version>
 
 		<junit.version>4.11</junit.version>
 		<httpclient.version>4.3.1</httpclient.version>
