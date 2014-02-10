@@ -28,4 +28,8 @@ import org.teknux.jettybootstrap.JettyBootstrapException;
 public interface IJettyHandler {
 
 	Handler getHandler() throws JettyBootstrapException;
+
+	String getItemType();
+
+	String getItemName();
 }

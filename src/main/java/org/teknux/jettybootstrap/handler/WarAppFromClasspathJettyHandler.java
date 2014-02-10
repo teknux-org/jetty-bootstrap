@@ -35,6 +35,8 @@ import org.teknux.jettybootstrap.utils.Md5;
 
 public class WarAppFromClasspathJettyHandler extends WarAppJettyHandler {
 
+	private static final String TYPE = "WarFromClasspath";
+
 	private final Logger logger = LoggerFactory.getLogger(WarAppFromClasspathJettyHandler.class);
 
 	private static final String RESOURCEWAR_DIRECTORY_NAME = "war";
@@ -80,5 +82,15 @@ public class WarAppFromClasspathJettyHandler extends WarAppJettyHandler {
 		setWar(warFile.getPath());
 
 		return super.getHandler();
+	}
+
+	@Override
+	public String getItemType() {
+		return TYPE;
+	}
+
+	@Override
+	public String getItemName() {
+		return warFromClasspath;
 	}
 }

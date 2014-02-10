@@ -231,7 +231,7 @@ public class JettyBootstrapTest {
 		File folder = temporaryFolder.newFolder();
 		copyResourceToFile("/webapp", folder);
 
-		initServer(false).addStaticResource(folder.getPath(), "/staticResource").startServer();
+		initServer(false).addExplodedWarApp(folder.getPath(), null, "/staticResource").startServer();
 
 		Assert.assertEquals(new SimpleResponse(200, "StaticResContent\n"), get("/staticResource/index.html"));
 	}
@@ -242,7 +242,7 @@ public class JettyBootstrapTest {
 		File folder = temporaryFolder.newFolder();
 		copyResourceToFile("/webapp", folder);
 
-		initServer(true).addStaticResource(folder.getPath(), "/sslStaticResource").startServer();
+		initServer(true).addExplodedWarApp(folder.getPath(), null, "/sslStaticResource").startServer();
 
 		Assert.assertEquals(new SimpleResponse(200, "StaticResContent\n"), get("/sslStaticResource/index.html"));
 	}
@@ -250,7 +250,7 @@ public class JettyBootstrapTest {
 	@Test
 	public void do11StaticResourceFromClasspathTest() throws IllegalStateException, IOException, JettyBootstrapException, KeyManagementException, NoSuchAlgorithmException,
 			KeyStoreException {
-		initServer(false).addStaticResourceFromClasspath("/webapp", "/staticResourceFromClasspath").startServer();
+		initServer(false).addExplodedWarAppFromClasspath("/webapp", null, "/staticResourceFromClasspath").startServer();
 
 		Assert.assertEquals(new SimpleResponse(200, "StaticResContent\n"), get("/staticResourceFromClasspath/index.html"));
 	}
@@ -258,7 +258,7 @@ public class JettyBootstrapTest {
 	@Test
 	public void do12SslStaticResourceFromClasspathTest() throws IllegalStateException, IOException, JettyBootstrapException, KeyManagementException, NoSuchAlgorithmException,
 			KeyStoreException {
-		initServer(true).addStaticResourceFromClasspath("/webapp", "/sslStaticResourceFromClasspath").startServer();
+		initServer(true).addExplodedWarAppFromClasspath("/webapp", null, "/sslStaticResourceFromClasspath").startServer();
 
 		Assert.assertEquals(new SimpleResponse(200, "StaticResContent\n"), get("/sslStaticResourceFromClasspath/index.html"));
 	}

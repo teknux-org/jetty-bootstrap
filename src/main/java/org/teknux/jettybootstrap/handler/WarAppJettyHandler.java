@@ -27,6 +27,8 @@ import org.teknux.jettybootstrap.utils.Md5;
 
 public class WarAppJettyHandler extends AbstractAppJettyHandler {
 
+	private static final String TYPE = "War";
+
 	private String war = null;
 
 	public String getWar() {
@@ -44,8 +46,18 @@ public class WarAppJettyHandler extends AbstractAppJettyHandler {
 
 	@Override
 	protected WebAppContext initWebAppContext(WebAppContext webAppContext) {
-		webAppContext.setWar(getWar());
+		webAppContext.setWar(war);
 
 		return webAppContext;
+	}
+
+	@Override
+	public String getItemType() {
+		return TYPE;
+	}
+
+	@Override
+	public String getItemName() {
+		return war;
 	}
 }

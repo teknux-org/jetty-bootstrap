@@ -27,6 +27,8 @@ import org.eclipse.jetty.server.Handler;
 public class JettyHandler implements
 		IJettyHandler {
 
+	private static final String TYPE = "Handler";
+
 	private Handler handler = null;
 
 	public Handler getHandler() {
@@ -35,5 +37,15 @@ public class JettyHandler implements
 
 	public void setHandler(Handler handler) {
 		this.handler = handler;
+	}
+
+	@Override
+	public String getItemType() {
+		return TYPE;
+	}
+
+	@Override
+	public String getItemName() {
+		return handler.toString();
 	}
 }

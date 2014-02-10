@@ -47,7 +47,6 @@ import org.teknux.jettybootstrap.handler.AbstractAppJettyHandler;
 import org.teknux.jettybootstrap.handler.ExplodedWarAppJettyHandler;
 import org.teknux.jettybootstrap.handler.IJettyHandler;
 import org.teknux.jettybootstrap.handler.JettyHandler;
-import org.teknux.jettybootstrap.handler.StaticResourceAppJettyHandler;
 import org.teknux.jettybootstrap.handler.WarAppFromClasspathJettyHandler;
 import org.teknux.jettybootstrap.handler.WarAppJettyHandler;
 import org.teknux.jettybootstrap.keystore.JettyKeystore;
@@ -289,76 +288,6 @@ public class JettyBootstrap {
 	}
 
 	/**
-	 * Add a static resource on the default context path
-	 * {@value #CONTEXT_PATH_ROOT}
-	 * 
-	 * @param resource
-	 *            the static resource (file or directory) to
-	 *            make available
-	 * @return this instance
-	 */
-	public JettyBootstrap addStaticResource(String resource) {
-		return addStaticResource(resource, CONTEXT_PATH_ROOT);
-	}
-
-	/**
-	 * Add a static resource specifying the context path.
-	 * 
-	 * @param resource
-	 *            the static resource (file or directory) to
-	 *            make available
-	 * @param contextPath
-	 *            the path (base URL) to make the resource
-	 *            available
-	 * @return this instance
-	 */
-	public JettyBootstrap addStaticResource(String resource, String contextPath) {
-		StaticResourceAppJettyHandler staticResourceAppJettyHandler = new StaticResourceAppJettyHandler();
-		staticResourceAppJettyHandler.setWebAppBase(resource);
-		staticResourceAppJettyHandler.setContextPath(contextPath);
-
-		jettyHandlers.add(staticResourceAppJettyHandler);
-
-		return this;
-	}
-
-	/**
-	 * Make a static resource from the current classpath
-	 * available on the default context path
-	 * {@value #CONTEXT_PATH_ROOT}
-	 * 
-	 * @param resource
-	 *            the static resource (file or directory) to
-	 *            make available
-	 * @return this instance
-	 */
-	public JettyBootstrap addStaticResourceFromClasspath(String resource) {
-		return addStaticResourceFromClasspath(resource, CONTEXT_PATH_ROOT);
-	}
-
-	/**
-	 * Make a static resource from the current classpath
-	 * available, specifying the context path.
-	 * 
-	 * @param resource
-	 *            the static resource (file or directory) to
-	 *            make available
-	 * @param contextPath
-	 *            the path (base URL) to make the resource
-	 *            available
-	 * @return this instance
-	 */
-	public JettyBootstrap addStaticResourceFromClasspath(String resource, String contextPath) {
-		StaticResourceAppJettyHandler staticResourceAppJettyHandler = new StaticResourceAppJettyHandler();
-		staticResourceAppJettyHandler.setWebAppBaseFromClasspath(resource);
-		staticResourceAppJettyHandler.setContextPath(contextPath);
-
-		jettyHandlers.add(staticResourceAppJettyHandler);
-
-		return this;
-	}
-
-	/**
 	 * Add an exploded (not packaged) War application on the
 	 * default context path {@value #CONTEXT_PATH_ROOT}
 	 * 
@@ -394,6 +323,19 @@ public class JettyBootstrap {
 		jettyHandlers.add(explodedWarAppJettyHandler);
 
 		return this;
+	}
+
+	/**
+	 * Add an exploded (not packaged) War application from
+	 * the current classpath, on the default context path
+	 * {@value #CONTEXT_PATH_ROOT}
+	 * 
+	 * @param explodedWar
+	 *            the exploded war path
+	 * @return this instance
+	 */
+	public JettyBootstrap addExplodedWarAppFromClasspath(String explodedWar) {
+		return addExplodedWarAppFromClasspath(explodedWar, null);
 	}
 
 	/**
@@ -640,6 +582,10 @@ public class JettyBootstrap {
 				abstractAppJettyHandler.setTempDirectory(jettyConfiguration.getTempDirectory());
 				abstractAppJettyHandler.setPersistTempDirectory(jettyConfiguration.isPersistAppTempDirectories());
 				abstractAppJettyHandler.setRedirectOnHttpsConnector(jettyConfiguration.isRedirectWebAppsOnHttpsConnector());
+
+				logger.debug("Deploying {} [{}] on contextPath [{}]...", jettyHandler.getItemType(), jettyHandler.getItemName(), abstractAppJettyHandler.getContextPath());
+			} else {
+				logger.debug("Deploying {} [{}]...", jettyHandler.getItemType(), jettyHandler.getItemName());
 			}
 
 			handlers.addHandler(jettyHandler.getHandler());
