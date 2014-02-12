@@ -49,6 +49,7 @@ import org.teknux.jettybootstrap.handler.IJettyHandler;
 import org.teknux.jettybootstrap.handler.JettyHandler;
 import org.teknux.jettybootstrap.handler.WarAppFromClasspathJettyHandler;
 import org.teknux.jettybootstrap.handler.WarAppJettyHandler;
+import org.teknux.jettybootstrap.handler.listener.JettyLifeCycleListenerUtil;
 import org.teknux.jettybootstrap.keystore.JettyKeystore;
 import org.teknux.jettybootstrap.keystore.JettyKeystoreException;
 
@@ -249,9 +250,7 @@ public class JettyBootstrap {
 		warAppJettyHandler.setWar(war);
 		warAppJettyHandler.setContextPath(contextPath);
 
-		jettyHandlers.add(warAppJettyHandler);
-
-		return this;
+		return addJettyHandler(warAppJettyHandler);
 	}
 
 	/**
@@ -282,9 +281,7 @@ public class JettyBootstrap {
 		warAppFromClasspathJettyHandler.setWarFromClasspath(warFromClasspath);
 		warAppFromClasspathJettyHandler.setContextPath(contextPath);
 
-		jettyHandlers.add(warAppFromClasspathJettyHandler);
-
-		return this;
+		return addJettyHandler(warAppFromClasspathJettyHandler);
 	}
 
 	/**
@@ -320,9 +317,7 @@ public class JettyBootstrap {
 		explodedWarAppJettyHandler.setDescriptor(descriptor);
 		explodedWarAppJettyHandler.setContextPath(contextPath);
 
-		jettyHandlers.add(explodedWarAppJettyHandler);
-
-		return this;
+		return addJettyHandler(explodedWarAppJettyHandler);
 	}
 
 	/**
@@ -372,9 +367,7 @@ public class JettyBootstrap {
 		explodedWarAppJettyHandler.setDescriptor(descriptor);
 		explodedWarAppJettyHandler.setContextPath(contextPath);
 
-		jettyHandlers.add(explodedWarAppJettyHandler);
-
-		return this;
+		return addJettyHandler(explodedWarAppJettyHandler);
 	}
 
 	/**
@@ -415,7 +408,17 @@ public class JettyBootstrap {
 		JettyHandler jettyHandler = new JettyHandler();
 		jettyHandler.setHandler(handler);
 
-		jettyHandlers.add(jettyHandler);
+		return addJettyHandler(jettyHandler);
+	}
+
+	/**
+	 * Add Handler
+	 * 
+	 * @param iJettyHandler
+	 * @return this instance
+	 */
+	public JettyBootstrap addJettyHandler(IJettyHandler iJettyHandler) {
+		jettyHandlers.add(iJettyHandler);
 
 		return this;
 	}
@@ -582,11 +585,11 @@ public class JettyBootstrap {
 				abstractAppJettyHandler.setTempDirectory(jettyConfiguration.getTempDirectory());
 				abstractAppJettyHandler.setPersistTempDirectory(jettyConfiguration.isPersistAppTempDirectories());
 				abstractAppJettyHandler.setRedirectOnHttpsConnector(jettyConfiguration.isRedirectWebAppsOnHttpsConnector());
-
-				logger.debug("Deploying {} [{}] on contextPath [{}]...", jettyHandler.getItemType(), jettyHandler.getItemName(), abstractAppJettyHandler.getContextPath());
-			} else {
-				logger.debug("Deploying {} [{}]...", jettyHandler.getItemType(), jettyHandler.getItemName());
 			}
+
+			jettyHandler.addJettyLifeCycleListener(JettyLifeCycleListenerUtil.getDefaultJettyLifeCycleListener());
+
+			logger.debug("Deploying {}...", jettyHandler);
 
 			handlers.addHandler(jettyHandler.getHandler());
 		}

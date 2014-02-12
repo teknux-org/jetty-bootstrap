@@ -22,6 +22,7 @@
 package org.teknux.jettybootstrap.handler;
 
 import java.io.File;
+import java.text.MessageFormat;
 
 import org.eclipse.jetty.security.ConstraintMapping;
 import org.eclipse.jetty.security.ConstraintSecurityHandler;
@@ -31,8 +32,7 @@ import org.eclipse.jetty.webapp.WebAppContext;
 import org.teknux.jettybootstrap.JettyBootstrapException;
 
 
-abstract public class AbstractAppJettyHandler implements
-		IJettyHandler {
+abstract public class AbstractAppJettyHandler extends AbstractJettyHandler {
 
 	private static final String APP_DIRECTORY_NAME = "apps";
 
@@ -83,7 +83,7 @@ abstract public class AbstractAppJettyHandler implements
 	}
 
 	@Override
-	public Handler getHandler() throws JettyBootstrapException {
+	protected Handler createHandler() throws JettyBootstrapException {
 		File appsTempDirectory = new File(getTempDirectory() + File.separator + APP_DIRECTORY_NAME);
 
 		if (!appsTempDirectory.exists() && !appsTempDirectory.mkdir()) {
@@ -131,5 +131,10 @@ abstract public class AbstractAppJettyHandler implements
 		constraintSecurityHandler.addConstraintMapping(constraintMapping);
 
 		return constraintSecurityHandler;
+	}
+
+	@Override
+	public String toString() {
+		return MessageFormat.format("{0} on contextPath [{1}]", super.toString(), getContextPath());
 	}
 }

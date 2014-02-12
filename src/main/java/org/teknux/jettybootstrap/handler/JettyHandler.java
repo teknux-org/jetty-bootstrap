@@ -22,16 +22,17 @@
 package org.teknux.jettybootstrap.handler;
 
 import org.eclipse.jetty.server.Handler;
+import org.teknux.jettybootstrap.JettyBootstrapException;
 
 
-public class JettyHandler implements
-		IJettyHandler {
+public class JettyHandler extends AbstractJettyHandler {
 
 	private static final String TYPE = "Handler";
 
 	private Handler handler = null;
 
-	public Handler getHandler() {
+	@Override
+	protected Handler createHandler() throws JettyBootstrapException {
 		return handler;
 	}
 

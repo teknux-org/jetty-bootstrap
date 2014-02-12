@@ -53,7 +53,7 @@ public class WarAppFromClasspathJettyHandler extends WarAppJettyHandler {
 	}
 
 	@Override
-	public Handler getHandler() throws JettyBootstrapException {
+	protected Handler createHandler() throws JettyBootstrapException {
 		File warDirectory = new File(getTempDirectory().getPath() + File.separator + RESOURCEWAR_DIRECTORY_NAME);
 
 		if (!warDirectory.exists() && !warDirectory.mkdir()) {
@@ -81,7 +81,7 @@ public class WarAppFromClasspathJettyHandler extends WarAppJettyHandler {
 
 		setWar(warFile.getPath());
 
-		return super.getHandler();
+		return super.createHandler();
 	}
 
 	@Override
