@@ -2,6 +2,8 @@
 
 http://jetty-bootstrap.io
 
+[![Build Status](https://drone.io/github.com/teknux-org/jetty-bootstrap/status.png)](https://drone.io/github.com/teknux-org/jetty-bootstrap/latest)
+
 ### Description
 Jetty-Bootstrap library make it easy to embed Jetty into your maven project and package a standalone app. Provides a fluent API to expose web application(s) and service(s), configure the server settings and package the whole application with a low footprint.
 
