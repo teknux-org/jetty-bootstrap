@@ -215,7 +215,6 @@
 
 	<properties>
 		<maven-compiler.version>2.3.2</maven-compiler.version>
-		<apache-rat.version>0.7</apache-rat.version>
 
 		<jetty.version>9.1.0.v20131115</jetty.version>
 

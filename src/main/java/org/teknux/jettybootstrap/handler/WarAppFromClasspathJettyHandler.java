@@ -23,6 +23,7 @@ package org.teknux.jettybootstrap.handler;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
 
 import org.apache.commons.io.FileUtils;
@@ -68,14 +69,19 @@ public class WarAppFromClasspathJettyHandler extends WarAppJettyHandler {
 		} else {
 			logger.trace("Copy war from classpath [{}] to directory [{}]...", getWarFromClasspath(), warDirectory);
 
+			InputStream inputStream = null;
 			try {
-				File classpathFile = new File(getClass().getResource(getWarFromClasspath()).toURI());
+				inputStream = getClass().getResourceAsStream(getWarFromClasspath());
 
-				FileUtils.copyFile(classpathFile, warFile);
-			} catch (URISyntaxException e) {
-				throw new JettyBootstrapException(e);
+				FileUtils.copyInputStreamToFile(inputStream, warFile);
 			} catch (IOException e) {
 				throw new JettyBootstrapException(e);
+			} finally {
+				try {
+					inputStream.close();
+				} catch (IOException e) {
+					logger.error("Can't close War Resource Stream [{}]", getWarFromClasspath(), e);
+				}
 			}
 		}
 
