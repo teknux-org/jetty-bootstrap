@@ -44,7 +44,7 @@
         </encoder>
     </appender>  
     
-    <logger name="org.eclipse.jetty" level="ERROR" />
+    <logger name="org.eclipse.jetty" level="WARN" />
    
     <root level="${logback.level.root}">
         <appender-ref ref="STDOUT" />
