@@ -24,7 +24,6 @@ package org.teknux.jettybootstrap.handler;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URISyntaxException;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jetty.server.Handler;
@@ -61,27 +60,21 @@ public class WarAppFromClasspathJettyHandler extends WarAppJettyHandler {
 			throw new JettyBootstrapException("Can't create temporary War directory");
 		}
 
-		String fileName = Md5.hash(getWarFromClasspath()) + WAR_EXTENSION;
+		String fileName = Md5.hash(warFromClasspath) + WAR_EXTENSION;
 		File warFile = new File(warDirectory.getPath() + File.separator + fileName);
 
 		if (warFile.exists()) {
 			logger.trace("War already exists in directory : [{}], don't copy", warDirectory);
 		} else {
-			logger.trace("Copy war from classpath [{}] to directory [{}]...", getWarFromClasspath(), warDirectory);
+			logger.trace("Copy war from classpath [{}] to directory [{}]...", warFromClasspath, warDirectory);
 
-			InputStream inputStream = null;
-			try {
-				inputStream = getClass().getResourceAsStream(getWarFromClasspath());
-
+			try (InputStream inputStream = getClass().getResourceAsStream(warFromClasspath)) {
+				if (inputStream == null) {
+					throw new JettyBootstrapException("Cannot get resource a stream from classpath : " + warFromClasspath);
+				}
 				FileUtils.copyInputStreamToFile(inputStream, warFile);
 			} catch (IOException e) {
 				throw new JettyBootstrapException(e);
-			} finally {
-				try {
-					inputStream.close();
-				} catch (IOException e) {
-					logger.error("Can't close War Resource Stream [{}]", getWarFromClasspath(), e);
-				}
 			}
 		}
 
