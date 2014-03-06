@@ -27,14 +27,21 @@ import java.text.MessageFormat;
 import org.eclipse.jetty.security.ConstraintMapping;
 import org.eclipse.jetty.security.ConstraintSecurityHandler;
 import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.util.ArrayUtil;
 import org.eclipse.jetty.util.security.Constraint;
 import org.eclipse.jetty.webapp.WebAppContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.teknux.jettybootstrap.JettyBootstrapException;
 
 
 abstract public class AbstractAppJettyHandler extends AbstractJettyHandler {
 
 	private static final String APP_DIRECTORY_NAME = "apps";
+
+	private static final String[] ADDITIONALS_WEBAPP_CONFIGURATION_CLASSES = { "org.eclipse.jetty.annotations.AnnotationConfiguration" };
+
+	private final Logger logger = LoggerFactory.getLogger(AbstractAppJettyHandler.class);
 
 	private String contextPath = null;
 	private boolean redirectOnHttpsConnector = false;
@@ -97,6 +104,24 @@ abstract public class AbstractAppJettyHandler extends AbstractJettyHandler {
 		webAppContext.setTempDirectory(appTempDirectory);
 		webAppContext.setParentLoaderPriority(isParentLoaderPriority());
 		webAppContext.setPersistTempDirectory(isPersistTempDirectory());
+
+		// Add configuration if available
+		String configurationClasses[] = WebAppContext.getDefaultConfigurationClasses();
+		for (String additionalWebAppConfigurationClass : ADDITIONALS_WEBAPP_CONFIGURATION_CLASSES) {
+			try {
+				Class.forName(additionalWebAppConfigurationClass);
+				configurationClasses = ArrayUtil.addToArray(configurationClasses, additionalWebAppConfigurationClass, String.class);
+				logger.debug("[{}] support added", additionalWebAppConfigurationClass);
+			} catch (ClassNotFoundException e) {
+				logger.trace("[{}] support not available", additionalWebAppConfigurationClass);
+			}
+		}
+		webAppContext.setConfigurationClasses(configurationClasses);
+
+		// List configurations
+		for (String configurationClasse : configurationClasses) {
+			logger.trace("Jetty WebAppContext Configuration => " + configurationClasse);
+		}
 
 		if (isRedirectOnHttpsConnector()) {
 			webAppContext.setSecurityHandler(getConstraintSecurityHandlerConfidential());

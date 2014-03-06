@@ -65,7 +65,16 @@
 			<artifactId>jetty-bootstrap-logs</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-
+		<dependency>
+			<groupId>org.teknux</groupId>
+			<artifactId>jetty-bootstrap-jsp</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.teknux</groupId>
+			<artifactId>jetty-bootstrap-annotations</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 	</dependencies>
 
 </project>
