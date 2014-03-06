@@ -10,6 +10,7 @@
 	<modules>
 		<module>jetty-bootstrap</module>
 		<module>jetty-bootstrap-jsp</module>
+		<module>jetty-bootstrap-annotations</module>
 		<module>jetty-bootstrap-logs</module>
 		<module>jetty-bootstrap-standalone</module>
 	</modules>
