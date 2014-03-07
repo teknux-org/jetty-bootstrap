@@ -64,13 +64,13 @@ public class WarAppFromClasspathJettyHandler extends WarAppJettyHandler {
 		File warFile = new File(warDirectory.getPath() + File.separator + fileName);
 
 		if (warFile.exists()) {
-			logger.trace("War already exists in directory : [{}], don't copy", warDirectory);
+			logger.trace("War already exists in directory : [{}], not copied", warDirectory);
 		} else {
-			logger.trace("Copy war from classpath [{}] to directory [{}]...", warFromClasspath, warDirectory);
+			logger.trace("Copy war file from classpath [{}] to directory [{}]...", warFromClasspath, warDirectory);
 
 			try (InputStream inputStream = getClass().getResourceAsStream(warFromClasspath)) {
 				if (inputStream == null) {
-					throw new JettyBootstrapException("Cannot get resource a stream from classpath : " + warFromClasspath);
+					throw new JettyBootstrapException("Cannot get resource as stream from classpath : " + warFromClasspath);
 				}
 				FileUtils.copyInputStreamToFile(inputStream, warFile);
 			} catch (IOException e) {

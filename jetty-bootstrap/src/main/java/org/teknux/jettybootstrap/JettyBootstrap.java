@@ -440,6 +440,15 @@ public class JettyBootstrap {
 		return server;
 	}
 
+	/**
+	 * Initialize Jetty server using the given
+	 * {@link IJettyConfiguration}. Basically creates the
+	 * server, set connectors, handlers and adds the
+	 * shutdown hook.
+	 * 
+	 * @param iJettyConfiguration
+	 * @throws JettyBootstrapException
+	 */
 	protected void init(IJettyConfiguration iJettyConfiguration) throws JettyBootstrapException {
 		this.jettyConfiguration = initConfiguration(iJettyConfiguration);
 
@@ -451,6 +460,16 @@ public class JettyBootstrap {
 		createShutdownHook(iJettyConfiguration);
 	}
 
+	/**
+	 * Parse the given {@link IJettyConfiguration} object,
+	 * validate the configuration and initialize it. Clean
+	 * temp directory if necessary and generates SSL
+	 * keystore when necessary.
+	 * 
+	 * @param iJettyConfiguration
+	 * @return
+	 * @throws JettyBootstrapException
+	 */
 	protected IJettyConfiguration initConfiguration(IJettyConfiguration iJettyConfiguration) throws JettyBootstrapException {
 		logger.debug("Init Configuration...");
 
@@ -502,6 +521,13 @@ public class JettyBootstrap {
 		return iJettyConfiguration;
 	}
 
+	/**
+	 * Convenient method used to build and return a new
+	 * {@link Server}.
+	 * 
+	 * @param iJettyConfiguration
+	 * @return
+	 */
 	protected Server createServer(IJettyConfiguration iJettyConfiguration) {
 		logger.trace("Create Jetty Server...");
 
@@ -512,6 +538,16 @@ public class JettyBootstrap {
 		return server;
 	}
 
+	/**
+	 * Creates and returns the necessary
+	 * {@link ServerConnector} based on the given
+	 * {@link IJettyConfiguration}.
+	 * 
+	 * @param iJettyConfiguration
+	 * @param server
+	 *            the server to
+	 * @return
+	 */
 	protected Connector[] createConnectors(IJettyConfiguration iJettyConfiguration, Server server) {
 		logger.trace("Creating Jetty Connectors...");
 
@@ -556,6 +592,12 @@ public class JettyBootstrap {
 		return connectors.toArray(new Connector[connectors.size()]);
 	}
 
+	/**
+	 * Convenient method used to gracefully stop Jetty
+	 * server. Invoked by the registered shutdown hook.
+	 * 
+	 * @param configuration
+	 */
 	protected void shutdown(IJettyConfiguration configuration) {
 		try {
 			logger.debug("Shutting Down...");
