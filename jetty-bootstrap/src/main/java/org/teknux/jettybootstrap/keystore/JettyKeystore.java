@@ -128,7 +128,7 @@ public class JettyKeystore {
 		Provider provider = new BouncyCastleProvider();
 
 		try {
-			ContentSigner signer = new JcaContentSignerBuilder(SIGNATURE_ALGORITHM_SHA256WITHRSA).setProvider(provider).build(keyPair.getPrivate());
+			ContentSigner signer = new JcaContentSignerBuilder(signatureAlgorithm).setProvider(provider).build(keyPair.getPrivate());
 
 			return new JcaX509CertificateConverter().setProvider(provider).getCertificate(x509v3CertificateBuilder.build(signer));
 		} catch (OperatorCreationException e) {
