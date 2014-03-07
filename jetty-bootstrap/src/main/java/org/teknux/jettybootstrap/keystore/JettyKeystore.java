@@ -26,34 +26,43 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.security.InvalidKeyException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.KeyStore;
 import java.security.KeyStore.PrivateKeyEntry;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.Provider;
 import java.security.SecureRandom;
-import java.security.Security;
-import java.security.SignatureException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Date;
 
-import org.bouncycastle.jce.X509Principal;
+import org.bouncycastle.asn1.ASN1Sequence;
+import org.bouncycastle.asn1.x500.X500Name;
+import org.bouncycastle.asn1.x500.X500NameBuilder;
+import org.bouncycastle.asn1.x500.style.BCStyle;
+import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
+import org.bouncycastle.cert.X509v3CertificateBuilder;
+import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.x509.X509V3CertificateGenerator;
+import org.bouncycastle.operator.ContentSigner;
+import org.bouncycastle.operator.OperatorCreationException;
+import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 
 
 public class JettyKeystore {
 
 	public static final String ALGORITHM_RSA = "RSA";
-	public static final String SIGNATURE_ALGORITHM_MD5WITHRSAENCRYPTION = "MD5WithRSAEncryption";
-	public static final String SIGNATURE_ALGORITHM_SHA256WITHRSA = "SHA256withRSA";
+	public static final String SIGNATURE_ALGORITHM_SHA256WITHRSA = "SHA256WithRSAEncryption";
 
 	private static final String DEFAULT_ALGORITHM = ALGORITHM_RSA;
 	private static final String DEFAULT_SIGNATURE_ALGORITHM = SIGNATURE_ALGORITHM_SHA256WITHRSA;
+
+	private String RDN_OU_VALUE = "None";
+	private String RDN_O_VALUE = "None";
+	private Long DAY_IN_MILLIS = 1000L * 60 * 60 * 24;
 
 	private String domainName;
 	private String alias;
@@ -107,25 +116,24 @@ public class JettyKeystore {
 	}
 
 	private X509Certificate generateX509Certificate(KeyPair keyPair, String domainName, String signatureAlgorithm) throws JettyKeystoreException {
-		Security.addProvider(new BouncyCastleProvider());
+		X500Name issuer = new X500NameBuilder(BCStyle.INSTANCE).addRDN(BCStyle.OU, RDN_OU_VALUE).addRDN(BCStyle.O, RDN_O_VALUE).addRDN(BCStyle.CN, domainName).build();
+		BigInteger serial = BigInteger.valueOf(Math.abs(new SecureRandom().nextInt()));
+		Date dateNotBefore = new Date(System.currentTimeMillis() - (30 * DAY_IN_MILLIS));
+		Date dateNotAfter = new Date(System.currentTimeMillis() + (3650 * DAY_IN_MILLIS));
+		X500Name subject = new X500NameBuilder(BCStyle.INSTANCE).addRDN(BCStyle.OU, RDN_OU_VALUE).addRDN(BCStyle.O, RDN_O_VALUE).addRDN(BCStyle.CN, domainName).build();
+		SubjectPublicKeyInfo publicKeyInfo = new SubjectPublicKeyInfo(ASN1Sequence.getInstance(keyPair.getPublic().getEncoded()));
 
-		X509V3CertificateGenerator x509V3CertificateGenerator = new X509V3CertificateGenerator();
-		x509V3CertificateGenerator.setSerialNumber(BigInteger.valueOf(Math.abs(new SecureRandom().nextInt())));
-		x509V3CertificateGenerator.setIssuerDN(new X509Principal("CN=" + domainName + ", OU=None, O=None L=None, C=None"));
-		x509V3CertificateGenerator.setNotBefore(new Date(System.currentTimeMillis() - 1000L * 60 * 60 * 24 * 30));
-		x509V3CertificateGenerator.setNotAfter(new Date(System.currentTimeMillis() + (1000L * 60 * 60 * 24 * 365 * 10)));
-		x509V3CertificateGenerator.setSubjectDN(new X509Principal("CN=" + domainName + ", OU=None, O=None L=None, C=None"));
+		X509v3CertificateBuilder x509v3CertificateBuilder = new X509v3CertificateBuilder(issuer, serial, dateNotBefore, dateNotAfter, subject, publicKeyInfo);
 
-		x509V3CertificateGenerator.setPublicKey(keyPair.getPublic());
-		x509V3CertificateGenerator.setSignatureAlgorithm(signatureAlgorithm);
+		Provider provider = new BouncyCastleProvider();
 
 		try {
-			return x509V3CertificateGenerator.generateX509Certificate(keyPair.getPrivate());
-		} catch (InvalidKeyException e) {
+			ContentSigner signer = new JcaContentSignerBuilder(SIGNATURE_ALGORITHM_SHA256WITHRSA).setProvider(provider).build(keyPair.getPrivate());
+
+			return new JcaX509CertificateConverter().setProvider(provider).getCertificate(x509v3CertificateBuilder.build(signer));
+		} catch (OperatorCreationException e) {
 			throw new JettyKeystoreException(e);
-		} catch (SecurityException e) {
-			throw new JettyKeystoreException(e);
-		} catch (SignatureException e) {
+		} catch (CertificateException e) {
 			throw new JettyKeystoreException(e);
 		}
 	}
