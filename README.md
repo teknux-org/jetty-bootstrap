@@ -7,7 +7,8 @@ http://jetty-bootstrap.io
 ### Description
 Jetty-Bootstrap library make it easy to embed Jetty into your maven project and package a standalone app. Provides a fluent API to expose web application(s) and service(s), configure the server settings and package the whole application with a low footprint.
 
-Read the [documentation](https://github.com/teknux-org/jetty-bootstrap/wiki) for usage details.
+- Read the [documentation](https://github.com/teknux-org/jetty-bootstrap/wiki) for usage details.
+- Browse sample projects source using this lib [here](https://github.com/teknux-org/jetty-bootstrap-examples).
 
 ### Requirements
 - Java 7
