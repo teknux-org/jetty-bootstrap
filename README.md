@@ -27,6 +27,6 @@ Maven dependency to include on your project
 <dependency>
 	<groupId>org.teknux</groupId>
 	<artifactId>jetty-bootstrap</artifactId>
-	<version>1.0.1</version>
+	<version>x.x.x</version>
 </dependency>
 ```
