@@ -50,6 +50,7 @@ abstract public class AbstractAppJettyHandler extends AbstractJettyHandler {
 	private File tempDirectory = null;
 	private boolean persistTempDirectory = false;
 	private boolean parentLoaderPriority = true;
+	private boolean throwIfStartupException = true;
 
 	public String getContextPath() {
 		return contextPath;
@@ -91,6 +92,14 @@ abstract public class AbstractAppJettyHandler extends AbstractJettyHandler {
 		this.parentLoaderPriority = parentLoaderPriority;
 	}
 
+    public boolean isThrowIfStartupException() {
+        return throwIfStartupException; 
+    }
+	
+	public void setThrowIfStartupException(boolean throwIfStartupException) {
+        this.throwIfStartupException = throwIfStartupException; 
+    }
+
 	@Override
 	protected Handler createHandler() throws JettyBootstrapException {
 		File appsTempDirectory = new File(getTempDirectory() + File.separator + APP_DIRECTORY_NAME);
@@ -107,6 +116,7 @@ abstract public class AbstractAppJettyHandler extends AbstractJettyHandler {
 		webAppContext.setParentLoaderPriority(isParentLoaderPriority());
 		webAppContext.setPersistTempDirectory(isPersistTempDirectory());
 		webAppContext.setConfigurationClasses(addConfigurationClasses(WebAppContext.getDefaultConfigurationClasses(), AdditionalWebAppJettyConfigurationClass.getAdditionalsWebAppJettyConfigurationClasses()));
+		webAppContext.setThrowUnavailableOnStartupException(throwIfStartupException);
 
 		if (isRedirectOnHttpsConnector()) {
 			webAppContext.setSecurityHandler(getConstraintSecurityHandlerConfidential());
