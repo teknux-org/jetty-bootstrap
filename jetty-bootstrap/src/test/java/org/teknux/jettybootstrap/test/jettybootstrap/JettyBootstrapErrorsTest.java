@@ -33,7 +33,7 @@ import org.teknux.jettybootstrap.JettyBootstrapException;
 
 public class JettyBootstrapErrorsTest extends AbstractJettyBootstrapTest {
 
-	@Test
+    @Test(expected = JettyBootstrapException.class)
 	public void missingStaticWarTest() throws IllegalStateException, IOException, JettyBootstrapException, KeyManagementException, NoSuchAlgorithmException, KeyStoreException,
 			URISyntaxException {
 		initServer(false).addWarApp("Missing", "/staticWar").startServer();
