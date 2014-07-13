@@ -61,6 +61,7 @@ public class PropertiesJettyConfiguration extends JettyConfiguration {
 	public static final String KEY_PERSIST_APP_TEMP_DIR = "persistAppTempDirectories";
 	public static final String KEY_CLEAN_TEMP_DIR = "cleanTempDir";
 	public static final String KEY_PARENT_LOADER_PRIORITY = "parentLoaderPriority";
+	public static final String KEY_THROW_IF_STARTUP_EXCEPTION = "throwIfStartupException";
 
 	/**
 	 * Basic constructor. Only system properties are used to
@@ -182,6 +183,11 @@ public class PropertiesJettyConfiguration extends JettyConfiguration {
 		if (parentLoaderPriority != null) {
 			setParentLoaderPriority(parentLoaderPriority);
 		}
+		
+		Boolean throwIfStartupException = PropertiesUtils.parseBoolean(properties, KEY_THROW_IF_STARTUP_EXCEPTION);
+        if (throwIfStartupException != null) {
+            setThrowIfStartupException(throwIfStartupException);
+        }
 	}
 
 	/**

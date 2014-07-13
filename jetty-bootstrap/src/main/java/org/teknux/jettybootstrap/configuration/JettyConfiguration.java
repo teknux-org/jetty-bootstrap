@@ -54,6 +54,7 @@ public class JettyConfiguration implements
 	private boolean persistAppTempDirectories = false;
 	private boolean cleanTempDir = false;
 	private boolean parentLoaderPriority = true;
+    private boolean throwIfStartupException = true;
 
 	/* (non-Javadoc)
 	 * @see org.teknux.jettybootstrap.configuration.IJettyConfiguration#isAutoJoinOnStart()
@@ -319,6 +320,24 @@ public class JettyConfiguration implements
 		this.parentLoaderPriority = parentLoaderPriority;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see org.teknux.jettybootstrap.configuration.IJettyConfiguration#isThrowIfStartupException()
+	 */
+	@Override
+	public boolean isThrowIfStartupException() {
+	    return throwIfStartupException;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see org.teknux.jettybootstrap.configuration.IJettyConfiguration#setThrowIfStartupException(boolean)
+	 */
+	@Override
+	public void setThrowIfStartupException(boolean throwIfStartupException) {
+	    this.throwIfStartupException = throwIfStartupException;
+	}
+	
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
@@ -328,6 +347,6 @@ public class JettyConfiguration implements
 			", idleTimeout=" + idleTimeout + ", host=" + host + ", port=" + port + ", sslPort=" + sslPort + ", jettyConnectors=" + jettyConnectors +
 			", redirectWebAppsOnHttpsConnector=" + redirectWebAppsOnHttpsConnector + ", sslKeyStorePassword=" + sslKeyStorePassword + ", sslKeyStorePath=" + sslKeyStorePath +
 			", tempDirectory=" + tempDirectory + ", persistAppTempDirectories=" + persistAppTempDirectories + ", cleanTempDir=" + cleanTempDir + ", parentLoaderPriority=" +
-			parentLoaderPriority + "]";
+			parentLoaderPriority + ", throwIfStartupException=" + throwIfStartupException + "]";
 	}
 }

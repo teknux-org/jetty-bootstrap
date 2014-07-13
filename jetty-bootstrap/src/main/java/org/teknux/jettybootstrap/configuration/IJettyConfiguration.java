@@ -267,4 +267,16 @@ public interface IJettyConfiguration {
 	boolean isParentLoaderPriority();
 
 	void setParentLoaderPriority(boolean parentLoaderPriority);
+	
+	/**
+	 * @return <code>true</code> if server is setup to stop when a web application startup fails
+	 */
+	boolean isThrowIfStartupException();
+	
+	/**
+	 * Set whether or not the server should stop when a web application startup fails
+	 * 
+	 * @param throwIfStartupException
+	 */
+	void setThrowIfStartupException(boolean throwIfStartupException);
 }

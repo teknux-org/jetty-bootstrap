@@ -23,7 +23,6 @@ package org.teknux.jettybootstrap;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -156,14 +155,12 @@ public class JettyBootstrap {
 		}
 
 		// display server addresses
-		StringBuilder sb = new StringBuilder("Server Started");
-		Connector[] connectors = server.getConnectors();
-		for (Connector connector : connectors) {
-			if (connector instanceof ServerConnector) {
-				sb.append(MessageFormat.format(" http://{0}:{1,number,#}", ((ServerConnector) connector).getHost(), ((ServerConnector) connector).getLocalPort()));
-			}
+		if (jettyConfiguration.getJettyConnectors().contains(JettyConnector.HTTP)) {
+		    logger.info("http://{}:{}", jettyConfiguration.getHost(), jettyConfiguration.getPort());
 		}
-		logger.info(sb.toString());
+		if (jettyConfiguration.getJettyConnectors().contains(JettyConnector.HTTPS)) {
+            logger.info("https://{}:{}", jettyConfiguration.getHost(), jettyConfiguration.getSslPort());
+        }
 
 		if (join) {
 			joinServer();
@@ -220,14 +217,14 @@ public class JettyBootstrap {
 
 			if (isServerStarted()) {
 				server.stop();
+				
+				logger.info("Server stopped.");
 			} else {
 				logger.warn("Can't stop server. Already stopped");
 			}
 		} catch (Exception e) {
 			throw new JettyBootstrapException(e);
 		}
-
-		logger.info("Server stopped.");
 
 		return this;
 	}
@@ -636,6 +633,7 @@ public class JettyBootstrap {
 				abstractAppJettyHandler.setTempDirectory(jettyConfiguration.getTempDirectory());
 				abstractAppJettyHandler.setPersistTempDirectory(jettyConfiguration.isPersistAppTempDirectories());
 				abstractAppJettyHandler.setRedirectOnHttpsConnector(jettyConfiguration.isRedirectWebAppsOnHttpsConnector());
+				abstractAppJettyHandler.setThrowIfStartupException(jettyConfiguration.isThrowIfStartupException());
 			}
 
 			jettyHandler.addJettyLifeCycleListener(JettyLifeCycleListenerUtil.getDefaultJettyLifeCycleListener());
