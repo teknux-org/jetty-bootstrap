@@ -182,7 +182,7 @@ public class JettyBootstrap {
 	 */
 	public JettyBootstrap joinServer() throws JettyBootstrapException {
 		try {
-			if (server != null && server.isStarted()) {
+			if (isServerStarted()) {
 				logger.debug("Joining Server...");
 
 				server.join();
@@ -194,6 +194,15 @@ public class JettyBootstrap {
 		}
 
 		return this;
+	}
+	
+	/**
+	 * Return if server is started
+	 * 
+	 * @return if server is started
+	 */
+	public boolean isServerStarted() {
+	    return (server != null && server.isStarted());
 	}
 
 	/**
@@ -209,7 +218,7 @@ public class JettyBootstrap {
 		try {
 			handlers.stop();
 
-			if (server != null && server.isStarted()) {
+			if (isServerStarted()) {
 				server.stop();
 			} else {
 				logger.warn("Can't stop server. Already stopped");
