@@ -55,6 +55,7 @@ public class JettyConfiguration implements
 	private boolean cleanTempDir = false;
 	private boolean parentLoaderPriority = true;
     private boolean throwIfStartupException = true;
+    private int maxInactiveInterval = -1;
 
 	/* (non-Javadoc)
 	 * @see org.teknux.jettybootstrap.configuration.IJettyConfiguration#isAutoJoinOnStart()
@@ -338,6 +339,25 @@ public class JettyConfiguration implements
 	    this.throwIfStartupException = throwIfStartupException;
 	}
 	
+	/*
+	 * (non-Javadoc)
+	 * @see org.teknux.jettybootstrap.configuration.IJettyConfiguration#getMaxInactiveInterval()
+	 */
+	@Override
+	public int getMaxInactiveInterval() {
+	    // TODO Auto-generated method stub
+	    return maxInactiveInterval;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see org.teknux.jettybootstrap.configuration.IJettyConfiguration#setMaxInactiveInterval(int)
+	 */
+	@Override
+	public void setMaxInactiveInterval(int maxInactiveInterval) {
+	    this.maxInactiveInterval = maxInactiveInterval;
+	}
+	
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
@@ -347,6 +367,6 @@ public class JettyConfiguration implements
 			", idleTimeout=" + idleTimeout + ", host=" + host + ", port=" + port + ", sslPort=" + sslPort + ", jettyConnectors=" + jettyConnectors +
 			", redirectWebAppsOnHttpsConnector=" + redirectWebAppsOnHttpsConnector + ", sslKeyStorePassword=" + sslKeyStorePassword + ", sslKeyStorePath=" + sslKeyStorePath +
 			", tempDirectory=" + tempDirectory + ", persistAppTempDirectories=" + persistAppTempDirectories + ", cleanTempDir=" + cleanTempDir + ", parentLoaderPriority=" +
-			parentLoaderPriority + ", throwIfStartupException=" + throwIfStartupException + "]";
+			parentLoaderPriority + ", throwIfStartupException=" + throwIfStartupException + ", maxInactiveInterval=" + maxInactiveInterval + "]";
 	}
 }

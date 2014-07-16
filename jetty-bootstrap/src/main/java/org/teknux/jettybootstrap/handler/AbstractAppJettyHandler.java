@@ -51,6 +51,7 @@ abstract public class AbstractAppJettyHandler extends AbstractJettyHandler {
 	private boolean persistTempDirectory = false;
 	private boolean parentLoaderPriority = true;
 	private boolean throwIfStartupException = true;
+    private int maxInactiveInterval = -1;
 
 	public String getContextPath() {
 		return contextPath;
@@ -100,7 +101,15 @@ abstract public class AbstractAppJettyHandler extends AbstractJettyHandler {
         this.throwIfStartupException = throwIfStartupException; 
     }
 
-	@Override
+	public int getMaxInactiveInterval() {
+        return maxInactiveInterval;
+    }
+
+    public void setMaxInactiveInterval(int maxInactiveInterval) {
+        this.maxInactiveInterval = maxInactiveInterval;
+    }
+
+    @Override
 	protected Handler createHandler() throws JettyBootstrapException {
 		File appsTempDirectory = new File(getTempDirectory() + File.separator + APP_DIRECTORY_NAME);
 
@@ -117,6 +126,7 @@ abstract public class AbstractAppJettyHandler extends AbstractJettyHandler {
 		webAppContext.setPersistTempDirectory(isPersistTempDirectory());
 		webAppContext.setConfigurationClasses(addConfigurationClasses(WebAppContext.getDefaultConfigurationClasses(), AdditionalWebAppJettyConfigurationClass.getAdditionalsWebAppJettyConfigurationClasses()));
 		webAppContext.setThrowUnavailableOnStartupException(throwIfStartupException);
+	    webAppContext.getSessionHandler().getSessionManager().setMaxInactiveInterval(maxInactiveInterval);
 
 		if (isRedirectOnHttpsConnector()) {
 			webAppContext.setSecurityHandler(getConstraintSecurityHandlerConfidential());
