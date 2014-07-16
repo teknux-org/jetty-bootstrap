@@ -606,8 +606,8 @@ public class JettyBootstrap {
 	 */
 	protected void shutdown(IJettyConfiguration configuration) {
 		try {
-			logger.debug("Shutting Down...");
 			if (configuration.isStopAtShutdown()) {
+			    logger.debug("Shutting Down...");
 				stopServer();
 			}
 		} catch (Exception e) {
@@ -633,6 +633,7 @@ public class JettyBootstrap {
 				abstractAppJettyHandler.setTempDirectory(jettyConfiguration.getTempDirectory());
 				abstractAppJettyHandler.setPersistTempDirectory(jettyConfiguration.isPersistAppTempDirectories());
 				abstractAppJettyHandler.setRedirectOnHttpsConnector(jettyConfiguration.isRedirectWebAppsOnHttpsConnector());
+				abstractAppJettyHandler.setParentLoaderPriority(jettyConfiguration.isParentLoaderPriority());
 				abstractAppJettyHandler.setThrowIfStartupException(jettyConfiguration.isThrowIfStartupException());
 				abstractAppJettyHandler.setMaxInactiveInterval(jettyConfiguration.getMaxInactiveInterval());
 			}
