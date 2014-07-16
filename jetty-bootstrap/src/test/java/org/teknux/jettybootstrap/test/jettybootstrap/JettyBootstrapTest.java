@@ -34,6 +34,7 @@ import org.junit.Assert;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
+import org.teknux.jettybootstrap.JettyBootstrap;
 import org.teknux.jettybootstrap.JettyBootstrapException;
 
 
@@ -46,7 +47,9 @@ public class JettyBootstrapTest extends AbstractJettyBootstrapTest {
 		File file = temporaryFolder.newFile();
 		copyResourceToFile("/static.war", file);
 
-		initServer(false).addWarApp(file.getPath(), "/staticWar").startServer();
+		JettyBootstrap jettyBootstrap = initServer(false);
+		jettyBootstrap.addWarApp(file.getPath(), "/staticWar");
+		jettyBootstrap.startServer();
 
 		Assert.assertEquals(new SimpleResponse(200, "test1content\n"), get("/staticWar/test1.html"));
 		Assert.assertEquals(new SimpleResponse(200, "test2content\n"), get("/staticWar/test2.html"));
@@ -59,7 +62,9 @@ public class JettyBootstrapTest extends AbstractJettyBootstrapTest {
 		File file = temporaryFolder.newFile();
 		copyResourceToFile("/static.war", file);
 
-		initServer(true).addWarApp(file.getPath(), "/sslStaticWar").startServer();
+		JettyBootstrap jettyBootstrap = initServer(true);
+		jettyBootstrap.addWarApp(file.getPath(), "/sslStaticWar");
+		jettyBootstrap.startServer();
 
 		Assert.assertEquals(new SimpleResponse(200, "test1content\n"), get("/sslStaticWar/test1.html"));
 		Assert.assertEquals(new SimpleResponse(200, "test2content\n"), get("/sslStaticWar/test2.html"));
@@ -72,7 +77,9 @@ public class JettyBootstrapTest extends AbstractJettyBootstrapTest {
 		File file = temporaryFolder.newFile();
 		copyResourceToFile("/servlet.war", file);
 
-		initServer(false).addWarApp(file.getPath(), "/servletWar").startServer();
+		JettyBootstrap jettyBootstrap = initServer(false);
+		jettyBootstrap.addWarApp(file.getPath(), "/servletWar");
+		jettyBootstrap.startServer();
 
 		Assert.assertEquals(new SimpleResponse(200, "Value=value1\n"), get("/servletWar?value=value1"));
 		Assert.assertEquals(new SimpleResponse(200, "Value=value2\n"), get("/servletWar?value=value2"));
@@ -84,7 +91,9 @@ public class JettyBootstrapTest extends AbstractJettyBootstrapTest {
 		File file = temporaryFolder.newFile();
 		copyResourceToFile("/servlet.war", file);
 
-		initServer(true).addWarApp(file.getPath(), "/sslServletWar").startServer();
+		JettyBootstrap jettyBootstrap = initServer(true);
+		jettyBootstrap.addWarApp(file.getPath(), "/sslServletWar");
+		jettyBootstrap.startServer();
 
 		Assert.assertEquals(new SimpleResponse(200, "Value=value1\n"), get("/sslServletWar?value=value1"));
 		Assert.assertEquals(new SimpleResponse(200, "Value=value2\n"), get("/sslServletWar?value=value2"));
@@ -93,7 +102,9 @@ public class JettyBootstrapTest extends AbstractJettyBootstrapTest {
 	@Test
 	public void do05StaticWarFromClasspathTest() throws IllegalStateException, IOException, JettyBootstrapException, KeyManagementException, NoSuchAlgorithmException,
 			KeyStoreException {
-		initServer(false).addWarAppFromClasspath("/static.war", "/staticWarFromClasspath").startServer();
+	    JettyBootstrap jettyBootstrap = initServer(false);
+	    jettyBootstrap.addWarAppFromClasspath("/static.war", "/staticWarFromClasspath");
+	    jettyBootstrap.startServer();
 
 		Assert.assertEquals(new SimpleResponse(200, "test1content\n"), get("/staticWarFromClasspath/test1.html"));
 		Assert.assertEquals(new SimpleResponse(200, "test2content\n"), get("/staticWarFromClasspath/test2.html"));
@@ -103,7 +114,9 @@ public class JettyBootstrapTest extends AbstractJettyBootstrapTest {
 	@Test
 	public void do06SslStaticWarFromClasspathTest() throws IllegalStateException, IOException, JettyBootstrapException, KeyManagementException, NoSuchAlgorithmException,
 			KeyStoreException {
-		initServer(true).addWarAppFromClasspath("/static.war", "/sslStaticWarFromClasspath").startServer();
+	    JettyBootstrap jettyBootstrap = initServer(true);
+	    jettyBootstrap.addWarAppFromClasspath("/static.war", "/sslStaticWarFromClasspath");
+	    jettyBootstrap.startServer();
 
 		Assert.assertEquals(new SimpleResponse(200, "test1content\n"), get("/sslStaticWarFromClasspath/test1.html"));
 		Assert.assertEquals(new SimpleResponse(200, "test2content\n"), get("/sslStaticWarFromClasspath/test2.html"));
@@ -113,7 +126,9 @@ public class JettyBootstrapTest extends AbstractJettyBootstrapTest {
 	@Test
 	public void do07ServletWarFromClasspathTest() throws IllegalStateException, IOException, JettyBootstrapException, KeyManagementException, NoSuchAlgorithmException,
 			KeyStoreException {
-		initServer(false).addWarAppFromClasspath("/servlet.war", "/servletWarFromClasspath").startServer();
+	    JettyBootstrap jettyBootstrap = initServer(false);
+	    jettyBootstrap.addWarAppFromClasspath("/servlet.war", "/servletWarFromClasspath");
+	    jettyBootstrap.startServer();
 
 		Assert.assertEquals(new SimpleResponse(200, "Value=value1\n"), get("/servletWarFromClasspath?value=value1"));
 		Assert.assertEquals(new SimpleResponse(200, "Value=value2\n"), get("/servletWarFromClasspath?value=value2"));
@@ -122,7 +137,9 @@ public class JettyBootstrapTest extends AbstractJettyBootstrapTest {
 	@Test
 	public void do08SslServletWarFromClasspathTest() throws IllegalStateException, IOException, JettyBootstrapException, KeyManagementException, NoSuchAlgorithmException,
 			KeyStoreException {
-		initServer(true).addWarAppFromClasspath("/servlet.war", "/sslServletWarFromClasspath").startServer();
+	    JettyBootstrap jettyBootstrap = initServer(true);
+	    jettyBootstrap.addWarAppFromClasspath("/servlet.war", "/sslServletWarFromClasspath");
+	    jettyBootstrap.startServer();
 
 		Assert.assertEquals(new SimpleResponse(200, "Value=value1\n"), get("/sslServletWarFromClasspath?value=value1"));
 		Assert.assertEquals(new SimpleResponse(200, "Value=value2\n"), get("/sslServletWarFromClasspath?value=value2"));
@@ -134,7 +151,9 @@ public class JettyBootstrapTest extends AbstractJettyBootstrapTest {
 		File folder = temporaryFolder.newFolder();
 		copyResourceToFile("/webapp", folder);
 
-		initServer(false).addExplodedWarApp(folder.getPath(), null, "/staticResource").startServer();
+		JettyBootstrap jettyBootstrap = initServer(false);
+		jettyBootstrap.addExplodedWarApp(folder.getPath(), null, "/staticResource");
+		jettyBootstrap.startServer();
 
 		Assert.assertEquals(new SimpleResponse(200, "StaticResContent\n"), get("/staticResource/index.html"));
 	}
@@ -145,7 +164,9 @@ public class JettyBootstrapTest extends AbstractJettyBootstrapTest {
 		File folder = temporaryFolder.newFolder();
 		copyResourceToFile("/webapp", folder);
 
-		initServer(true).addExplodedWarApp(folder.getPath(), null, "/sslStaticResource").startServer();
+		JettyBootstrap jettyBootstrap = initServer(true);
+		jettyBootstrap.addExplodedWarApp(folder.getPath(), null, "/sslStaticResource");
+		jettyBootstrap.startServer();
 
 		Assert.assertEquals(new SimpleResponse(200, "StaticResContent\n"), get("/sslStaticResource/index.html"));
 	}
@@ -153,7 +174,9 @@ public class JettyBootstrapTest extends AbstractJettyBootstrapTest {
 	@Test
 	public void do11StaticResourceFromClasspathTest() throws IllegalStateException, IOException, JettyBootstrapException, KeyManagementException, NoSuchAlgorithmException,
 			KeyStoreException {
-		initServer(false).addExplodedWarAppFromClasspath("/webapp", null, "/staticResourceFromClasspath").startServer();
+	    JettyBootstrap jettyBootstrap = initServer(false);
+	    jettyBootstrap.addExplodedWarAppFromClasspath("/webapp", null, "/staticResourceFromClasspath");
+	    jettyBootstrap.startServer();
 
 		Assert.assertEquals(new SimpleResponse(200, "StaticResContent\n"), get("/staticResourceFromClasspath/index.html"));
 	}
@@ -161,7 +184,9 @@ public class JettyBootstrapTest extends AbstractJettyBootstrapTest {
 	@Test
 	public void do12SslStaticResourceFromClasspathTest() throws IllegalStateException, IOException, JettyBootstrapException, KeyManagementException, NoSuchAlgorithmException,
 			KeyStoreException {
-		initServer(true).addExplodedWarAppFromClasspath("/webapp", null, "/sslStaticResourceFromClasspath").startServer();
+	    JettyBootstrap jettyBootstrap = initServer(true);
+	    jettyBootstrap.addExplodedWarAppFromClasspath("/webapp", null, "/sslStaticResourceFromClasspath");
+	    jettyBootstrap.startServer();
 
 		Assert.assertEquals(new SimpleResponse(200, "StaticResContent\n"), get("/sslStaticResourceFromClasspath/index.html"));
 	}
@@ -172,7 +197,9 @@ public class JettyBootstrapTest extends AbstractJettyBootstrapTest {
 		File folder = temporaryFolder.newFolder();
 		copyResourceToFile("/webapp", folder);
 
-		initServer(false).addExplodedWarApp(folder.getPath(), null, "/explodedWar").startServer();
+		JettyBootstrap jettyBootstrap = initServer(false);
+		jettyBootstrap.addExplodedWarApp(folder.getPath(), null, "/explodedWar");
+		jettyBootstrap.startServer();
 
 		Assert.assertEquals(new SimpleResponse(200, "StaticResContent\n"), get("/explodedWar/index.html"));
 	}
@@ -183,7 +210,9 @@ public class JettyBootstrapTest extends AbstractJettyBootstrapTest {
 		File folder = temporaryFolder.newFolder();
 		copyResourceToFile("/webapp", folder);
 
-		initServer(true).addExplodedWarApp(folder.getPath(), null, "/sslExplodedWar").startServer();
+		JettyBootstrap jettyBootstrap = initServer(true);
+		jettyBootstrap.addExplodedWarApp(folder.getPath(), null, "/sslExplodedWar");
+		jettyBootstrap.startServer();
 
 		Assert.assertEquals(new SimpleResponse(200, "StaticResContent\n"), get("/sslExplodedWar/index.html"));
 	}
@@ -191,7 +220,9 @@ public class JettyBootstrapTest extends AbstractJettyBootstrapTest {
 	@Test
 	public void do15ExplodedWarFromClasspathTest() throws IllegalStateException, IOException, JettyBootstrapException, KeyManagementException, NoSuchAlgorithmException,
 			KeyStoreException, URISyntaxException {
-		initServer(false).addExplodedWarAppFromClasspath("/webapp", null, "/explodedWarFromClasspath").startServer();
+	    JettyBootstrap jettyBootstrap = initServer(false);
+	    jettyBootstrap.addExplodedWarAppFromClasspath("/webapp", null, "/explodedWarFromClasspath");
+	    jettyBootstrap.startServer();
 
 		Assert.assertEquals(new SimpleResponse(200, "StaticResContent\n"), get("/explodedWarFromClasspath/index.html"));
 	}
@@ -199,7 +230,9 @@ public class JettyBootstrapTest extends AbstractJettyBootstrapTest {
 	@Test
 	public void do16SslExplodedWarFromClasspathTest() throws IllegalStateException, IOException, JettyBootstrapException, KeyManagementException, NoSuchAlgorithmException,
 			KeyStoreException, URISyntaxException {
-		initServer(true).addExplodedWarAppFromClasspath("/webapp", null, "/sslExplodedWarFromClasspath").startServer();
+	    JettyBootstrap jettyBootstrap = initServer(true);
+	    jettyBootstrap.addExplodedWarAppFromClasspath("/webapp", null, "/sslExplodedWarFromClasspath");
+	    jettyBootstrap.startServer();
 
 		Assert.assertEquals(new SimpleResponse(200, "StaticResContent\n"), get("/sslExplodedWarFromClasspath/index.html"));
 	}
@@ -207,7 +240,9 @@ public class JettyBootstrapTest extends AbstractJettyBootstrapTest {
 	@Test
 	public void do17Self() throws IllegalStateException, IOException, JettyBootstrapException, KeyManagementException, NoSuchAlgorithmException, KeyStoreException,
 			URISyntaxException {
-		initServer(false).addSelf().startServer();
+	    JettyBootstrap jettyBootstrap = initServer(false);
+	    jettyBootstrap.addSelf();
+	    jettyBootstrap.startServer();
 
 		Assert.assertEquals(new SimpleResponse(200, "StaticResContent\n"), get("/index.html"));
 	}
@@ -215,7 +250,9 @@ public class JettyBootstrapTest extends AbstractJettyBootstrapTest {
 	@Test
 	public void do18SslSelf() throws IllegalStateException, IOException, JettyBootstrapException, KeyManagementException, NoSuchAlgorithmException, KeyStoreException,
 			URISyntaxException {
-		initServer(true).addSelf().startServer();
+	    JettyBootstrap jettyBootstrap = initServer(true);
+	    jettyBootstrap.addSelf();
+	    jettyBootstrap.startServer();
 
 		Assert.assertEquals(new SimpleResponse(200, "StaticResContent\n"), get("/index.html"));
 	}
@@ -226,7 +263,9 @@ public class JettyBootstrapTest extends AbstractJettyBootstrapTest {
 		context.setContextPath("/handler");
 		context.addServlet(new ServletHolder(new TestServlet()), "/*");
 
-		initServer(false).addHandler(context).startServer();
+		JettyBootstrap jettyBootstrap = initServer(false);
+		jettyBootstrap.addHandler(context);
+		jettyBootstrap.startServer();
 
 		Assert.assertEquals(new SimpleResponse(200, "ServletTestContent\n"), get("/handler"));
 	}
@@ -237,7 +276,9 @@ public class JettyBootstrapTest extends AbstractJettyBootstrapTest {
 		context.setContextPath("/sslHandler");
 		context.addServlet(new ServletHolder(new TestServlet()), "/*");
 
-		initServer(true).addHandler(context).startServer();
+		JettyBootstrap jettyBootstrap = initServer(true);
+		jettyBootstrap.addHandler(context);
+		jettyBootstrap.startServer();
 
 		Assert.assertEquals(new SimpleResponse(200, "ServletTestContent\n"), get("/sslHandler"));
 	}

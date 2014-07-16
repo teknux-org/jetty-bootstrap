@@ -24,19 +24,22 @@ package org.teknux.jettybootstrap.handler;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.NoSuchAlgorithmException;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jetty.server.Handler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.teknux.jettybootstrap.JettyBootstrapException;
-import org.teknux.jettybootstrap.utils.Md5;
+import org.teknux.jettybootstrap.utils.Md5Util;
 
 
 public class WarAppFromClasspathJettyHandler extends WarAppJettyHandler {
 
 	private static final String TYPE = "WarFromClasspath";
 
+	private File tempDirectory;
+	
 	private final Logger logger = LoggerFactory.getLogger(WarAppFromClasspathJettyHandler.class);
 
 	private static final String RESOURCEWAR_DIRECTORY_NAME = "war";
@@ -51,8 +54,16 @@ public class WarAppFromClasspathJettyHandler extends WarAppJettyHandler {
 	public void setWarFromClasspath(String resourceWar) {
 		this.warFromClasspath = resourceWar;
 	}
+	
+	public File getTempDirectory() {
+        return tempDirectory;
+    }
 
-	@Override
+    public void setTempDirectory(File tempDirectory) {
+        this.tempDirectory = tempDirectory;
+    }
+
+    @Override
 	protected Handler createHandler() throws JettyBootstrapException {
 		File warDirectory = new File(getTempDirectory().getPath() + File.separator + RESOURCEWAR_DIRECTORY_NAME);
 
@@ -60,7 +71,12 @@ public class WarAppFromClasspathJettyHandler extends WarAppJettyHandler {
 			throw new JettyBootstrapException("Can't create temporary War directory");
 		}
 
-		String fileName = Md5.hash(warFromClasspath) + WAR_EXTENSION;
+		String fileName;
+        try {
+            fileName = Md5Util.hash(warFromClasspath) + WAR_EXTENSION;
+        } catch (NoSuchAlgorithmException e) {
+            throw new JettyBootstrapException(e);
+        }
 		File warFile = new File(warDirectory.getPath() + File.separator + fileName);
 
 		if (warFile.exists()) {

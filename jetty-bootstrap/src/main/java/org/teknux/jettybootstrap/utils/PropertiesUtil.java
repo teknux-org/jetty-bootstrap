@@ -29,9 +29,9 @@ import java.util.Properties;
  * 
  * @author "Francois EYL"
  */
-public class PropertiesUtils {
+public class PropertiesUtil {
 
-	private PropertiesUtils() {
+	private PropertiesUtil() {
 	}
 
 	/**

@@ -28,6 +28,7 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 
 import org.junit.Test;
+import org.teknux.jettybootstrap.JettyBootstrap;
 import org.teknux.jettybootstrap.JettyBootstrapException;
 
 
@@ -36,14 +37,18 @@ public class JettyBootstrapErrorsTest extends AbstractJettyBootstrapTest {
     @Test(expected = JettyBootstrapException.class)
 	public void missingStaticWarTest() throws IllegalStateException, IOException, JettyBootstrapException, KeyManagementException, NoSuchAlgorithmException, KeyStoreException,
 			URISyntaxException {
-		initServer(false).addWarApp("Missing", "/staticWar").startServer();
+        JettyBootstrap jettyBootstrap = initServer(false);
+        jettyBootstrap.addWarApp("Missing", "/staticWar");
+        jettyBootstrap.startServer();
 	}
 
 	@Test(expected = JettyBootstrapException.class)
 	public void missingServletWarFromClasspathTest() throws IllegalStateException, IOException, JettyBootstrapException, KeyManagementException, NoSuchAlgorithmException,
 			KeyStoreException {
 		// will throw JettyBootstrapException because war is not in classpath
-		initServer(false).addWarAppFromClasspath("/servlet-missing.war", "/servletWarFromClasspath-missing").startServer();
+	    JettyBootstrap jettyBootstrap = initServer(false);
+	    jettyBootstrap.addWarAppFromClasspath("/servlet-missing.war", "/servletWarFromClasspath-missing");
+	    jettyBootstrap.startServer();
 	}
 
 }

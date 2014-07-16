@@ -23,7 +23,6 @@ package org.teknux.jettybootstrap.handler;
 
 import org.eclipse.jetty.server.Handler;
 import org.teknux.jettybootstrap.JettyBootstrapException;
-import org.teknux.jettybootstrap.handler.listener.IJettyLifeCycleListener;
 
 
 public interface IJettyHandler {
@@ -35,8 +34,4 @@ public interface IJettyHandler {
 	String getItemName();
 
 	String toString();
-
-	void addJettyLifeCycleListener(IJettyLifeCycleListener iJettyLifeCycleListener);
-
-	void removeJettyLifeCycleListener(IJettyLifeCycleListener iJettyLifeCycleListener);
 }

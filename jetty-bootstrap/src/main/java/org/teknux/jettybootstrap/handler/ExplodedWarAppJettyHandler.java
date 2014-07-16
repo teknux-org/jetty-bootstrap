@@ -22,10 +22,11 @@
 package org.teknux.jettybootstrap.handler;
 
 import java.security.InvalidParameterException;
+import java.security.NoSuchAlgorithmException;
 
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.webapp.WebAppContext;
-import org.teknux.jettybootstrap.utils.Md5;
+import org.teknux.jettybootstrap.utils.Md5Util;
 
 
 public class ExplodedWarAppJettyHandler extends AbstractAppJettyHandler {
@@ -71,13 +72,17 @@ public class ExplodedWarAppJettyHandler extends AbstractAppJettyHandler {
 	}
 
 	@Override
-	protected String getAppTempDirName() {
-		if (webAppBase != null) {
-			return Md5.hash(webAppBase);
-		}
-		if (webAppBaseFromClasspath != null) {
-			return Md5.hash(webAppBaseFromClasspath);
-		}
+	public String getAppTempDirName() {
+	    try {
+    		if (webAppBase != null) {
+                return Md5Util.hash(webAppBase);
+    		}
+    		if (webAppBaseFromClasspath != null) {
+    			return Md5Util.hash(webAppBaseFromClasspath);
+    		}
+	    } catch (NoSuchAlgorithmException e) {
+	        throw new RuntimeException("Md5 Sum Error", e);
+	    }
 
 		throw new InvalidParameterException("webAppBase or webAppBaseFromClasspath required");
 	}
