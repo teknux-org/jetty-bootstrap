@@ -37,8 +37,10 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
+import org.eclipse.jetty.webapp.WebAppContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.teknux.jettybootstrap.configuration.AdditionalWebAppJettyConfigurationClass;
 import org.teknux.jettybootstrap.configuration.IJettyConfiguration;
 import org.teknux.jettybootstrap.configuration.JettyConnector;
 import org.teknux.jettybootstrap.configuration.PropertiesJettyConfiguration;
@@ -48,7 +50,6 @@ import org.teknux.jettybootstrap.handler.IJettyHandler;
 import org.teknux.jettybootstrap.handler.JettyHandler;
 import org.teknux.jettybootstrap.handler.WarAppFromClasspathJettyHandler;
 import org.teknux.jettybootstrap.handler.WarAppJettyHandler;
-import org.teknux.jettybootstrap.handler.listener.JettyLifeCycleListenerUtil;
 import org.teknux.jettybootstrap.keystore.JettyKeystore;
 import org.teknux.jettybootstrap.keystore.JettyKeystoreException;
 
@@ -60,6 +61,8 @@ public class JettyBootstrap {
 
 	private final Logger logger = LoggerFactory.getLogger(JettyBootstrap.class);
 
+	   private static final String APP_DIRECTORY_NAME = "apps";
+	   
 	private static final String DEFAULT_KEYSTORE_FILENAME = "default.keystore";
 	private static final String DEFAULT_KEYSTORE_DOMAINNAME = "unknown";
 	private static final String DEFAULT_KEYSTORE_ALIAS = "jettybootstrap";
@@ -74,7 +77,6 @@ public class JettyBootstrap {
 	private static final String CONTEXT_PATH_ROOT = "/";
 
 	private IJettyConfiguration jettyConfiguration;
-	private List<IJettyHandler> jettyHandlers = new ArrayList<IJettyHandler>();
 
 	private Server server = null;
 	private HandlerList handlers = new HandlerList();
@@ -146,7 +148,7 @@ public class JettyBootstrap {
 		if (server == null) {
 			init(jettyConfiguration);
 		}
-		setHandlers();
+		initHandlers();
 
 		try {
 			server.start();
@@ -236,8 +238,9 @@ public class JettyBootstrap {
 	 * @param war
 	 *            the path to a war file
 	 * @return this instance
+	 * @throws JettyBootstrapException 
 	 */
-	public JettyBootstrap addWarApp(String war) {
+	public JettyBootstrap addWarApp(String war) throws JettyBootstrapException {
 		return addWarApp(war, CONTEXT_PATH_ROOT);
 	}
 
@@ -250,8 +253,9 @@ public class JettyBootstrap {
 	 *            the path (base URL) to make the war
 	 *            available
 	 * @return this instance
+	 * @throws JettyBootstrapException 
 	 */
-	public JettyBootstrap addWarApp(String war, String contextPath) {
+	public JettyBootstrap addWarApp(String war, String contextPath) throws JettyBootstrapException {
 		WarAppJettyHandler warAppJettyHandler = new WarAppJettyHandler();
 		warAppJettyHandler.setWar(war);
 		warAppJettyHandler.setContextPath(contextPath);
@@ -266,8 +270,9 @@ public class JettyBootstrap {
 	 * @param warFromClasspath
 	 *            the path to a war file in the classpath
 	 * @return this instance
+	 * @throws JettyBootstrapException 
 	 */
-	public JettyBootstrap addWarAppFromClasspath(String warFromClasspath) {
+	public JettyBootstrap addWarAppFromClasspath(String warFromClasspath) throws JettyBootstrapException {
 		return addWarAppFromClasspath(warFromClasspath, CONTEXT_PATH_ROOT);
 	}
 
@@ -281,11 +286,13 @@ public class JettyBootstrap {
 	 *            the path (base URL) to make the war
 	 *            available
 	 * @return this instance
+	 * @throws JettyBootstrapException 
 	 */
-	public JettyBootstrap addWarAppFromClasspath(String warFromClasspath, String contextPath) {
+	public JettyBootstrap addWarAppFromClasspath(String warFromClasspath, String contextPath) throws JettyBootstrapException {
 		WarAppFromClasspathJettyHandler warAppFromClasspathJettyHandler = new WarAppFromClasspathJettyHandler();
 		warAppFromClasspathJettyHandler.setWarFromClasspath(warFromClasspath);
 		warAppFromClasspathJettyHandler.setContextPath(contextPath);
+        warAppFromClasspathJettyHandler.setTempDirectory(jettyConfiguration.getTempDirectory());
 
 		return addJettyHandler(warAppFromClasspathJettyHandler);
 	}
@@ -299,8 +306,9 @@ public class JettyBootstrap {
 	 * @param descriptor
 	 *            the web.xml descriptor path
 	 * @return this instance
+	 * @throws JettyBootstrapException 
 	 */
-	public JettyBootstrap addExplodedWarApp(String explodedWar, String descriptor) {
+	public JettyBootstrap addExplodedWarApp(String explodedWar, String descriptor) throws JettyBootstrapException {
 		return addExplodedWarApp(explodedWar, descriptor, CONTEXT_PATH_ROOT);
 	}
 
@@ -316,8 +324,9 @@ public class JettyBootstrap {
 	 *            the path (base URL) to make the resource
 	 *            available
 	 * @return this instance
+	 * @throws JettyBootstrapException 
 	 */
-	public JettyBootstrap addExplodedWarApp(String explodedWar, String descriptor, String contextPath) {
+	public JettyBootstrap addExplodedWarApp(String explodedWar, String descriptor, String contextPath) throws JettyBootstrapException {
 		ExplodedWarAppJettyHandler explodedWarAppJettyHandler = new ExplodedWarAppJettyHandler();
 		explodedWarAppJettyHandler.setWebAppBase(explodedWar);
 		explodedWarAppJettyHandler.setDescriptor(descriptor);
@@ -334,8 +343,9 @@ public class JettyBootstrap {
 	 * @param explodedWar
 	 *            the exploded war path
 	 * @return this instance
+	 * @throws JettyBootstrapException 
 	 */
-	public JettyBootstrap addExplodedWarAppFromClasspath(String explodedWar) {
+	public JettyBootstrap addExplodedWarAppFromClasspath(String explodedWar) throws JettyBootstrapException {
 		return addExplodedWarAppFromClasspath(explodedWar, null);
 	}
 
@@ -349,8 +359,9 @@ public class JettyBootstrap {
 	 * @param descriptor
 	 *            the web.xml descriptor path
 	 * @return this instance
+	 * @throws JettyBootstrapException 
 	 */
-	public JettyBootstrap addExplodedWarAppFromClasspath(String explodedWar, String descriptor) {
+	public JettyBootstrap addExplodedWarAppFromClasspath(String explodedWar, String descriptor) throws JettyBootstrapException {
 		return addExplodedWarAppFromClasspath(explodedWar, descriptor, CONTEXT_PATH_ROOT);
 	}
 
@@ -366,8 +377,9 @@ public class JettyBootstrap {
 	 *            the path (base URL) to make the resource
 	 *            available
 	 * @return this instance
+	 * @throws JettyBootstrapException 
 	 */
-	public JettyBootstrap addExplodedWarAppFromClasspath(String explodedWar, String descriptor, String contextPath) {
+	public JettyBootstrap addExplodedWarAppFromClasspath(String explodedWar, String descriptor, String contextPath) throws JettyBootstrapException {
 		ExplodedWarAppJettyHandler explodedWarAppJettyHandler = new ExplodedWarAppJettyHandler();
 		explodedWarAppJettyHandler.setWebAppBaseFromClasspath(explodedWar);
 		explodedWarAppJettyHandler.setDescriptor(descriptor);
@@ -383,8 +395,9 @@ public class JettyBootstrap {
 	 * 
 	 * @see #addExplodedWarAppFromClasspath(String, String)
 	 * @return this instance
+	 * @throws JettyBootstrapException 
 	 */
-	public JettyBootstrap addSelf() {
+	public JettyBootstrap addSelf() throws JettyBootstrapException {
 		return addExplodedWarAppFromClasspath(RESOURCE_WEBAPP, null);
 	}
 
@@ -399,8 +412,9 @@ public class JettyBootstrap {
 	 *            the path (base URL) to make the resource
 	 *            available
 	 * @return this instance
+	 * @throws JettyBootstrapException 
 	 */
-	public JettyBootstrap addSelf(String contextPath) {
+	public JettyBootstrap addSelf(String contextPath) throws JettyBootstrapException {
 		return addExplodedWarAppFromClasspath(RESOURCE_WEBAPP, null, contextPath);
 	}
 
@@ -409,10 +423,13 @@ public class JettyBootstrap {
 	 * 
 	 * @param handler
 	 * @return this instance
+	 * @throws JettyBootstrapException 
 	 */
-	public JettyBootstrap addHandler(Handler handler) {
+	public JettyBootstrap addHandler(Handler handler) throws JettyBootstrapException {
 		JettyHandler jettyHandler = new JettyHandler();
 		jettyHandler.setHandler(handler);
+
+//      handler.addLifeCycleListener(JettyLifeCycleListenerUtil.getBindedListener(this, JettyLifeCycleListenerUtil.getDefaultJettyLifeCycleListener()));
 
 		return addJettyHandler(jettyHandler);
 	}
@@ -422,9 +439,42 @@ public class JettyBootstrap {
 	 * 
 	 * @param iJettyHandler
 	 * @return this instance
+	 * @throws JettyBootstrapException 
 	 */
-	public JettyBootstrap addJettyHandler(IJettyHandler iJettyHandler) {
-		jettyHandlers.add(iJettyHandler);
+	public JettyBootstrap addJettyHandler(IJettyHandler iJettyHandler) throws JettyBootstrapException {
+	       if (server == null) {
+	            init(jettyConfiguration);
+	        }
+	       
+	    Handler handler = iJettyHandler.getHandler();
+	    if (iJettyHandler instanceof AbstractAppJettyHandler) {
+	        WebAppContext webAppContext = (WebAppContext) handler;
+	           webAppContext.setParentLoaderPriority(jettyConfiguration.isParentLoaderPriority());
+	           webAppContext.setPersistTempDirectory(jettyConfiguration.isPersistAppTempDirectories());
+	            webAppContext.setConfigurationClasses(AbstractAppJettyHandler.addConfigurationClasses(WebAppContext.getDefaultConfigurationClasses(), AdditionalWebAppJettyConfigurationClass.getAdditionalsWebAppJettyConfigurationClasses()));
+	            webAppContext.setThrowUnavailableOnStartupException(jettyConfiguration.isThrowIfStartupException());
+	            webAppContext.getSessionHandler().getSessionManager().setMaxInactiveInterval(jettyConfiguration.getMaxInactiveInterval());
+
+	            if (jettyConfiguration.isRedirectWebAppsOnHttpsConnector()) {
+	                webAppContext.setSecurityHandler(AbstractAppJettyHandler.getConstraintSecurityHandlerConfidential());
+	            }
+	        
+	        AbstractAppJettyHandler abstractAppJettyHandler = (AbstractAppJettyHandler)iJettyHandler;	        
+	        webAppContext.setContextPath(abstractAppJettyHandler.getContextPath());
+
+            File appsTempDirectory = new File(jettyConfiguration.getTempDirectory() + File.separator + APP_DIRECTORY_NAME);
+            if (!appsTempDirectory.exists() && !appsTempDirectory.mkdir()) {
+                throw new JettyBootstrapException("Can't create temporary applications directory");
+            }
+            File appTempDirectory = new File(appsTempDirectory.getPath() + File.separator + abstractAppJettyHandler.getAppTempDirName());
+            webAppContext.setTempDirectory(appTempDirectory);
+
+	        if (iJettyHandler instanceof ExplodedWarAppJettyHandler) {
+	            ExplodedWarAppJettyHandler explodedWarAppJettyHandler = (ExplodedWarAppJettyHandler)iJettyHandler;
+	            webAppContext.setDescriptor(explodedWarAppJettyHandler.getDescriptor());
+	        }
+	    }
+		handlers.addHandler(handler);
 
 		return this;
 	}
@@ -606,8 +656,8 @@ public class JettyBootstrap {
 	 */
 	protected void shutdown(IJettyConfiguration configuration) {
 		try {
-			logger.debug("Shutting Down...");
 			if (configuration.isStopAtShutdown()) {
+			    logger.debug("Shutting Down...");
 				stopServer();
 			}
 		} catch (Exception e) {
@@ -616,32 +666,27 @@ public class JettyBootstrap {
 	}
 
 	/**
-	 * Set Handlers to jetty
+	 * Init Handlers
 	 * 
 	 * @throws JettyBootstrapException
 	 */
-	private void setHandlers() throws JettyBootstrapException {
-		if (jettyHandlers.size() == 0) {
-			return;
-		}
-
-		handlers.removeBeans();
-
-		for (IJettyHandler jettyHandler : jettyHandlers) {
-			if (jettyHandler instanceof AbstractAppJettyHandler) {
-				AbstractAppJettyHandler abstractAppJettyHandler = (AbstractAppJettyHandler) jettyHandler;
-				abstractAppJettyHandler.setTempDirectory(jettyConfiguration.getTempDirectory());
-				abstractAppJettyHandler.setPersistTempDirectory(jettyConfiguration.isPersistAppTempDirectories());
-				abstractAppJettyHandler.setRedirectOnHttpsConnector(jettyConfiguration.isRedirectWebAppsOnHttpsConnector());
-				abstractAppJettyHandler.setThrowIfStartupException(jettyConfiguration.isThrowIfStartupException());
-				abstractAppJettyHandler.setMaxInactiveInterval(jettyConfiguration.getMaxInactiveInterval());
-			}
-
-			jettyHandler.addJettyLifeCycleListener(JettyLifeCycleListenerUtil.getDefaultJettyLifeCycleListener());
-
-			logger.debug("Deploying {}...", jettyHandler);
-
-			handlers.addHandler(jettyHandler.getHandler());
+	private void initHandlers() throws JettyBootstrapException {
+		for (Handler handler : handlers.getHandlers()) {
+//		    if (handler instanceof WebAppContext) {
+//
+//	        WebAppContext webAppContext = new WebAppContext();
+//	        webAppContext.setParentLoaderPriority(jettyConfiguration.isParentLoaderPriority());
+//	        webAppContext.setPersistTempDirectory(jettyConfiguration.isPersistAppTempDirectories());
+//	        webAppContext.setConfigurationClasses(AbstractAppJettyHandler.addConfigurationClasses(WebAppContext.getDefaultConfigurationClasses(), AdditionalWebAppJettyConfigurationClass.getAdditionalsWebAppJettyConfigurationClasses()));
+//	        webAppContext.setThrowUnavailableOnStartupException(jettyConfiguration.isThrowIfStartupException());
+//	        webAppContext.getSessionHandler().getSessionManager().setMaxInactiveInterval(jettyConfiguration.getMaxInactiveInterval());
+//
+//	        if (jettyConfiguration.isRedirectWebAppsOnHttpsConnector()) {
+//	            webAppContext.setSecurityHandler(AbstractAppJettyHandler.getConstraintSecurityHandlerConfidential());
+//	        }
+//	        handler.addLifeCycleListener(JettyLifeCycleListenerUtil.getBindedListener(this, JettyLifeCycleListenerUtil.getDefaultJettyLifeCycleListener()));
+//		    }
+			logger.debug("Deploying {}...", handler);
 		}
 	}
 

@@ -71,7 +71,7 @@ public class ExplodedWarAppJettyHandler extends AbstractAppJettyHandler {
 	}
 
 	@Override
-	protected String getAppTempDirName() {
+	public String getAppTempDirName() {
 		if (webAppBase != null) {
 			return Md5.hash(webAppBase);
 		}

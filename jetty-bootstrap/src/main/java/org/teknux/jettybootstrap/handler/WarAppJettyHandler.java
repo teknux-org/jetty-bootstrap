@@ -40,7 +40,7 @@ public class WarAppJettyHandler extends AbstractAppJettyHandler {
 	}
 
 	@Override
-	protected String getAppTempDirName() {
+	public String getAppTempDirName() {
 		return Md5.hash(getWar());
 	}
 

@@ -37,6 +37,8 @@ public class WarAppFromClasspathJettyHandler extends WarAppJettyHandler {
 
 	private static final String TYPE = "WarFromClasspath";
 
+	private File tempDirectory;
+	
 	private final Logger logger = LoggerFactory.getLogger(WarAppFromClasspathJettyHandler.class);
 
 	private static final String RESOURCEWAR_DIRECTORY_NAME = "war";
@@ -51,8 +53,16 @@ public class WarAppFromClasspathJettyHandler extends WarAppJettyHandler {
 	public void setWarFromClasspath(String resourceWar) {
 		this.warFromClasspath = resourceWar;
 	}
+	
+	public File getTempDirectory() {
+        return tempDirectory;
+    }
 
-	@Override
+    public void setTempDirectory(File tempDirectory) {
+        this.tempDirectory = tempDirectory;
+    }
+
+    @Override
 	protected Handler createHandler() throws JettyBootstrapException {
 		File warDirectory = new File(getTempDirectory().getPath() + File.separator + RESOURCEWAR_DIRECTORY_NAME);
 

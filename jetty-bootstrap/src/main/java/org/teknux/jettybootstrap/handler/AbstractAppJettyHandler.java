@@ -21,7 +21,6 @@
  *******************************************************************************/
 package org.teknux.jettybootstrap.handler;
 
-import java.io.File;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,18 +39,10 @@ import org.teknux.jettybootstrap.configuration.AdditionalWebAppJettyConfiguratio
 
 
 abstract public class AbstractAppJettyHandler extends AbstractJettyHandler {
-
-	private static final String APP_DIRECTORY_NAME = "apps";
 	
-	private final Logger logger = LoggerFactory.getLogger(AbstractAppJettyHandler.class);
+	private final static Logger logger = LoggerFactory.getLogger(AbstractAppJettyHandler.class);
 
 	private String contextPath = null;
-	private boolean redirectOnHttpsConnector = false;
-	private File tempDirectory = null;
-	private boolean persistTempDirectory = false;
-	private boolean parentLoaderPriority = true;
-	private boolean throwIfStartupException = true;
-    private int maxInactiveInterval = -1;
 
 	public String getContextPath() {
 		return contextPath;
@@ -61,81 +52,14 @@ abstract public class AbstractAppJettyHandler extends AbstractJettyHandler {
 		this.contextPath = contextPath;
 	}
 
-	public boolean isRedirectOnHttpsConnector() {
-		return redirectOnHttpsConnector;
-	}
-
-	public void setRedirectOnHttpsConnector(boolean redirectOnHttpsConnector) {
-		this.redirectOnHttpsConnector = redirectOnHttpsConnector;
-	}
-
-	public File getTempDirectory() {
-		return tempDirectory;
-	}
-
-	public void setTempDirectory(File tempDirectory) {
-		this.tempDirectory = tempDirectory;
-	}
-
-	public boolean isPersistTempDirectory() {
-		return persistTempDirectory;
-	}
-
-	public void setPersistTempDirectory(boolean persistTempDirectory) {
-		this.persistTempDirectory = persistTempDirectory;
-	}
-
-	public boolean isParentLoaderPriority() {
-		return parentLoaderPriority;
-	}
-
-	public void setParentLoaderPriority(boolean parentLoaderPriority) {
-		this.parentLoaderPriority = parentLoaderPriority;
-	}
-
-    public boolean isThrowIfStartupException() {
-        return throwIfStartupException; 
-    }
-	
-	public void setThrowIfStartupException(boolean throwIfStartupException) {
-        this.throwIfStartupException = throwIfStartupException; 
-    }
-
-	public int getMaxInactiveInterval() {
-        return maxInactiveInterval;
-    }
-
-    public void setMaxInactiveInterval(int maxInactiveInterval) {
-        this.maxInactiveInterval = maxInactiveInterval;
-    }
-
     @Override
 	protected Handler createHandler() throws JettyBootstrapException {
-		File appsTempDirectory = new File(getTempDirectory() + File.separator + APP_DIRECTORY_NAME);
-
-		if (!appsTempDirectory.exists() && !appsTempDirectory.mkdir()) {
-			throw new JettyBootstrapException("Can't create temporary applications directory");
-		}
-
-		File appTempDirectory = new File(appsTempDirectory.getPath() + File.separator + getAppTempDirName());
-
 		WebAppContext webAppContext = new WebAppContext();
-		webAppContext.setContextPath(getContextPath());
-		webAppContext.setTempDirectory(appTempDirectory);
-		webAppContext.setParentLoaderPriority(isParentLoaderPriority());
-		webAppContext.setPersistTempDirectory(isPersistTempDirectory());
-		webAppContext.setConfigurationClasses(addConfigurationClasses(WebAppContext.getDefaultConfigurationClasses(), AdditionalWebAppJettyConfigurationClass.getAdditionalsWebAppJettyConfigurationClasses()));
-		webAppContext.setThrowUnavailableOnStartupException(throwIfStartupException);
-	    webAppContext.getSessionHandler().getSessionManager().setMaxInactiveInterval(maxInactiveInterval);
-
-		if (isRedirectOnHttpsConnector()) {
-			webAppContext.setSecurityHandler(getConstraintSecurityHandlerConfidential());
-		}
 
 		return initWebAppContext(webAppContext);
 	}
 
-	private String[] addConfigurationClasses(String[] defaultConfigurationClasses, AdditionalWebAppJettyConfigurationClass[] additionalsWebappConfigurationClasses) {
+	public static String[] addConfigurationClasses(String[] defaultConfigurationClasses, AdditionalWebAppJettyConfigurationClass[] additionalsWebappConfigurationClasses) {
 		
 		List<String> configurationClasses = new ArrayList<String>(Arrays.asList(defaultConfigurationClasses));
 		
@@ -175,7 +99,7 @@ abstract public class AbstractAppJettyHandler extends AbstractJettyHandler {
 					}
 				} else {
 					for (String className : additionalWebappConfigurationClass.getClasses()) {
-						logger.warn("[{}] not available", className);
+						logger.debug("[{}] not available", className);
 					}
 				}
 			}
@@ -189,7 +113,7 @@ abstract public class AbstractAppJettyHandler extends AbstractJettyHandler {
 		return configurationClasses.toArray(new String[configurationClasses.size()]);
 	}
 	
-	private boolean classesExists(List<String> classNames) {
+	public static boolean classesExists(List<String> classNames) {
 		for (String className : classNames) {
 			try {
 				Class.forName(className);
@@ -206,7 +130,7 @@ abstract public class AbstractAppJettyHandler extends AbstractJettyHandler {
 	 * 
 	 * @return name
 	 */
-	abstract protected String getAppTempDirName();
+	abstract public String getAppTempDirName();
 
 	abstract protected WebAppContext initWebAppContext(WebAppContext webAppContext);
 
@@ -215,7 +139,7 @@ abstract public class AbstractAppJettyHandler extends AbstractJettyHandler {
 	 * 
 	 * @return @ConstraintSecurityHandler
 	 */
-	private ConstraintSecurityHandler getConstraintSecurityHandlerConfidential() {
+	public static ConstraintSecurityHandler getConstraintSecurityHandlerConfidential() {
 		Constraint constraint = new Constraint();
 		constraint.setDataConstraint(Constraint.DC_CONFIDENTIAL);
 
