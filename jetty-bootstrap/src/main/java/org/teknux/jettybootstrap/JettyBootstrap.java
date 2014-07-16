@@ -634,6 +634,7 @@ public class JettyBootstrap {
 				abstractAppJettyHandler.setPersistTempDirectory(jettyConfiguration.isPersistAppTempDirectories());
 				abstractAppJettyHandler.setRedirectOnHttpsConnector(jettyConfiguration.isRedirectWebAppsOnHttpsConnector());
 				abstractAppJettyHandler.setThrowIfStartupException(jettyConfiguration.isThrowIfStartupException());
+				abstractAppJettyHandler.setMaxInactiveInterval(jettyConfiguration.getMaxInactiveInterval());
 			}
 
 			jettyHandler.addJettyLifeCycleListener(JettyLifeCycleListenerUtil.getDefaultJettyLifeCycleListener());

@@ -62,6 +62,7 @@ public class PropertiesJettyConfiguration extends JettyConfiguration {
 	public static final String KEY_CLEAN_TEMP_DIR = "cleanTempDir";
 	public static final String KEY_PARENT_LOADER_PRIORITY = "parentLoaderPriority";
 	public static final String KEY_THROW_IF_STARTUP_EXCEPTION = "throwIfStartupException";
+	public static final String KEY_MAX_INACTIVE_INTERVAL = "maxInactiveInterval";
 
 	/**
 	 * Basic constructor. Only system properties are used to
@@ -187,6 +188,11 @@ public class PropertiesJettyConfiguration extends JettyConfiguration {
 		Boolean throwIfStartupException = PropertiesUtils.parseBoolean(properties, KEY_THROW_IF_STARTUP_EXCEPTION);
         if (throwIfStartupException != null) {
             setThrowIfStartupException(throwIfStartupException);
+        }
+        
+        Integer maxInactiveInterval = PropertiesUtils.parseInt(properties, KEY_MAX_INACTIVE_INTERVAL);
+        if (maxInactiveInterval != null) {
+            setMaxInactiveInterval(maxInactiveInterval);
         }
 	}
 

@@ -279,4 +279,16 @@ public interface IJettyConfiguration {
 	 * @param throwIfStartupException
 	 */
 	void setThrowIfStartupException(boolean throwIfStartupException);
+	
+    /**
+     * @return the max period of inactivity, after which the session is invalidated, in seconds.
+     */
+    public int getMaxInactiveInterval();
+
+    /**
+     * Sets the max period of inactivity, after which the session is invalidated, in seconds.
+     *
+     * @param seconds the max inactivity period, in seconds.
+     */
+    public void setMaxInactiveInterval(int seconds);
 }
