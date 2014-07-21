@@ -19,45 +19,47 @@
  *      "Laurent MARCHAL"
  *  
  *******************************************************************************/
-package org.teknux.jettybootstrap.handler.listener;
+package org.teknux.jettybootstrap.handler.util;
 
-import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.util.component.LifeCycle;
+import org.eclipse.jetty.util.component.LifeCycle.Listener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.teknux.jettybootstrap.handler.IJettyHandler;
 
 
-public class JettyLifeCycleLogListener {
+public class JettyLifeCycleLogListener implements Listener{
 
 	private final static Logger logger = LoggerFactory.getLogger(JettyLifeCycleLogListener.class);
+	
+    private IJettyHandler iJettyHandler;
+	
+	public JettyLifeCycleLogListener(final IJettyHandler iJettyHandler) {
+	    this.iJettyHandler = iJettyHandler;
+	}
 
-	public static LifeCycle.Listener getLogListener(final Handler handler) {
-		return new LifeCycle.Listener() {
+	@Override
+	public void lifeCycleStarting(LifeCycle event) {
+	    logger.trace("Starting {}...", iJettyHandler.toString());
+	}
 
-			@Override
-			public void lifeCycleStarting(LifeCycle event) {
-			    logger.trace("Starting {}...", handler.toString());
-			}
+	@Override
+	public void lifeCycleStarted(LifeCycle event) {
+	    logger.trace("{} Started", iJettyHandler.toString());
+	}
 
-			@Override
-			public void lifeCycleStarted(LifeCycle event) {
-			    logger.trace("{} Started", handler.toString());
-			}
+	@Override
+	public void lifeCycleFailure(LifeCycle event, Throwable cause) {
+	    logger.error("Failure {}", iJettyHandler.toString(), cause);
+	}
 
-			@Override
-			public void lifeCycleFailure(LifeCycle event, Throwable cause) {
-			    logger.error("Failure {}", handler.toString(), cause);
-			}
+	@Override
+	public void lifeCycleStopping(LifeCycle event) {
+		logger.trace("Stopping {}...", iJettyHandler.toString());
+	}
 
-			@Override
-			public void lifeCycleStopping(LifeCycle event) {
-				logger.trace("Stopping {}...", handler.toString());
-			}
-
-			@Override
-			public void lifeCycleStopped(LifeCycle event) {
-				logger.trace("{} Stopped", handler.toString());
-			}
-		};
+	@Override
+	public void lifeCycleStopped(LifeCycle event) {
+		logger.trace("{} Stopped", iJettyHandler.toString());
 	}
 }

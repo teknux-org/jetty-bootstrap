@@ -48,9 +48,9 @@ import org.teknux.jettybootstrap.handler.IJettyHandler;
 import org.teknux.jettybootstrap.handler.JettyHandler;
 import org.teknux.jettybootstrap.handler.WarAppFromClasspathJettyHandler;
 import org.teknux.jettybootstrap.handler.WarAppJettyHandler;
-import org.teknux.jettybootstrap.handler.listener.JettyLifeCycleLogListener;
 import org.teknux.jettybootstrap.keystore.JettyKeystore;
 import org.teknux.jettybootstrap.keystore.JettyKeystoreException;
+import org.teknux.jettybootstrap.utils.PathUtil;
 
 
 /**
@@ -66,7 +66,7 @@ public class JettyBootstrap {
 	private static final String DEFAULT_KEYSTORE_PASSWORD = "jettybootstrap";
 
 	private static final String TEMP_DIRECTORY_NAME = ".temp";
-	public static final File TEMP_DIRECTORY_JARDIR = new File(getJarDir().getPath() + File.separator + TEMP_DIRECTORY_NAME);
+	public static final File TEMP_DIRECTORY_JARDIR = new File(PathUtil.getJarDir() + File.separator + TEMP_DIRECTORY_NAME);
 	public static final File TEMP_DIRECTORY_SYSTEMP = new File(System.getProperty("java.io.tmpdir") + File.separator + TEMP_DIRECTORY_NAME);
 	protected static final File TEMP_DIRECTORY_DEFAULT = TEMP_DIRECTORY_JARDIR;
 
@@ -428,8 +428,6 @@ public class JettyBootstrap {
 		JettyHandler jettyHandler = new JettyHandler();
 		jettyHandler.setHandler(handler);
 
-        handler.addLifeCycleListener(JettyLifeCycleLogListener.getLogListener(handler));
-
 		return addJettyHandler(jettyHandler);
 	}
 
@@ -652,25 +650,16 @@ public class JettyBootstrap {
 	/**
 	 * Create Shutdown Hook.
 	 * 
-	 * @param configuration
+	 * @param iJettyConfiguration
 	 */
-	private void createShutdownHook(final IJettyConfiguration configuration) {
+	private void createShutdownHook(final IJettyConfiguration iJettyConfiguration) {
 		logger.trace("Creating Jetty ShutdownHook...");
 
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 
 			public void run() {
-				shutdown(configuration);
+				shutdown(iJettyConfiguration);
 			}
 		});
-	}
-
-	/**
-	 * Get directory location of Jar
-	 * 
-	 * @return @File
-	 */
-	private static File getJarDir() {
-		return new File(JettyBootstrap.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getParentFile();
 	}
 }

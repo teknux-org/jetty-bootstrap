@@ -22,27 +22,47 @@
 
 package org.teknux.jettybootstrap.utils;
 
-import java.util.List;
+import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 
-public class ClassUtil {
+public class PathUtil {
+    private static final String CHARSET_UTF8 = "UTF-8";
     
-    public static boolean classExists(String className) {
-        try {
-            Class.forName(className);
-        } catch (ClassNotFoundException e) {
-            return false;
-        }
-        
-        return true;
+    /**
+     * Get Jar location
+     * 
+     * @return Jar directory
+     */
+    public static String getJarDir() {
+        return getJarDir(PathUtil.class);
     }
     
-    public static boolean classesExists(List<String> classNames) {
-        for (String className : classNames) {
-            if (! classExists(className)) {
-                return false;
-            }
+    /**
+     * Get Jar location
+     * 
+     * @param clazz
+     * @return
+     */
+    public static String getJarDir(Class<?> clazz) {
+        return decodeUrl(new File(clazz.getProtectionDomain().getCodeSource().getLocation().getPath()).getParent());
+    }
+    
+    /**
+     * Decode Url
+     * 
+     * @param url
+     * @return
+     */
+    private static String decodeUrl(String url) {
+        if (url == null) {
+            return null;
         }
-        
-        return true;
+
+        try {
+            return URLDecoder.decode(url, CHARSET_UTF8);
+        } catch (UnsupportedEncodingException e) {
+            return url;
+        }
     }
 }
