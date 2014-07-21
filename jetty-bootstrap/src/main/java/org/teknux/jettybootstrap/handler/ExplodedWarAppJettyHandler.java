@@ -26,12 +26,18 @@ import java.security.NoSuchAlgorithmException;
 
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.webapp.WebAppContext;
+import org.teknux.jettybootstrap.JettyBootstrapException;
+import org.teknux.jettybootstrap.configuration.IJettyConfiguration;
 import org.teknux.jettybootstrap.utils.Md5Util;
 
 
 public class ExplodedWarAppJettyHandler extends AbstractAppJettyHandler {
 
-	private static final String TYPE = "ExplodedWar";
+	public ExplodedWarAppJettyHandler(IJettyConfiguration iJettyConfiguration) {
+        super(iJettyConfiguration);
+    }
+
+    private static final String TYPE = "ExplodedWar";
 	private static final String TYPE_FROM_CLASSPATH = "ExplodedWarFromClasspath";
 
 	private String webAppBase = null;
@@ -88,7 +94,8 @@ public class ExplodedWarAppJettyHandler extends AbstractAppJettyHandler {
 	}
 
 	@Override
-	protected WebAppContext initWebAppContext(WebAppContext webAppContext) {
+    public WebAppContext createHandler() throws JettyBootstrapException {
+	    WebAppContext webAppContext = super.createHandler();
 		if (webAppBase != null) {
 			webAppContext.setResourceBase(webAppBase);
 		}

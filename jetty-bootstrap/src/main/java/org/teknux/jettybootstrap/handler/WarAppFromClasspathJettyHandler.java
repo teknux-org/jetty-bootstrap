@@ -27,19 +27,22 @@ import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
 
 import org.apache.commons.io.FileUtils;
-import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.webapp.WebAppContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.teknux.jettybootstrap.JettyBootstrapException;
+import org.teknux.jettybootstrap.configuration.IJettyConfiguration;
 import org.teknux.jettybootstrap.utils.Md5Util;
 
 
 public class WarAppFromClasspathJettyHandler extends WarAppJettyHandler {
 
-	private static final String TYPE = "WarFromClasspath";
+	public WarAppFromClasspathJettyHandler(IJettyConfiguration iJettyConfiguration) {
+        super(iJettyConfiguration);
+    }
 
-	private File tempDirectory;
-	
+    private static final String TYPE = "WarFromClasspath";
+
 	private final Logger logger = LoggerFactory.getLogger(WarAppFromClasspathJettyHandler.class);
 
 	private static final String RESOURCEWAR_DIRECTORY_NAME = "war";
@@ -55,17 +58,9 @@ public class WarAppFromClasspathJettyHandler extends WarAppJettyHandler {
 		this.warFromClasspath = resourceWar;
 	}
 	
-	public File getTempDirectory() {
-        return tempDirectory;
-    }
-
-    public void setTempDirectory(File tempDirectory) {
-        this.tempDirectory = tempDirectory;
-    }
-
     @Override
-	protected Handler createHandler() throws JettyBootstrapException {
-		File warDirectory = new File(getTempDirectory().getPath() + File.separator + RESOURCEWAR_DIRECTORY_NAME);
+	protected WebAppContext createHandler() throws JettyBootstrapException {
+		File warDirectory = new File(getJettyConfiguration().getTempDirectory().getPath() + File.separator + RESOURCEWAR_DIRECTORY_NAME);
 
 		if (!warDirectory.exists() && !warDirectory.mkdir()) {
 			throw new JettyBootstrapException("Can't create temporary War directory");

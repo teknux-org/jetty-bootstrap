@@ -37,14 +37,13 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
+import org.eclipse.jetty.webapp.WebAppContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.teknux.jettybootstrap.configuration.IJettyConfiguration;
 import org.teknux.jettybootstrap.configuration.JettyConnector;
 import org.teknux.jettybootstrap.configuration.PropertiesJettyConfiguration;
 import org.teknux.jettybootstrap.handler.ExplodedWarAppJettyHandler;
-import org.teknux.jettybootstrap.handler.HandlerBuilder;
-import org.teknux.jettybootstrap.handler.IJettyHandler;
 import org.teknux.jettybootstrap.handler.JettyHandler;
 import org.teknux.jettybootstrap.handler.WarAppFromClasspathJettyHandler;
 import org.teknux.jettybootstrap.handler.WarAppJettyHandler;
@@ -74,6 +73,7 @@ public class JettyBootstrap {
 	private static final String CONTEXT_PATH_ROOT = "/";
 
 	private IJettyConfiguration iJettyConfiguration;
+	private boolean isInitializedConfiguration = false;
 
 	private Server server = null;
 	private HandlerList handlers = new HandlerList();
@@ -144,11 +144,8 @@ public class JettyBootstrap {
 	public JettyBootstrap startServer(boolean join) throws JettyBootstrapException {
 		logger.info("Starting Server...");
 
-		if (server == null) {
-			init(iJettyConfiguration);
-		}
-		initHandlers();
-
+		init(iJettyConfiguration);
+		
 		try {
 			server.start();
 		} catch (Exception e) {
@@ -236,10 +233,10 @@ public class JettyBootstrap {
 	 * 
 	 * @param war
 	 *            the path to a war file
-	 * @return Handler
+	 * @return WebAppContext
 	 * @throws JettyBootstrapException 
 	 */
-	public Handler addWarApp(String war) throws JettyBootstrapException {
+	public WebAppContext addWarApp(String war) throws JettyBootstrapException {
 		return addWarApp(war, CONTEXT_PATH_ROOT);
 	}
 
@@ -251,15 +248,18 @@ public class JettyBootstrap {
 	 * @param contextPath
 	 *            the path (base URL) to make the war
 	 *            available
-	 * @return Handler
+	 * @return WebAppContext
 	 * @throws JettyBootstrapException 
 	 */
-	public Handler addWarApp(String war, String contextPath) throws JettyBootstrapException {
-		WarAppJettyHandler warAppJettyHandler = new WarAppJettyHandler();
+	public WebAppContext addWarApp(String war, String contextPath) throws JettyBootstrapException {       
+		WarAppJettyHandler warAppJettyHandler = new WarAppJettyHandler(initConfiguration(iJettyConfiguration));
 		warAppJettyHandler.setWar(war);
 		warAppJettyHandler.setContextPath(contextPath);
 
-		return addJettyHandler(warAppJettyHandler);
+        WebAppContext webAppContext = warAppJettyHandler.getHandler();    
+        handlers.addHandler(webAppContext);
+        
+        return webAppContext;
 	}
 
 	/**
@@ -268,10 +268,10 @@ public class JettyBootstrap {
 	 * 
 	 * @param warFromClasspath
 	 *            the path to a war file in the classpath
-	 * @return Handler
+	 * @return WebAppContext
 	 * @throws JettyBootstrapException 
 	 */
-	public Handler addWarAppFromClasspath(String warFromClasspath) throws JettyBootstrapException {
+	public WebAppContext addWarAppFromClasspath(String warFromClasspath) throws JettyBootstrapException {
 		return addWarAppFromClasspath(warFromClasspath, CONTEXT_PATH_ROOT);
 	}
 
@@ -284,16 +284,18 @@ public class JettyBootstrap {
 	 * @param contextPath
 	 *            the path (base URL) to make the war
 	 *            available
-	 * @return Handler
+	 * @return WebAppContext
 	 * @throws JettyBootstrapException 
 	 */
-	public Handler addWarAppFromClasspath(String warFromClasspath, String contextPath) throws JettyBootstrapException {
-		WarAppFromClasspathJettyHandler warAppFromClasspathJettyHandler = new WarAppFromClasspathJettyHandler();
+	public WebAppContext addWarAppFromClasspath(String warFromClasspath, String contextPath) throws JettyBootstrapException {        
+		WarAppFromClasspathJettyHandler warAppFromClasspathJettyHandler = new WarAppFromClasspathJettyHandler(initConfiguration(iJettyConfiguration));
 		warAppFromClasspathJettyHandler.setWarFromClasspath(warFromClasspath);
 		warAppFromClasspathJettyHandler.setContextPath(contextPath);
-        warAppFromClasspathJettyHandler.setTempDirectory(iJettyConfiguration.getTempDirectory());
 
-		return addJettyHandler(warAppFromClasspathJettyHandler);
+        WebAppContext webAppContext = warAppFromClasspathJettyHandler.getHandler();    
+        handlers.addHandler(webAppContext);
+        
+        return webAppContext;
 	}
 
 	/**
@@ -304,10 +306,10 @@ public class JettyBootstrap {
 	 *            the exploded war path
 	 * @param descriptor
 	 *            the web.xml descriptor path
-	 * @return Handler
+	 * @return WebAppContext
 	 * @throws JettyBootstrapException 
 	 */
-	public Handler addExplodedWarApp(String explodedWar, String descriptor) throws JettyBootstrapException {
+	public WebAppContext addExplodedWarApp(String explodedWar, String descriptor) throws JettyBootstrapException {
 		return addExplodedWarApp(explodedWar, descriptor, CONTEXT_PATH_ROOT);
 	}
 
@@ -322,16 +324,19 @@ public class JettyBootstrap {
 	 * @param contextPath
 	 *            the path (base URL) to make the resource
 	 *            available
-	 * @return Handler
+	 * @return WebAppContext
 	 * @throws JettyBootstrapException 
 	 */
-	public Handler addExplodedWarApp(String explodedWar, String descriptor, String contextPath) throws JettyBootstrapException {
-		ExplodedWarAppJettyHandler explodedWarAppJettyHandler = new ExplodedWarAppJettyHandler();
+	public WebAppContext addExplodedWarApp(String explodedWar, String descriptor, String contextPath) throws JettyBootstrapException {        
+		ExplodedWarAppJettyHandler explodedWarAppJettyHandler = new ExplodedWarAppJettyHandler(initConfiguration(iJettyConfiguration));
 		explodedWarAppJettyHandler.setWebAppBase(explodedWar);
 		explodedWarAppJettyHandler.setDescriptor(descriptor);
 		explodedWarAppJettyHandler.setContextPath(contextPath);
 
-		return addJettyHandler(explodedWarAppJettyHandler);
+		WebAppContext webAppContext = explodedWarAppJettyHandler.getHandler();    
+        handlers.addHandler(webAppContext);
+        
+		return webAppContext;
 	}
 
 	/**
@@ -341,10 +346,10 @@ public class JettyBootstrap {
 	 * 
 	 * @param explodedWar
 	 *            the exploded war path
-	 * @return Handler
+	 * @return WebAppContext
 	 * @throws JettyBootstrapException 
 	 */
-	public Handler addExplodedWarAppFromClasspath(String explodedWar) throws JettyBootstrapException {
+	public WebAppContext addExplodedWarAppFromClasspath(String explodedWar) throws JettyBootstrapException {
 		return addExplodedWarAppFromClasspath(explodedWar, null);
 	}
 
@@ -357,10 +362,10 @@ public class JettyBootstrap {
 	 *            the exploded war path
 	 * @param descriptor
 	 *            the web.xml descriptor path
-	 * @return Handler
+	 * @return WebAppContext
 	 * @throws JettyBootstrapException 
 	 */
-	public Handler addExplodedWarAppFromClasspath(String explodedWar, String descriptor) throws JettyBootstrapException {
+	public WebAppContext addExplodedWarAppFromClasspath(String explodedWar, String descriptor) throws JettyBootstrapException {
 		return addExplodedWarAppFromClasspath(explodedWar, descriptor, CONTEXT_PATH_ROOT);
 	}
 
@@ -375,16 +380,19 @@ public class JettyBootstrap {
 	 * @param contextPath
 	 *            the path (base URL) to make the resource
 	 *            available
-	 * @return Handler
+	 * @return WebAppContext
 	 * @throws JettyBootstrapException 
 	 */
-	public Handler addExplodedWarAppFromClasspath(String explodedWar, String descriptor, String contextPath) throws JettyBootstrapException {
-		ExplodedWarAppJettyHandler explodedWarAppJettyHandler = new ExplodedWarAppJettyHandler();
+	public WebAppContext addExplodedWarAppFromClasspath(String explodedWar, String descriptor, String contextPath) throws JettyBootstrapException {        
+		ExplodedWarAppJettyHandler explodedWarAppJettyHandler = new ExplodedWarAppJettyHandler(initConfiguration(iJettyConfiguration));
 		explodedWarAppJettyHandler.setWebAppBaseFromClasspath(explodedWar);
 		explodedWarAppJettyHandler.setDescriptor(descriptor);
 		explodedWarAppJettyHandler.setContextPath(contextPath);
 
-		return addJettyHandler(explodedWarAppJettyHandler);
+		WebAppContext webAppContext = explodedWarAppJettyHandler.getHandler();	
+		handlers.addHandler(webAppContext);
+		
+		return webAppContext;
 	}
 
 	/**
@@ -393,10 +401,10 @@ public class JettyBootstrap {
 	 * the default context path {@value #CONTEXT_PATH_ROOT}
 	 * 
 	 * @see #addExplodedWarAppFromClasspath(String, String)
-	 * @return Handler
+	 * @return WebAppContext
 	 * @throws JettyBootstrapException 
 	 */
-	public Handler addSelf() throws JettyBootstrapException {
+	public WebAppContext addSelf() throws JettyBootstrapException {
 		return addExplodedWarAppFromClasspath(RESOURCE_WEBAPP, null);
 	}
 
@@ -410,10 +418,10 @@ public class JettyBootstrap {
 	 * @param contextPath
 	 *            the path (base URL) to make the resource
 	 *            available
-	 * @return Handler
+	 * @return WebAppContext
 	 * @throws JettyBootstrapException 
 	 */
-	public Handler addSelf(String contextPath) throws JettyBootstrapException {
+	public WebAppContext addSelf(String contextPath) throws JettyBootstrapException {
 		return addExplodedWarAppFromClasspath(RESOURCE_WEBAPP, null, contextPath);
 	}
 
@@ -424,29 +432,12 @@ public class JettyBootstrap {
 	 * @return Handler
 	 * @throws JettyBootstrapException 
 	 */
-	public Handler addHandler(Handler handler) throws JettyBootstrapException {
+	public Handler addHandler(Handler handler) throws JettyBootstrapException {       
 		JettyHandler jettyHandler = new JettyHandler();
 		jettyHandler.setHandler(handler);
 
-		return addJettyHandler(jettyHandler);
-	}
-
-	/**
-	 * Add Handler
-	 * 
-	 * @param iJettyHandler
-	 * @return Handler
-	 * @throws JettyBootstrapException 
-	 */
-	public Handler addJettyHandler(IJettyHandler iJettyHandler) throws JettyBootstrapException {
-        if (server == null) {
-            init(iJettyConfiguration);
-        }
-        
-	    HandlerBuilder handlerBuilder = new HandlerBuilder(iJettyConfiguration, iJettyHandler);
-	    Handler handler = handlerBuilder.build();
 		handlers.addHandler(handler);
-
+		
 		return handler;
 	}
 
@@ -477,14 +468,16 @@ public class JettyBootstrap {
 	 * @throws JettyBootstrapException
 	 */
 	protected void init(IJettyConfiguration iJettyConfiguration) throws JettyBootstrapException {
-		this.iJettyConfiguration = initConfiguration(iJettyConfiguration);
-
-		server = createServer(iJettyConfiguration);
-		server.setConnectors(createConnectors(iJettyConfiguration, server));
-
-		server.setHandler(handlers);
-
-		createShutdownHook(iJettyConfiguration);
+	    if (server == null) {
+    		this.iJettyConfiguration = initConfiguration(iJettyConfiguration);
+    
+    		server = createServer(iJettyConfiguration);
+    		server.setConnectors(createConnectors(iJettyConfiguration, server));
+    
+    		server.setHandler(handlers);
+    
+    		createShutdownHook(iJettyConfiguration);
+	    }
 	}
 
 	/**
@@ -498,52 +491,56 @@ public class JettyBootstrap {
 	 * @throws JettyBootstrapException
 	 */
 	protected IJettyConfiguration initConfiguration(IJettyConfiguration iJettyConfiguration) throws JettyBootstrapException {
-		logger.debug("Init Configuration...");
-
-		logger.trace("Check Temp Directory...");
-		if (iJettyConfiguration.getTempDirectory() == null) {
-			iJettyConfiguration.setTempDirectory(TEMP_DIRECTORY_DEFAULT);
-		}
-
-		if (iJettyConfiguration.getTempDirectory().exists() && iJettyConfiguration.isCleanTempDir()) {
-			logger.trace("Clean Temp Directory...");
-
-			try {
-				FileUtils.deleteDirectory(iJettyConfiguration.getTempDirectory());
-			} catch (IOException e) {
-				throw new JettyBootstrapException("Can't clean temporary directory");
-			}
-		}
-		if (!iJettyConfiguration.getTempDirectory().exists() && !iJettyConfiguration.getTempDirectory().mkdirs()) {
-			throw new JettyBootstrapException("Can't create temporary directory");
-		}
-
-		logger.trace("Check required properties...");
-		if (iJettyConfiguration.getHost() == null || iJettyConfiguration.getHost().isEmpty()) {
-			throw new JettyBootstrapException("Host not specified");
-		}
-
-		logger.trace("Check connectors...");
-		if (iJettyConfiguration.hasJettyConnector(JettyConnector.HTTPS) && (iJettyConfiguration.getSslKeyStorePath() == null || iJettyConfiguration.getSslKeyStorePath().isEmpty())) {
-			File keystoreFile = new File(iJettyConfiguration.getTempDirectory().getPath() + File.separator + DEFAULT_KEYSTORE_FILENAME);
-
-			if (!keystoreFile.exists()) {
-				try {
-					JettyKeystore.generateKeystoreAndSave(DEFAULT_KEYSTORE_DOMAINNAME, DEFAULT_KEYSTORE_ALIAS, DEFAULT_KEYSTORE_PASSWORD, keystoreFile);
-				} catch (JettyKeystoreException e) {
-					throw new JettyBootstrapException("Can't generate keyStore", e);
-				}
-			}
-			iJettyConfiguration.setSslKeyStorePath(keystoreFile.getPath());
-			iJettyConfiguration.setSslKeyStorePassword(DEFAULT_KEYSTORE_PASSWORD);
-		}
-
-		if (iJettyConfiguration.isRedirectWebAppsOnHttpsConnector() &&
-			(!iJettyConfiguration.hasJettyConnector(JettyConnector.HTTP) || !iJettyConfiguration.hasJettyConnector(JettyConnector.HTTPS))) {
-			throw new JettyBootstrapException("You can't redirect all from HTTP to HTTPS Connector if both connectors are not setted");
-		}
-
-		logger.trace("Configuration : {}", iJettyConfiguration);
+	    if (! isInitializedConfiguration) {
+    		logger.debug("Init Configuration...");
+    
+    		logger.trace("Check Temp Directory...");
+    		if (iJettyConfiguration.getTempDirectory() == null) {
+    			iJettyConfiguration.setTempDirectory(TEMP_DIRECTORY_DEFAULT);
+    		}
+    
+    		if (iJettyConfiguration.getTempDirectory().exists() && iJettyConfiguration.isCleanTempDir()) {
+    			logger.trace("Clean Temp Directory...");
+    
+    			try {
+    				FileUtils.deleteDirectory(iJettyConfiguration.getTempDirectory());
+    			} catch (IOException e) {
+    				throw new JettyBootstrapException("Can't clean temporary directory");
+    			}
+    		}
+    		if (!iJettyConfiguration.getTempDirectory().exists() && !iJettyConfiguration.getTempDirectory().mkdirs()) {
+    			throw new JettyBootstrapException("Can't create temporary directory");
+    		}
+    
+    		logger.trace("Check required properties...");
+    		if (iJettyConfiguration.getHost() == null || iJettyConfiguration.getHost().isEmpty()) {
+    			throw new JettyBootstrapException("Host not specified");
+    		}
+    
+    		logger.trace("Check connectors...");
+    		if (iJettyConfiguration.hasJettyConnector(JettyConnector.HTTPS) && (iJettyConfiguration.getSslKeyStorePath() == null || iJettyConfiguration.getSslKeyStorePath().isEmpty())) {
+    			File keystoreFile = new File(iJettyConfiguration.getTempDirectory().getPath() + File.separator + DEFAULT_KEYSTORE_FILENAME);
+    
+    			if (!keystoreFile.exists()) {
+    				try {
+    					JettyKeystore.generateKeystoreAndSave(DEFAULT_KEYSTORE_DOMAINNAME, DEFAULT_KEYSTORE_ALIAS, DEFAULT_KEYSTORE_PASSWORD, keystoreFile);
+    				} catch (JettyKeystoreException e) {
+    					throw new JettyBootstrapException("Can't generate keyStore", e);
+    				}
+    			}
+    			iJettyConfiguration.setSslKeyStorePath(keystoreFile.getPath());
+    			iJettyConfiguration.setSslKeyStorePassword(DEFAULT_KEYSTORE_PASSWORD);
+    		}
+    
+    		if (iJettyConfiguration.isRedirectWebAppsOnHttpsConnector() &&
+    			(!iJettyConfiguration.hasJettyConnector(JettyConnector.HTTP) || !iJettyConfiguration.hasJettyConnector(JettyConnector.HTTPS))) {
+    			throw new JettyBootstrapException("You can't redirect all from HTTP to HTTPS Connector if both connectors are not setted");
+    		}
+    
+    		isInitializedConfiguration = true;
+    		
+    		logger.trace("Configuration : {}", iJettyConfiguration);
+	    }
 
 		return iJettyConfiguration;
 	}
@@ -633,17 +630,6 @@ public class JettyBootstrap {
 			}
 		} catch (Exception e) {
 			logger.error("Shutdown", e);
-		}
-	}
-
-	/**
-	 * Init Handlers
-	 * 
-	 * @throws JettyBootstrapException
-	 */
-	private void initHandlers() throws JettyBootstrapException {
-		for (Handler handler : handlers.getHandlers()) {
-			logger.debug("Deploying {}...", handler);
 		}
 	}
 

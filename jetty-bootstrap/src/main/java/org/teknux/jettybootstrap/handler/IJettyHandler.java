@@ -25,9 +25,9 @@ import org.eclipse.jetty.server.Handler;
 import org.teknux.jettybootstrap.JettyBootstrapException;
 
 
-public interface IJettyHandler {
+public interface IJettyHandler<T extends Handler> {
 
-	Handler getHandler() throws JettyBootstrapException;
+	T getHandler() throws JettyBootstrapException;
 
 	String getItemType();
 

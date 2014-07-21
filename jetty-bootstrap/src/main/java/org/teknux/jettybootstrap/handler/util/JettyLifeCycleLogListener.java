@@ -32,9 +32,9 @@ public class JettyLifeCycleLogListener implements Listener{
 
 	private final static Logger logger = LoggerFactory.getLogger(JettyLifeCycleLogListener.class);
 	
-    private IJettyHandler iJettyHandler;
+    private IJettyHandler<?> iJettyHandler;
 	
-	public JettyLifeCycleLogListener(final IJettyHandler iJettyHandler) {
+	public JettyLifeCycleLogListener(final IJettyHandler<?> iJettyHandler) {
 	    this.iJettyHandler = iJettyHandler;
 	}
 
@@ -45,7 +45,7 @@ public class JettyLifeCycleLogListener implements Listener{
 
 	@Override
 	public void lifeCycleStarted(LifeCycle event) {
-	    logger.trace("{} Started", iJettyHandler.toString());
+	    logger.debug("{} Started", iJettyHandler.toString());
 	}
 
 	@Override
@@ -60,6 +60,6 @@ public class JettyLifeCycleLogListener implements Listener{
 
 	@Override
 	public void lifeCycleStopped(LifeCycle event) {
-		logger.trace("{} Stopped", iJettyHandler.toString());
+		logger.debug("{} Stopped", iJettyHandler.toString());
 	}
 }
