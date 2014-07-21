@@ -21,13 +21,21 @@
  *******************************************************************************/
 package org.teknux.jettybootstrap.handler;
 
+import java.security.NoSuchAlgorithmException;
+
 import org.eclipse.jetty.webapp.WebAppContext;
-import org.teknux.jettybootstrap.utils.Md5;
+import org.teknux.jettybootstrap.JettyBootstrapException;
+import org.teknux.jettybootstrap.configuration.IJettyConfiguration;
+import org.teknux.jettybootstrap.utils.Md5Util;
 
 
 public class WarAppJettyHandler extends AbstractAppJettyHandler {
 
-	private static final String TYPE = "War";
+	public WarAppJettyHandler(IJettyConfiguration iJettyConfiguration) {
+        super(iJettyConfiguration);
+    }
+
+    private static final String TYPE = "War";
 
 	private String war = null;
 
@@ -41,11 +49,16 @@ public class WarAppJettyHandler extends AbstractAppJettyHandler {
 
 	@Override
 	protected String getAppTempDirName() {
-		return Md5.hash(getWar());
+		try {
+            return Md5Util.hash(getWar());
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
 	}
 
 	@Override
-	protected WebAppContext initWebAppContext(WebAppContext webAppContext) {
+	protected WebAppContext createHandler() throws JettyBootstrapException {
+	    WebAppContext webAppContext = super.createHandler();
 		webAppContext.setWar(war);
 
 		return webAppContext;

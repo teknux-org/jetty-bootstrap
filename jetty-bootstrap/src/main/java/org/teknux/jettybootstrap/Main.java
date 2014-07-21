@@ -42,7 +42,7 @@ public class Main {
 	 * @param args
 	 *            each argument is a web application (war
 	 *            file, directory).
-	 * @throws JettyBootstrapException
+	 * @throws JettyBootstrapException on failure
 	 */
 	public static void main(String[] args) throws JettyBootstrapException {
 		if (args.length == 0) {

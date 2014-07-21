@@ -29,14 +29,14 @@ import java.util.Properties;
  * 
  * @author "Francois EYL"
  */
-public class PropertiesUtils {
+public class PropertiesUtil {
 
-	private PropertiesUtils() {
+	private PropertiesUtil() {
 	}
 
 	/**
-	 * @param p
-	 * @param key
+	 * @param p Properties
+	 * @param key String
 	 * @return the {@link Long} or <code>null</code>
 	 */
 	public static Long parseLong(Properties p, String key) {
@@ -53,8 +53,8 @@ public class PropertiesUtils {
 	}
 
 	/**
-	 * @param p
-	 * @param key
+	 * @param p Properties
+	 * @param key Key
 	 * @return {@link Integer} or <code>null</code>
 	 */
 	public static Integer parseInt(Properties p, String key) {
@@ -71,9 +71,9 @@ public class PropertiesUtils {
 	}
 
 	/**
-	 * @param p
-	 * @param key
-	 * @param separator
+	 * @param p Properties
+	 * @param key String
+	 * @param separator String
 	 * @return an array of {@link String} or
 	 *         <code>null</code>
 	 */
@@ -91,8 +91,8 @@ public class PropertiesUtils {
 	}
 
 	/**
-	 * @param p
-	 * @param key
+	 * @param p Properties
+	 * @param key String
 	 * @return {@link Boolean} or <code>null</code>
 	 */
 	public static Boolean parseBoolean(Properties p, String key) {

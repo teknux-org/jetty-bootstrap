@@ -19,44 +19,50 @@
  *      "Laurent MARCHAL"
  *  
  *******************************************************************************/
+
 package org.teknux.jettybootstrap.utils;
 
+import java.io.File;
 import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.net.URLDecoder;
 
+public class PathUtil {
+    private static final String CHARSET_UTF8 = "UTF-8";
+    
+    /**
+     * Get Jar location
+     * 
+     * @return Jar directory
+     */
+    public static String getJarDir() {
+        return getJarDir(PathUtil.class);
+    }
+    
+    /**
+     * Get Jar location
+     * 
+     * @param clazz Based on class location
+     * @return String
+     */
+    public static String getJarDir(Class<?> clazz) {
+        return decodeUrl(new File(clazz.getProtectionDomain().getCodeSource().getLocation().getPath()).getParent());
+    }
+    
+    /**
+     * Decode Url
+     * 
+     * @param url
+     * @return
+     */
+    private static String decodeUrl(String url) {
+        if (url == null) {
+            return null;
+        }
 
-public class Md5 {
-
-	private static String convertToHex(byte[] data) {
-		StringBuffer buf = new StringBuffer();
-		for (int i = 0; i < data.length; i++) {
-			int halfbyte = (data[i] >>> 4) & 0x0F;
-			int two_halfs = 0;
-			do {
-				if ((0 <= halfbyte) && (halfbyte <= 9))
-					buf.append((char) ('0' + halfbyte));
-				else
-					buf.append((char) ('a' + (halfbyte - 10)));
-				halfbyte = data[i] & 0x0F;
-			} while (two_halfs++ < 1);
-		}
-		return buf.toString();
-	}
-
-	public static String hash(String text) {
-		MessageDigest md;
-		try {
-			md = MessageDigest.getInstance("MD5");
-
-			byte[] md5hash = new byte[32];
-			md.update(text.getBytes("UTF-8"), 0, text.length());
-			md5hash = md.digest();
-			return convertToHex(md5hash);
-		} catch (NoSuchAlgorithmException e) {
-			return null;
-		} catch (UnsupportedEncodingException e) {
-			return null;
-		}
-	}
+        try {
+            return URLDecoder.decode(url, CHARSET_UTF8);
+        } catch (UnsupportedEncodingException e) {
+            return url;
+        }
+    }
 }

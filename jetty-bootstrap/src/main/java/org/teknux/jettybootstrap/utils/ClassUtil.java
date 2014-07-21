@@ -19,19 +19,30 @@
  *      "Laurent MARCHAL"
  *  
  *******************************************************************************/
-package org.teknux.jettybootstrap.handler;
 
-import org.eclipse.jetty.server.Handler;
-import org.teknux.jettybootstrap.JettyBootstrapException;
+package org.teknux.jettybootstrap.utils;
 
+import java.util.List;
 
-public interface IJettyHandler<T extends Handler> {
-
-	T getHandler() throws JettyBootstrapException;
-
-	String getItemType();
-
-	String getItemName();
-
-	String toString();
+public class ClassUtil {
+    
+    public static boolean classExists(String className) {
+        try {
+            Class.forName(className);
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
+        
+        return true;
+    }
+    
+    public static boolean classesExists(List<String> classNames) {
+        for (String className : classNames) {
+            if (! classExists(className)) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
 }

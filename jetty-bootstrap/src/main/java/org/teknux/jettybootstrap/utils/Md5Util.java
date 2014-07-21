@@ -19,21 +19,26 @@
  *      "Laurent MARCHAL"
  *  
  *******************************************************************************/
-package org.teknux.jettybootstrap.handler.listener;
+package org.teknux.jettybootstrap.utils;
 
-import org.eclipse.jetty.util.component.LifeCycle;
-import org.teknux.jettybootstrap.handler.IJettyHandler;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 
-public interface IJettyLifeCycleListener {
+public class Md5Util {
 
-	public void lifeCycleStarting(IJettyHandler iJettyHandler, LifeCycle event);
+  private final static String HASH_ALGORITHM = "MD5";
+    
+    private Md5Util() {
+    }
+    
+    public static String hash(String string) throws NoSuchAlgorithmException {
+        MessageDigest messageDigest = MessageDigest.getInstance(HASH_ALGORITHM);
+        StringBuffer stringBuffer = new StringBuffer();
+        for (byte byt : messageDigest.digest(string.getBytes())) {
+            stringBuffer.append(String.format("%02x", byt & 0xff));
+        }
 
-	public void lifeCycleStarted(IJettyHandler iJettyHandler, LifeCycle event);
-
-	public void lifeCycleFailure(IJettyHandler iJettyHandler, LifeCycle event, Throwable cause);
-
-	public void lifeCycleStopping(IJettyHandler iJettyHandler, LifeCycle event);
-
-	public void lifeCycleStopped(IJettyHandler iJettyHandler, LifeCycle event);
+        return stringBuffer.toString();
+    }
 }

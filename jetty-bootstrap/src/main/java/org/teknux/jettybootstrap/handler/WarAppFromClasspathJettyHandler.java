@@ -24,18 +24,24 @@ package org.teknux.jettybootstrap.handler;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.NoSuchAlgorithmException;
 
 import org.apache.commons.io.FileUtils;
-import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.webapp.WebAppContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.teknux.jettybootstrap.JettyBootstrapException;
-import org.teknux.jettybootstrap.utils.Md5;
+import org.teknux.jettybootstrap.configuration.IJettyConfiguration;
+import org.teknux.jettybootstrap.utils.Md5Util;
 
 
 public class WarAppFromClasspathJettyHandler extends WarAppJettyHandler {
 
-	private static final String TYPE = "WarFromClasspath";
+	public WarAppFromClasspathJettyHandler(IJettyConfiguration iJettyConfiguration) {
+        super(iJettyConfiguration);
+    }
+
+    private static final String TYPE = "WarFromClasspath";
 
 	private final Logger logger = LoggerFactory.getLogger(WarAppFromClasspathJettyHandler.class);
 
@@ -51,16 +57,21 @@ public class WarAppFromClasspathJettyHandler extends WarAppJettyHandler {
 	public void setWarFromClasspath(String resourceWar) {
 		this.warFromClasspath = resourceWar;
 	}
-
-	@Override
-	protected Handler createHandler() throws JettyBootstrapException {
-		File warDirectory = new File(getTempDirectory().getPath() + File.separator + RESOURCEWAR_DIRECTORY_NAME);
+	
+    @Override
+	protected WebAppContext createHandler() throws JettyBootstrapException {
+		File warDirectory = new File(getJettyConfiguration().getTempDirectory().getPath() + File.separator + RESOURCEWAR_DIRECTORY_NAME);
 
 		if (!warDirectory.exists() && !warDirectory.mkdir()) {
 			throw new JettyBootstrapException("Can't create temporary War directory");
 		}
 
-		String fileName = Md5.hash(warFromClasspath) + WAR_EXTENSION;
+		String fileName;
+        try {
+            fileName = Md5Util.hash(warFromClasspath) + WAR_EXTENSION;
+        } catch (NoSuchAlgorithmException e) {
+            throw new JettyBootstrapException(e);
+        }
 		File warFile = new File(warDirectory.getPath() + File.separator + fileName);
 
 		if (warFile.exists()) {

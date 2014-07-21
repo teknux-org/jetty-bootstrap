@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import org.teknux.jettybootstrap.utils.PropertiesUtils;
+import org.teknux.jettybootstrap.utils.PropertiesUtil;
 
 
 /**
@@ -78,7 +78,7 @@ public class PropertiesJettyConfiguration extends JettyConfiguration {
 	 * This means system properties have higher priorities
 	 * that the provided ones.
 	 * 
-	 * @param properties
+	 * @param properties Properties
 	 */
 	public PropertiesJettyConfiguration(Properties properties) {
 		this(properties, false);
@@ -90,7 +90,8 @@ public class PropertiesJettyConfiguration extends JettyConfiguration {
 	 * This means system properties have higher priorities
 	 * that the provided ones.
 	 * 
-	 * @param properties
+	 * @param properties Properties
+	 * @param ignoreSystemProperties boolean
 	 */
 	public PropertiesJettyConfiguration(Properties properties, boolean ignoreSystemProperties) {
 		if (properties != null) {
@@ -105,27 +106,27 @@ public class PropertiesJettyConfiguration extends JettyConfiguration {
 	}
 
 	private void loadProperties(Properties properties) {
-		Boolean autoJoin = PropertiesUtils.parseBoolean(properties, KEY_AUTO_JOIN_ON_START);
+		Boolean autoJoin = PropertiesUtil.parseBoolean(properties, KEY_AUTO_JOIN_ON_START);
 		if (autoJoin != null) {
 			setAutoJoinOnStart(autoJoin);
 		}
 
-		Integer maxThreads = PropertiesUtils.parseInt(properties, KEY_MAX_THREADS);
+		Integer maxThreads = PropertiesUtil.parseInt(properties, KEY_MAX_THREADS);
 		if (maxThreads != null) {
 			setMaxThreads(maxThreads);
 		}
 
-		Boolean stopAtShutdown = PropertiesUtils.parseBoolean(properties, KEY_STOP_AT_SHUTDOWN);
+		Boolean stopAtShutdown = PropertiesUtil.parseBoolean(properties, KEY_STOP_AT_SHUTDOWN);
 		if (stopAtShutdown != null) {
 			setStopAtShutdown(stopAtShutdown);
 		}
 
-		Long stopTimeout = PropertiesUtils.parseLong(properties, KEY_STOP_TIMEOUT);
+		Long stopTimeout = PropertiesUtil.parseLong(properties, KEY_STOP_TIMEOUT);
 		if (stopTimeout != null) {
 			setStopTimeout(stopTimeout);
 		}
 
-		Long idleTimeout = PropertiesUtils.parseLong(properties, KEY_IDLE_TIMEOUT);
+		Long idleTimeout = PropertiesUtil.parseLong(properties, KEY_IDLE_TIMEOUT);
 		if (idleTimeout != null) {
 			setIdleTimeout(idleTimeout);
 		}
@@ -135,22 +136,22 @@ public class PropertiesJettyConfiguration extends JettyConfiguration {
 			setHost(host);
 		}
 
-		Integer port = PropertiesUtils.parseInt(properties, KEY_PORT);
+		Integer port = PropertiesUtil.parseInt(properties, KEY_PORT);
 		if (port != null) {
 			setPort(port);
 		}
 
-		Integer sslPort = PropertiesUtils.parseInt(properties, KEY_SSL_PORT);
+		Integer sslPort = PropertiesUtil.parseInt(properties, KEY_SSL_PORT);
 		if (sslPort != null) {
 			setSslPort(sslPort);
 		}
 
-		JettyConnector[] connectors = parseConnectors(PropertiesUtils.parseArray(properties, KEY_CONNECTORS, CONNECTOR_SEPARATOR));
+		JettyConnector[] connectors = parseConnectors(PropertiesUtil.parseArray(properties, KEY_CONNECTORS, CONNECTOR_SEPARATOR));
 		if (connectors != null) {
 			setJettyConnectors(connectors);
 		}
 
-		Boolean redirectOnSSL = PropertiesUtils.parseBoolean(properties, KEY_REDIRECT_WEBAPPS_ON_HTTPS);
+		Boolean redirectOnSSL = PropertiesUtil.parseBoolean(properties, KEY_REDIRECT_WEBAPPS_ON_HTTPS);
 		if (redirectOnSSL != null) {
 			setRedirectWebAppsOnHttpsConnector(redirectOnSSL);
 		}
@@ -170,27 +171,27 @@ public class PropertiesJettyConfiguration extends JettyConfiguration {
 			setTempDirectory(new File(tempDir));
 		}
 
-		Boolean persistAppTempDir = PropertiesUtils.parseBoolean(properties, KEY_PERSIST_APP_TEMP_DIR);
+		Boolean persistAppTempDir = PropertiesUtil.parseBoolean(properties, KEY_PERSIST_APP_TEMP_DIR);
 		if (persistAppTempDir != null) {
 			setPersistAppTempDirectories(persistAppTempDir);
 		}
 
-		Boolean cleanTempDir = PropertiesUtils.parseBoolean(properties, KEY_CLEAN_TEMP_DIR);
+		Boolean cleanTempDir = PropertiesUtil.parseBoolean(properties, KEY_CLEAN_TEMP_DIR);
 		if (cleanTempDir != null) {
 			setCleanTempDir(cleanTempDir);
 		}
 
-		Boolean parentLoaderPriority = PropertiesUtils.parseBoolean(properties, KEY_PARENT_LOADER_PRIORITY);
+		Boolean parentLoaderPriority = PropertiesUtil.parseBoolean(properties, KEY_PARENT_LOADER_PRIORITY);
 		if (parentLoaderPriority != null) {
 			setParentLoaderPriority(parentLoaderPriority);
 		}
 		
-		Boolean throwIfStartupException = PropertiesUtils.parseBoolean(properties, KEY_THROW_IF_STARTUP_EXCEPTION);
+		Boolean throwIfStartupException = PropertiesUtil.parseBoolean(properties, KEY_THROW_IF_STARTUP_EXCEPTION);
         if (throwIfStartupException != null) {
             setThrowIfStartupException(throwIfStartupException);
         }
         
-        Integer maxInactiveInterval = PropertiesUtils.parseInt(properties, KEY_MAX_INACTIVE_INTERVAL);
+        Integer maxInactiveInterval = PropertiesUtil.parseInt(properties, KEY_MAX_INACTIVE_INTERVAL);
         if (maxInactiveInterval != null) {
             setMaxInactiveInterval(maxInactiveInterval);
         }
@@ -202,7 +203,7 @@ public class PropertiesJettyConfiguration extends JettyConfiguration {
 	 * array are ignored, returns <code>null</code> when no
 	 * value match from input array.
 	 * 
-	 * @param connectors
+	 * @param connectors Connector Array
 	 * @return array of {@link JettyConnector}
 	 *         <code>null</code> in case nothing match.
 	 */

@@ -27,10 +27,10 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.teknux.jettybootstrap.configuration.PropertiesJettyConfiguration;
-import org.teknux.jettybootstrap.utils.PropertiesUtils;
+import org.teknux.jettybootstrap.utils.PropertiesUtil;
 
 
-public class PropertiesUtilsTest {
+public class PropertiesUtilTest {
 
 	private static Properties testValuesProperties;
 
@@ -55,30 +55,30 @@ public class PropertiesUtilsTest {
 
 	@Test
 	public void parseIntTest() {
-		Assert.assertNull(PropertiesUtils.parseInt(null, "test"));
-		Assert.assertNull(PropertiesUtils.parseInt(null, null));
-		Assert.assertNull(PropertiesUtils.parseInt(new Properties(), null));
-		Assert.assertEquals(new Integer(9090), PropertiesUtils.parseInt(testValuesProperties, PropertiesJettyConfiguration.KEY_PORT));
-		Assert.assertEquals(new Integer(9443), PropertiesUtils.parseInt(testValuesProperties, PropertiesJettyConfiguration.KEY_SSL_PORT));
+		Assert.assertNull(PropertiesUtil.parseInt(null, "test"));
+		Assert.assertNull(PropertiesUtil.parseInt(null, null));
+		Assert.assertNull(PropertiesUtil.parseInt(new Properties(), null));
+		Assert.assertEquals(new Integer(9090), PropertiesUtil.parseInt(testValuesProperties, PropertiesJettyConfiguration.KEY_PORT));
+		Assert.assertEquals(new Integer(9443), PropertiesUtil.parseInt(testValuesProperties, PropertiesJettyConfiguration.KEY_SSL_PORT));
 	}
 
 	@Test
 	public void parseArrayTest() {
-		Assert.assertNull(PropertiesUtils.parseArray(null, null, null));
-		Assert.assertNull(PropertiesUtils.parseArray(new Properties(), null, null));
-		Assert.assertNull(PropertiesUtils.parseArray(new Properties(), "test", null));
-		Assert.assertNull(PropertiesUtils.parseArray(new Properties(), "test", ""));
-		Assert.assertNull(PropertiesUtils.parseArray(new Properties(), "test", ","));
-		Assert.assertArrayEquals(new String[] { "DEFAULT", "SSL" }, PropertiesUtils.parseArray(testValuesProperties, PropertiesJettyConfiguration.KEY_CONNECTORS, ","));
+		Assert.assertNull(PropertiesUtil.parseArray(null, null, null));
+		Assert.assertNull(PropertiesUtil.parseArray(new Properties(), null, null));
+		Assert.assertNull(PropertiesUtil.parseArray(new Properties(), "test", null));
+		Assert.assertNull(PropertiesUtil.parseArray(new Properties(), "test", ""));
+		Assert.assertNull(PropertiesUtil.parseArray(new Properties(), "test", ","));
+		Assert.assertArrayEquals(new String[] { "DEFAULT", "SSL" }, PropertiesUtil.parseArray(testValuesProperties, PropertiesJettyConfiguration.KEY_CONNECTORS, ","));
 	}
 
 	@Test
 	public void parseBooleanTest() {
-		Assert.assertNull(PropertiesUtils.parseBoolean(null, null));
-		Assert.assertNull(PropertiesUtils.parseBoolean(new Properties(), null));
-		Assert.assertNull(PropertiesUtils.parseBoolean(new Properties(), "test"));
+		Assert.assertNull(PropertiesUtil.parseBoolean(null, null));
+		Assert.assertNull(PropertiesUtil.parseBoolean(new Properties(), null));
+		Assert.assertNull(PropertiesUtil.parseBoolean(new Properties(), "test"));
 
-		Assert.assertEquals(Boolean.TRUE, PropertiesUtils.parseBoolean(testValuesProperties, PropertiesJettyConfiguration.KEY_AUTO_JOIN_ON_START));
-		Assert.assertEquals(Boolean.FALSE, PropertiesUtils.parseBoolean(testValuesProperties, PropertiesJettyConfiguration.KEY_STOP_AT_SHUTDOWN));
+		Assert.assertEquals(Boolean.TRUE, PropertiesUtil.parseBoolean(testValuesProperties, PropertiesJettyConfiguration.KEY_AUTO_JOIN_ON_START));
+		Assert.assertEquals(Boolean.FALSE, PropertiesUtil.parseBoolean(testValuesProperties, PropertiesJettyConfiguration.KEY_STOP_AT_SHUTDOWN));
 	}
 }
