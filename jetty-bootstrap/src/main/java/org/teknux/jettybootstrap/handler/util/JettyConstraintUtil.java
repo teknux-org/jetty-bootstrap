@@ -30,7 +30,7 @@ public class JettyConstraintUtil {
     /**
      * Create constraint which redirect to Secure Port
      * 
-     * @return @ConstraintSecurityHandler
+     * @return ConstraintSecurityHandler
      */
     public static ConstraintSecurityHandler getConstraintSecurityHandlerConfidential() {
         Constraint constraint = new Constraint();

@@ -43,7 +43,7 @@ public interface IJettyConfiguration {
 	 * Set whether or not main thread should join jetty
 	 * ones.
 	 * 
-	 * @param autoJoinOnStart
+	 * @param autoJoinOnStart boolean
 	 */
 	void setAutoJoinOnStart(boolean autoJoinOnStart);
 
@@ -57,7 +57,7 @@ public interface IJettyConfiguration {
 	 * Set the maximum number of threads jetty is allowed
 	 * handle.
 	 * 
-	 * @param maxThreads
+	 * @param maxThreads int
 	 */
 	void setMaxThreads(int maxThreads);
 
@@ -77,7 +77,7 @@ public interface IJettyConfiguration {
 	 * whenever the main application stops. Otherwise jetty
 	 * remains running.
 	 * 
-	 * @param stopAtShutdown
+	 * @param stopAtShutdown boolean
 	 */
 	void setStopAtShutdown(boolean stopAtShutdown);
 
@@ -86,6 +86,11 @@ public interface IJettyConfiguration {
 	 */
 	long getStopTimeout();
 
+	/**
+	 * Set the timeout before forcing jetty to stop.
+	 * 
+	 * @param stopTimeout long
+	 */
 	void setStopTimeout(long stopTimeout);
 
 	/**
@@ -102,49 +107,49 @@ public interface IJettyConfiguration {
 	 * This applies to all connectors.
 	 * 
 	 * @see AbstractConnector#setIdleTimeout
-	 * @param idleTimeout
+	 * @param idleTimeout long
 	 */
 	void setIdleTimeout(long idleTimeout);
 
 	/**
 	 * Get the server host IP/Name.
 	 * 
-	 * @return
+	 * @return String
 	 */
 	String getHost();
 
 	/**
 	 * Set the server host IP/Name.
 	 * 
-	 * @param host
+	 * @param host String
 	 */
 	void setHost(String host);
 
 	/**
 	 * Get the HTTP port number.
 	 * 
-	 * @return
+	 * @return int
 	 */
 	int getPort();
 
 	/**
 	 * Set the HTTP port number.
 	 * 
-	 * @param port
+	 * @param port int
 	 */
 	void setPort(int port);
 
 	/**
 	 * Get the port number for SSL (HTTPS).
 	 * 
-	 * @return
+	 * @return int
 	 */
 	int getSslPort();
 
 	/**
 	 * Set the port number used for SSL (HTTPS).
 	 * 
-	 * @param sslPort
+	 * @param sslPort int
 	 */
 	void setSslPort(int sslPort);
 
@@ -152,8 +157,8 @@ public interface IJettyConfiguration {
 	 * Check whether or not the given {@link JettyConnector}
 	 * has to be supported by the server.
 	 * 
-	 * @param jettyConnector
-	 * @return
+	 * @param jettyConnector JettyConnector
+	 * @return boolean
 	 */
 	boolean hasJettyConnector(JettyConnector jettyConnector);
 
@@ -161,14 +166,14 @@ public interface IJettyConfiguration {
 	 * Get the collection of connectors the server as to
 	 * use.
 	 * 
-	 * @return
+	 * @return Set of JettyConnector
 	 */
 	Set<JettyConnector> getJettyConnectors();
 
 	/**
 	 * Set what connectors the server has to use.
 	 * 
-	 * @param jettyConnectors
+	 * @param jettyConnectors JettyConnector Array
 	 */
 	void setJettyConnectors(JettyConnector... jettyConnectors);
 
@@ -200,7 +205,7 @@ public interface IJettyConfiguration {
 	/**
 	 * Set the password of the SSL keystore file.
 	 * 
-	 * @param sslKeyStorePassword
+	 * @param sslKeyStorePassword String
 	 */
 	void setSslKeyStorePassword(String sslKeyStorePassword);
 
@@ -216,7 +221,7 @@ public interface IJettyConfiguration {
 	 * Set the SSL keystore file path used for HTTPS
 	 * support.
 	 * 
-	 * @param sslKeyStorePath
+	 * @param sslKeyStorePath String
 	 */
 	void setSslKeyStorePath(String sslKeyStorePath);
 
@@ -230,7 +235,7 @@ public interface IJettyConfiguration {
 	 * Set the temporary directory used to deploy
 	 * applications.
 	 * 
-	 * @param tempDirectory
+	 * @param tempDirectory File
 	 */
 	void setTempDirectory(File tempDirectory);
 
@@ -246,7 +251,7 @@ public interface IJettyConfiguration {
 	 * Set whether or not the applications temporary
 	 * directory must be preserved over restart.
 	 * 
-	 * @param persistTempDirectory
+	 * @param persistTempDirectory boolean
 	 */
 	void setPersistAppTempDirectories(boolean persistTempDirectory);
 
@@ -260,7 +265,7 @@ public interface IJettyConfiguration {
 	 * Set whether or not a clear of the temp directory is
 	 * needed before starting up the server.
 	 * 
-	 * @param cleanTempDir
+	 * @param cleanTempDir boolean
 	 */
 	void setCleanTempDir(boolean cleanTempDir);
 
@@ -276,7 +281,7 @@ public interface IJettyConfiguration {
 	/**
 	 * Set whether or not the server should stop when a web application startup fails
 	 * 
-	 * @param throwIfStartupException
+	 * @param throwIfStartupException boolean
 	 */
 	void setThrowIfStartupException(boolean throwIfStartupException);
 	

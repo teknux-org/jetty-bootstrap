@@ -78,7 +78,7 @@ public class PropertiesJettyConfiguration extends JettyConfiguration {
 	 * This means system properties have higher priorities
 	 * that the provided ones.
 	 * 
-	 * @param properties
+	 * @param properties Properties
 	 */
 	public PropertiesJettyConfiguration(Properties properties) {
 		this(properties, false);
@@ -90,7 +90,8 @@ public class PropertiesJettyConfiguration extends JettyConfiguration {
 	 * This means system properties have higher priorities
 	 * that the provided ones.
 	 * 
-	 * @param properties
+	 * @param properties Properties
+	 * @param ignoreSystemProperties boolean
 	 */
 	public PropertiesJettyConfiguration(Properties properties, boolean ignoreSystemProperties) {
 		if (properties != null) {
@@ -202,7 +203,7 @@ public class PropertiesJettyConfiguration extends JettyConfiguration {
 	 * array are ignored, returns <code>null</code> when no
 	 * value match from input array.
 	 * 
-	 * @param connectors
+	 * @param connectors Connector Array
 	 * @return array of {@link JettyConnector}
 	 *         <code>null</code> in case nothing match.
 	 */

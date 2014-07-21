@@ -21,42 +21,79 @@
  *******************************************************************************/
 package org.teknux.jettybootstrap.handler;
 
+import java.io.File;
 import java.text.MessageFormat;
 
-import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.teknux.jettybootstrap.JettyBootstrapException;
+import org.teknux.jettybootstrap.configuration.IJettyConfiguration;
+import org.teknux.jettybootstrap.handler.util.AdditionalWebAppJettyConfigurationUtil;
+import org.teknux.jettybootstrap.handler.util.JettyConstraintUtil;
 
+abstract public class AbstractAppJettyHandler extends AbstractJettyHandler<WebAppContext> {
+    private static final String APP_DIRECTORY_NAME = "apps";
 
-abstract public class AbstractAppJettyHandler extends AbstractJettyHandler {
-	private String contextPath = null;
+    private IJettyConfiguration iJettyConfiguration;
+    private String contextPath = null;
 
-	public String getContextPath() {
-		return contextPath;
-	}
+    public AbstractAppJettyHandler(IJettyConfiguration iJettyConfiguration) {
+        this.iJettyConfiguration = iJettyConfiguration;
+    }
 
-	public void setContextPath(String contextPath) {
-		this.contextPath = contextPath;
-	}
+    protected IJettyConfiguration getJettyConfiguration() {
+        return iJettyConfiguration;
+    }
+
+    public String getContextPath() {
+        return contextPath;
+    }
+
+    public void setContextPath(String contextPath) {
+        this.contextPath = contextPath;
+    }
 
     @Override
-	protected Handler createHandler() throws JettyBootstrapException {
-		WebAppContext webAppContext = new WebAppContext();
+    protected WebAppContext createHandler() throws JettyBootstrapException {
+        WebAppContext webAppContext = new WebAppContext();
 
-		return initWebAppContext(webAppContext);
-	}
-	
-	/**
-	 * The name of Temporary Application directory
-	 * 
-	 * @return name
-	 */
-	abstract public String getAppTempDirName();
+        // Init WebAppContext from Jetty Configuration
+        webAppContext.setParentLoaderPriority(iJettyConfiguration.isParentLoaderPriority());
+        webAppContext.setPersistTempDirectory(iJettyConfiguration.isPersistAppTempDirectories());
+        webAppContext.setThrowUnavailableOnStartupException(iJettyConfiguration.isThrowIfStartupException());
+        webAppContext.getSessionHandler().getSessionManager().setMaxInactiveInterval(iJettyConfiguration.getMaxInactiveInterval());
 
-	abstract protected WebAppContext initWebAppContext(WebAppContext webAppContext);
+        // Add redirect to SSL if necessary
+        if (iJettyConfiguration.isRedirectWebAppsOnHttpsConnector()) {
+            webAppContext.setSecurityHandler(JettyConstraintUtil.getConstraintSecurityHandlerConfidential());
+        }
 
-	@Override
-	public String toString() {
-		return MessageFormat.format("{0} on contextPath [{1}]", super.toString(), getContextPath());
-	}
+        // Init temp directory
+        File appsTempDirectory = new File(iJettyConfiguration.getTempDirectory() + File.separator + APP_DIRECTORY_NAME);
+        if (!appsTempDirectory.exists() && !appsTempDirectory.mkdir()) {
+            throw new JettyBootstrapException("Can't create temporary applications directory");
+        }
+        File appTempDirectory = new File(appsTempDirectory.getPath() + File.separator + getAppTempDirName());
+        webAppContext.setTempDirectory(appTempDirectory);
+
+        // Adds extra classes if necessary
+        webAppContext.setConfigurationClasses(AdditionalWebAppJettyConfigurationUtil.addOptionalConfigurationClasses(WebAppContext
+                .getDefaultConfigurationClasses()));
+
+        // Set Context Path
+        webAppContext.setContextPath(contextPath);
+
+        return webAppContext;
+    }
+
+    /**
+     * The name of Temporary Application directory
+     * 
+     * @return name
+     */
+    abstract protected String getAppTempDirName();
+
+    @Override
+    public String toString() {
+        return MessageFormat.format("{0} on contextPath [{1}]", super.toString(), getContextPath());
+    }
 }

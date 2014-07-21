@@ -24,46 +24,52 @@ package org.teknux.jettybootstrap.handler;
 import java.security.NoSuchAlgorithmException;
 
 import org.eclipse.jetty.webapp.WebAppContext;
+import org.teknux.jettybootstrap.JettyBootstrapException;
+import org.teknux.jettybootstrap.configuration.IJettyConfiguration;
 import org.teknux.jettybootstrap.utils.Md5Util;
-
 
 public class WarAppJettyHandler extends AbstractAppJettyHandler {
 
-	private static final String TYPE = "War";
+    public WarAppJettyHandler(IJettyConfiguration iJettyConfiguration) {
+        super(iJettyConfiguration);
+    }
 
-	private String war = null;
+    private static final String TYPE = "War";
 
-	public String getWar() {
-		return war;
-	}
+    private String war = null;
 
-	public void setWar(String war) {
-		this.war = war;
-	}
+    public String getWar() {
+        return war;
+    }
 
-	@Override
-	public String getAppTempDirName() {
-		try {
+    public void setWar(String war) {
+        this.war = war;
+    }
+
+    @Override
+    protected String getAppTempDirName() {
+        try {
             return Md5Util.hash(getWar());
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
-	}
+    }
 
-	@Override
-	protected WebAppContext initWebAppContext(WebAppContext webAppContext) {
-		webAppContext.setWar(war);
+    @Override
+    protected WebAppContext createHandler() throws JettyBootstrapException {
+        WebAppContext webAppContext = super.createHandler();
+        webAppContext.setWar(war);
 
-		return webAppContext;
-	}
+        return webAppContext;
+    }
 
-	@Override
-	public String getItemType() {
-		return TYPE;
-	}
+    @Override
+    public String getItemType() {
+        return TYPE;
+    }
 
-	@Override
-	public String getItemName() {
-		return war;
-	}
+    @Override
+    public String getItemName() {
+        return war;
+    }
 }

@@ -41,8 +41,8 @@ public class PathUtil {
     /**
      * Get Jar location
      * 
-     * @param clazz
-     * @return
+     * @param clazz Based on class location
+     * @return String
      */
     public static String getJarDir(Class<?> clazz) {
         return decodeUrl(new File(clazz.getProtectionDomain().getCodeSource().getLocation().getPath()).getParent());

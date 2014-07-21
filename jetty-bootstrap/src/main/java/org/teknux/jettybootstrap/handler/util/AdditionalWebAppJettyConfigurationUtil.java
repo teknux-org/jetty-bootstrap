@@ -48,8 +48,8 @@ public class AdditionalWebAppJettyConfigurationUtil {
     /**
      * Add the classes that natively supported by JettyBootstrap if available (e.g. : Annotations)
      * 
-     * @param configurationClasses
-     * @return
+     * @param configurationClasses Class Name array
+     * @return String[]
      */
     public static String[] addOptionalConfigurationClasses(String[] configurationClasses) {
         return addConfigurationClasses(configurationClasses, AdditionalWebAppJettyConfigurationUtil.getOptionnalAdditionalsWebAppJettyConfigurationClasses());
@@ -58,9 +58,9 @@ public class AdditionalWebAppJettyConfigurationUtil {
     /**
      * Add the optionalAdditionalsWebappConfigurationClasses to the configurationClasses if available
      * 
-     * @param configurationClasses
-     * @param optionalAdditionalsWebappConfigurationClasses
-     * @return
+     * @param configurationClasses Class Name array
+     * @param optionalAdditionalsWebappConfigurationClasses Class Name array
+     * @return String[]
      */
     public static String[] addConfigurationClasses(String[] configurationClasses, AdditionalWebAppJettyConfigurationClass[] optionalAdditionalsWebappConfigurationClasses) {
         List<String> newConfigurationClasses = new ArrayList<String>(Arrays.asList(configurationClasses));

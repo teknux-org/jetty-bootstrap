@@ -24,14 +24,13 @@ package org.teknux.jettybootstrap.handler;
 import org.eclipse.jetty.server.Handler;
 import org.teknux.jettybootstrap.JettyBootstrapException;
 
+public interface IJettyHandler<T extends Handler> {
 
-public interface IJettyHandler {
+    T getHandler() throws JettyBootstrapException;
 
-	Handler getHandler() throws JettyBootstrapException;
+    String getItemType();
 
-	String getItemType();
+    String getItemName();
 
-	String getItemName();
-
-	String toString();
+    String toString();
 }

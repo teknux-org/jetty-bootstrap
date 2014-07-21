@@ -25,20 +25,23 @@ import java.text.MessageFormat;
 
 import org.eclipse.jetty.server.Handler;
 import org.teknux.jettybootstrap.JettyBootstrapException;
+import org.teknux.jettybootstrap.handler.util.JettyLifeCycleLogListener;
 
+abstract public class AbstractJettyHandler<T extends Handler> implements IJettyHandler<T> {
 
-abstract public class AbstractJettyHandler implements
-		IJettyHandler {
+    @Override
+    final public T getHandler() throws JettyBootstrapException {
+        T handler = createHandler();
 
-	@Override
-	public Handler getHandler() throws JettyBootstrapException {
-		return createHandler();
-	}
+        handler.addLifeCycleListener(new JettyLifeCycleLogListener(this));
 
-	@Override
-	public String toString() {
-		return MessageFormat.format("{0} [{1}]", getItemType(), getItemName());
-	}
+        return handler;
+    }
 
-	abstract protected Handler createHandler() throws JettyBootstrapException;
+    abstract protected T createHandler() throws JettyBootstrapException;
+
+    @Override
+    public String toString() {
+        return MessageFormat.format("{0} [{1}]", getItemType(), getItemName());
+    }
 }
