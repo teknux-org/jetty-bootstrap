@@ -34,72 +34,73 @@ import org.teknux.jettybootstrap.JettyBootstrapException;
 import org.teknux.jettybootstrap.configuration.IJettyConfiguration;
 import org.teknux.jettybootstrap.utils.Md5Util;
 
+
 public class WarAppFromClasspathJettyHandler extends WarAppJettyHandler {
 
-    public WarAppFromClasspathJettyHandler(IJettyConfiguration iJettyConfiguration) {
+	public WarAppFromClasspathJettyHandler(IJettyConfiguration iJettyConfiguration) {
         super(iJettyConfiguration);
     }
 
     private static final String TYPE = "WarFromClasspath";
 
-    private final Logger logger = LoggerFactory.getLogger(WarAppFromClasspathJettyHandler.class);
+	private final Logger logger = LoggerFactory.getLogger(WarAppFromClasspathJettyHandler.class);
 
-    private static final String RESOURCEWAR_DIRECTORY_NAME = "war";
-    private static final String WAR_EXTENSION = ".war";
+	private static final String RESOURCEWAR_DIRECTORY_NAME = "war";
+	private static final String WAR_EXTENSION = ".war";
 
-    private String warFromClasspath = null;
+	private String warFromClasspath = null;
 
-    public String getWarFromClasspath() {
-        return warFromClasspath;
-    }
+	public String getWarFromClasspath() {
+		return warFromClasspath;
+	}
 
-    public void setWarFromClasspath(String resourceWar) {
-        this.warFromClasspath = resourceWar;
-    }
-
+	public void setWarFromClasspath(String resourceWar) {
+		this.warFromClasspath = resourceWar;
+	}
+	
     @Override
-    protected WebAppContext createHandler() throws JettyBootstrapException {
-        File warDirectory = new File(getJettyConfiguration().getTempDirectory().getPath() + File.separator + RESOURCEWAR_DIRECTORY_NAME);
+	protected WebAppContext createHandler() throws JettyBootstrapException {
+		File warDirectory = new File(getJettyConfiguration().getTempDirectory().getPath() + File.separator + RESOURCEWAR_DIRECTORY_NAME);
 
-        if (!warDirectory.exists() && !warDirectory.mkdir()) {
-            throw new JettyBootstrapException("Can't create temporary War directory");
-        }
+		if (!warDirectory.exists() && !warDirectory.mkdir()) {
+			throw new JettyBootstrapException("Can't create temporary War directory");
+		}
 
-        String fileName;
+		String fileName;
         try {
             fileName = Md5Util.hash(warFromClasspath) + WAR_EXTENSION;
         } catch (NoSuchAlgorithmException e) {
             throw new JettyBootstrapException(e);
         }
-        File warFile = new File(warDirectory.getPath() + File.separator + fileName);
+		File warFile = new File(warDirectory.getPath() + File.separator + fileName);
 
-        if (warFile.exists()) {
-            logger.trace("War already exists in directory : [{}], not copied", warDirectory);
-        } else {
-            logger.trace("Copy war file from classpath [{}] to directory [{}]...", warFromClasspath, warDirectory);
+		if (warFile.exists()) {
+			logger.trace("War already exists in directory : [{}], not copied", warDirectory);
+		} else {
+			logger.trace("Copy war file from classpath [{}] to directory [{}]...", warFromClasspath, warDirectory);
 
-            try (InputStream inputStream = getClass().getResourceAsStream(warFromClasspath)) {
-                if (inputStream == null) {
-                    throw new JettyBootstrapException("Cannot get resource as stream from classpath : " + warFromClasspath);
-                }
-                FileUtils.copyInputStreamToFile(inputStream, warFile);
-            } catch (IOException e) {
-                throw new JettyBootstrapException(e);
-            }
-        }
+			try (InputStream inputStream = getClass().getResourceAsStream(warFromClasspath)) {
+				if (inputStream == null) {
+					throw new JettyBootstrapException("Cannot get resource as stream from classpath : " + warFromClasspath);
+				}
+				FileUtils.copyInputStreamToFile(inputStream, warFile);
+			} catch (IOException e) {
+				throw new JettyBootstrapException(e);
+			}
+		}
 
-        setWar(warFile.getPath());
+		setWar(warFile.getPath());
 
-        return super.createHandler();
-    }
+		return super.createHandler();
+	}
 
-    @Override
-    public String getItemType() {
-        return TYPE;
-    }
+	@Override
+	public String getItemType() {
+		return TYPE;
+	}
 
-    @Override
-    public String getItemName() {
-        return warFromClasspath;
-    }
+	@Override
+	public String getItemName() {
+		return warFromClasspath;
+	}
 }

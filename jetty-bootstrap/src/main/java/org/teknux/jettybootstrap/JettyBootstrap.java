@@ -262,7 +262,7 @@ public class JettyBootstrap {
      * @param warFromClasspath
      *            the path to a war file in the classpath
      * @return WebAppContext
-     * @throws JettyBootstrapException on failure
+     * @throws JettyBootstrapException on failed
      */
     public WebAppContext addWarAppFromClasspath(String warFromClasspath) throws JettyBootstrapException {
         return addWarAppFromClasspath(warFromClasspath, CONTEXT_PATH_ROOT);
@@ -277,7 +277,7 @@ public class JettyBootstrap {
      * @param contextPath
      *            the path (base URL) to make the war available
      * @return WebAppContext
-     * @throws JettyBootstrapException on failure
+     * @throws JettyBootstrapException on failed
      */
     public WebAppContext addWarAppFromClasspath(String warFromClasspath, String contextPath) throws JettyBootstrapException {
         WarAppFromClasspathJettyHandler warAppFromClasspathJettyHandler = new WarAppFromClasspathJettyHandler(getConfiguration());
@@ -299,7 +299,7 @@ public class JettyBootstrap {
      * @param descriptor
      *            the web.xml descriptor path
      * @return WebAppContext
-     * @throws JettyBootstrapException on failure
+     * @throws JettyBootstrapException on failed
      */
     public WebAppContext addExplodedWarApp(String explodedWar, String descriptor) throws JettyBootstrapException {
         return addExplodedWarApp(explodedWar, descriptor, CONTEXT_PATH_ROOT);
@@ -316,7 +316,7 @@ public class JettyBootstrap {
      * @param contextPath
      *            the path (base URL) to make the resource available
      * @return WebAppContext
-     * @throws JettyBootstrapException on failure
+     * @throws JettyBootstrapException on failed
      */
     public WebAppContext addExplodedWarApp(String explodedWar, String descriptor, String contextPath) throws JettyBootstrapException {
         ExplodedWarAppJettyHandler explodedWarAppJettyHandler = new ExplodedWarAppJettyHandler(getConfiguration());
@@ -337,7 +337,7 @@ public class JettyBootstrap {
      * @param explodedWar
      *            the exploded war path
      * @return WebAppContext
-     * @throws JettyBootstrapException on failure
+     * @throws JettyBootstrapException on failed
      */
     public WebAppContext addExplodedWarAppFromClasspath(String explodedWar) throws JettyBootstrapException {
         return addExplodedWarAppFromClasspath(explodedWar, null);
@@ -352,7 +352,7 @@ public class JettyBootstrap {
      * @param descriptor
      *            the web.xml descriptor path
      * @return WebAppContext
-     * @throws JettyBootstrapException on failure
+     * @throws JettyBootstrapException on failed
      */
     public WebAppContext addExplodedWarAppFromClasspath(String explodedWar, String descriptor) throws JettyBootstrapException {
         return addExplodedWarAppFromClasspath(explodedWar, descriptor, CONTEXT_PATH_ROOT);
@@ -369,7 +369,7 @@ public class JettyBootstrap {
      * @param contextPath
      *            the path (base URL) to make the resource available
      * @return WebAppContext
-     * @throws JettyBootstrapException on failure
+     * @throws JettyBootstrapException on failed
      */
     public WebAppContext addExplodedWarAppFromClasspath(String explodedWar, String descriptor, String contextPath) throws JettyBootstrapException {
         ExplodedWarAppJettyHandler explodedWarAppJettyHandler = new ExplodedWarAppJettyHandler(getConfiguration());
@@ -390,7 +390,7 @@ public class JettyBootstrap {
      * 
      * @see #addExplodedWarAppFromClasspath(String, String)
      * @return WebAppContext
-     * @throws JettyBootstrapException on failure
+     * @throws JettyBootstrapException on failed
      */
     public WebAppContext addSelf() throws JettyBootstrapException {
         return addExplodedWarAppFromClasspath(RESOURCE_WEBAPP, null);
@@ -404,7 +404,7 @@ public class JettyBootstrap {
      * @param contextPath
      *            the path (base URL) to make the resource available
      * @return WebAppContext
-     * @throws JettyBootstrapException on failure
+     * @throws JettyBootstrapException on failed
      */
     public WebAppContext addSelf(String contextPath) throws JettyBootstrapException {
         return addExplodedWarAppFromClasspath(RESOURCE_WEBAPP, null, contextPath);
@@ -415,7 +415,7 @@ public class JettyBootstrap {
      * 
      * @param handler Jetty Handler
      * @return Handler
-     * @throws JettyBootstrapException on failure
+     * @throws JettyBootstrapException on failed
      */
     public Handler addHandler(Handler handler) throws JettyBootstrapException {
         JettyHandler jettyHandler = new JettyHandler();
