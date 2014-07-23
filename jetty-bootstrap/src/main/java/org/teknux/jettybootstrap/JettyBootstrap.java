@@ -98,18 +98,22 @@ public class JettyBootstrap {
      * {@link PropertiesJettyConfiguration} configuration.
      */
     public JettyBootstrap() {
-        this(new PropertiesJettyConfiguration());
+        this(null);
     }
 
     /**
      * Constructor specifiying the configuration properties.
      * 
-     * @param configuration
+     * @param iJettyconfiguration
      *            the {@link IJettyConfiguration} implementation of the
      *            configuration
      */
-    public JettyBootstrap(final IJettyConfiguration configuration) {
-        this.iJettyConfiguration = configuration;
+    public JettyBootstrap(final IJettyConfiguration iJettyconfiguration) {
+        if (iJettyconfiguration == null) {
+            this.iJettyConfiguration = new PropertiesJettyConfiguration();
+        } else {
+            this.iJettyConfiguration = iJettyconfiguration.clone();
+        }
     }
 
     /**

@@ -31,8 +31,10 @@ import org.eclipse.jetty.server.AbstractConnector;
  * This interface represents all the available configuration
  * options for the jetty server
  */
-public interface IJettyConfiguration {
+public interface IJettyConfiguration extends Cloneable {
 
+    IJettyConfiguration clone();
+    
 	/**
 	 * @return <code>true</code> to join jetty with main
 	 *         thread.

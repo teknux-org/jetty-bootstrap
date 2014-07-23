@@ -57,6 +57,14 @@ public class JettyConfiguration implements
     private boolean throwIfStartupException = true;
     private int maxInactiveInterval = -1;
 
+    public IJettyConfiguration clone() {
+        try {
+            return (IJettyConfiguration) super.clone();
+        } catch (CloneNotSupportedException e) {
+            return null;
+        }
+    }
+    
 	/* (non-Javadoc)
 	 * @see org.teknux.jettybootstrap.configuration.IJettyConfiguration#isAutoJoinOnStart()
 	 */
