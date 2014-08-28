@@ -13,6 +13,7 @@
 		<module>jetty-bootstrap-annotations</module>
 		<module>jetty-bootstrap-logs</module>
 		<module>jetty-bootstrap-standalone</module>
+                <module>jetty-bootstrap-websocket-server</module>
 	</modules>
 
 	<name>Jetty Bootstrap : Parent</name>
