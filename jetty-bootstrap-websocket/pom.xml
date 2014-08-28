@@ -8,10 +8,10 @@
 		<version>1.0.5-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>jetty-bootstrap-websocket-server</artifactId>
+	<artifactId>jetty-bootstrap-websocket</artifactId>
 	<packaging>jar</packaging>
 
-	<name>Jetty Bootstrap : Websocket Server Dependencies</name>
+	<name>Jetty Bootstrap : Websocket Dependencies</name>
 	<url>http://jetty-bootstrap.io</url>
 
 	<dependencies>
