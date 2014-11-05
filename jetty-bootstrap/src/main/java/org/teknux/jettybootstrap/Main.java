@@ -21,69 +21,16 @@
  *******************************************************************************/
 package org.teknux.jettybootstrap;
 
-import java.io.File;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-/**
- * Convenient class to use JettyBootstrap JAR directly from
- * command line and deploy an existing application(s) from
- * the host file system on a basic server. This class is
- * mainly here for testing.
- */
 public class Main {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
-	private static final String WAR_FILE_SUFFIX = ".war";
+    private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
-	/**
-	 * @param args
-	 *            each argument is a web application (war
-	 *            file, directory).
-	 * @throws JettyBootstrapException on failure
-	 */
-	public static void main(String[] args) throws JettyBootstrapException {
-		if (args.length == 0) {
-			LOGGER.debug("Starting Self...");
-			JettyBootstrap.startSelf();
-		} else {
-			JettyBootstrap jettyBootstrap = new JettyBootstrap();
-
-			for (String arg : args) {
-				File file = new File(arg);
-
-				if (!file.exists()) {
-					LOGGER.warn("File [{}] doesn't exists. Ignore application", file);
-				} else {
-					String contextPath = "/";
-
-					if (file.isFile() && file.getName().toLowerCase().endsWith(WAR_FILE_SUFFIX)) {
-						contextPath += file.getName().substring(0, file.getName().length() - WAR_FILE_SUFFIX.length());
-					} else {
-						contextPath += file.getName();
-					}
-
-					if (contextPath.equals("ROOT")) {
-						contextPath = "/";
-					}
-
-					if (file.isDirectory()) {
-						LOGGER.debug("[{}] exists and is a directory. Adding Exploded War Application...", file);
-						jettyBootstrap.addExplodedWarApp(file.getPath(), null, contextPath);
-					} else {
-						if (file.isFile() && file.getName().toLowerCase().endsWith(".war")) {
-							LOGGER.debug("[{}] exists and is a war file. Add War Application...", file);
-							jettyBootstrap.addWarApp(file.getPath(), contextPath);
-						} else {
-							LOGGER.warn("[{}] exists but is an unknown file. Ignore application", file);
-						}
-					}
-				}
-			}
-
-			jettyBootstrap.startServer();
-		}
-	}
+    public static void main(String[] args) throws JettyBootstrapException {
+        LOGGER.debug("Starting Self...");
+        JettyBootstrap.startSelf();
+    }
 }
