@@ -505,8 +505,7 @@ public class JettyBootstrap {
 
                 if (!keystoreFile.exists()) {
                     try {
-                        JettyKeystore jettyKeystore = new JettyKeystore(iJettyConfiguration.getSslKeyStoreDomainName(), iJettyConfiguration.getSslKeyStoreAlias(),
-                                iJettyConfiguration.getSslKeyStorePassword());
+                        JettyKeystore jettyKeystore = new JettyKeystore(iJettyConfiguration.getSslKeyStoreAlias(), iJettyConfiguration.getSslKeyStorePassword());
                         jettyKeystore.setAlgorithm(iJettyConfiguration.getSslKeyStoreAlgorithm());
                         jettyKeystore.setSignatureAlgorithm(iJettyConfiguration.getSslKeyStoreSignatureAlgorithm());
                         jettyKeystore.setRdnOuValue(iJettyConfiguration.getSslKeyStoreRdnOuValue());
@@ -514,7 +513,7 @@ public class JettyBootstrap {
                         jettyKeystore.setDateNotBeforeNumberOfDays(iJettyConfiguration.getSslKeyStoreDateNotBeforeNumberOfDays());
                         jettyKeystore.setDateNotAfterNumberOfDays(iJettyConfiguration.getSslKeyStoreDateNotAfterNumberOfDays());
 
-                        jettyKeystore.generateAndSave(keystoreFile);
+                        jettyKeystore.generateKeyStoreAndSave(iJettyConfiguration.getSslKeyStoreDomainName(), keystoreFile);
                     } catch (JettyKeystoreException e) {
                         throw new JettyBootstrapException("Can't generate keyStore", e);
                     }

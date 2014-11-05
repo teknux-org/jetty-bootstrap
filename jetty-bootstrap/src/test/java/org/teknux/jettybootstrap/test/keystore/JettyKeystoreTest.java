@@ -49,11 +49,11 @@ public class JettyKeystoreTest {
     @Test
     public void do01KeystoreTest() throws JettyKeystoreException, KeyStoreException, InvalidKeyException, CertificateException, NoSuchAlgorithmException, NoSuchProviderException,
             SignatureException {
-        JettyKeystore jettyKeystore = new JettyKeystore(KEYSTORE_DOMAINNAME, KEYSTORE_ALIAS, KEYSTORE_PASSWORD);
+        JettyKeystore jettyKeystore = new JettyKeystore(KEYSTORE_ALIAS, KEYSTORE_PASSWORD);
 
         Assert.assertNotEquals(null, jettyKeystore);
 
-        KeyStore keyStore = jettyKeystore.generate();
+        KeyStore keyStore = jettyKeystore.generateKeyStore(KEYSTORE_DOMAINNAME);
 
         Assert.assertNotEquals(null, keyStore);
 
