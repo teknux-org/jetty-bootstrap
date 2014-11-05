@@ -38,6 +38,7 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Date;
+import java.util.Objects;
 
 import org.bouncycastle.asn1.ASN1Sequence;
 import org.bouncycastle.asn1.x500.X500Name;
@@ -54,133 +55,196 @@ import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 
 public class JettyKeystore {
 
-	public static final String ALGORITHM_RSA = "RSA";
-	public static final String SIGNATURE_ALGORITHM_SHA256WITHRSA = "SHA256WithRSAEncryption";
+    public static final String ALGORITHM_RSA = "RSA";
+    public static final String SIGNATURE_ALGORITHM_SHA256WITHRSA = "SHA256WithRSAEncryption";
 
-	private static final String DEFAULT_ALGORITHM = ALGORITHM_RSA;
-	private static final String DEFAULT_SIGNATURE_ALGORITHM = SIGNATURE_ALGORITHM_SHA256WITHRSA;
+    private static final String DEFAULT_ALGORITHM = ALGORITHM_RSA;
+    private static final String DEFAULT_SIGNATURE_ALGORITHM = SIGNATURE_ALGORITHM_SHA256WITHRSA;
+    private static final String DEFAULT_RDN_OU_VALUE = "None";
+    private static final String DEFAULT_RDN_O_VALUE = "None";
+    private static final int DEFAULT_DATE_NOT_BEFORE_NUMBER_OF_DAYS = 30;
+    private static final int DEFAULT_DATE_NOT_AFTER_NUMBER_OF_DAYS = 3650;
 
-	private String RDN_OU_VALUE = "None";
-	private String RDN_O_VALUE = "None";
-	private Long DAY_IN_MILLIS = 1000L * 60 * 60 * 24;
+    private static final Long DAY_IN_MILLIS = 1000L * 60 * 60 * 24;
 
-	private String domainName;
-	private String alias;
-	private String password;
+    private String algorithm = DEFAULT_ALGORITHM;
+    private String signatureAlgorithm = DEFAULT_SIGNATURE_ALGORITHM;
+    private String domainName;
+    private String alias;
+    private String password;
+    private String rdnOuValue = DEFAULT_RDN_OU_VALUE;
+    private String rdnOValue = DEFAULT_RDN_O_VALUE;
+    private int dateNotBeforeNumberOfDays = DEFAULT_DATE_NOT_BEFORE_NUMBER_OF_DAYS;
+    private int dateNotAfterNumberOfDays = DEFAULT_DATE_NOT_AFTER_NUMBER_OF_DAYS;
 
-	public static void generateKeystoreAndSave(String domainName, String alias, String password, File file) throws JettyKeystoreException {
-		JettyKeystore jettyKeystore = new JettyKeystore(domainName, alias, password);
-		jettyKeystore.generateAndSave(file);
-	}
+    public JettyKeystore(String domainName, String alias, String password) {
+        this.domainName = Objects.requireNonNull(domainName, "DomainName is required");
+        this.alias = Objects.requireNonNull(alias, "Alias is required");
+        this.password = Objects.requireNonNull(password, "Password is required");
+    }
 
-	public static void generateKeystoreAndSave(String domainName, String alias, String password, File file, String algorithm, String signatureAlgorithm)
-			throws JettyKeystoreException {
-		JettyKeystore jettyKeystore = new JettyKeystore(domainName, alias, password);
-		jettyKeystore.generateAndSave(file, algorithm, signatureAlgorithm);
-	}
+    public String getAlgorithm() {
+        return algorithm;
+    }
 
-	public JettyKeystore(String domainName, String alias, String password) {
-		this.domainName = domainName;
-		this.alias = alias;
-		this.password = password;
-	}
+    public void setAlgorithm(String algorithm) {
+        this.algorithm = algorithm;
+    }
 
-	public void generateAndSave(File file) throws JettyKeystoreException {
-		KeyStore keyStore = generate();
-		saveKeyStore(keyStore, file, password);
-	}
+    public String getSignatureAlgorithm() {
+        return signatureAlgorithm;
+    }
 
-	public void generateAndSave(File file, String algorithm, String signatureAlgorithm) throws JettyKeystoreException {
-		KeyStore keyStore = generate(algorithm, signatureAlgorithm);
-		saveKeyStore(keyStore, file, password);
-	}
+    public void setSignatureAlgorithm(String signatureAlgorithm) {
+        this.signatureAlgorithm = signatureAlgorithm;
+    }
 
-	public KeyStore generate() throws JettyKeystoreException {
-		return generate(DEFAULT_ALGORITHM, DEFAULT_SIGNATURE_ALGORITHM);
-	}
+    public String getDomainName() {
+        return domainName;
+    }
 
-	public KeyStore generate(String algorithm, String signatureAlgorithm) throws JettyKeystoreException {
-		KeyPair keyPair = generateKeyPair(algorithm);
-		X509Certificate x509Certificate = generateX509Certificate(keyPair, domainName, signatureAlgorithm);
+    public void setDomainName(String domainName) {
+        this.domainName = Objects.requireNonNull(domainName, "DomainName is required");
+    }
 
-		return generateKeyStore(keyPair, x509Certificate, alias, password);
-	}
+    public String getAlias() {
+        return alias;
+    }
 
-	private KeyPair generateKeyPair(String algorithm) throws JettyKeystoreException {
-		try {
-			KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(algorithm);
-			return keyPairGenerator.generateKeyPair();
-		} catch (NoSuchAlgorithmException e) {
-			throw new JettyKeystoreException(e);
-		}
-	}
+    public void setAlias(String alias) {
+        this.alias = Objects.requireNonNull(alias, "Alias is required");
+    }
 
-	private X509Certificate generateX509Certificate(KeyPair keyPair, String domainName, String signatureAlgorithm) throws JettyKeystoreException {
-		X500Name issuer = new X500NameBuilder(BCStyle.INSTANCE).addRDN(BCStyle.OU, RDN_OU_VALUE).addRDN(BCStyle.O, RDN_O_VALUE).addRDN(BCStyle.CN, domainName).build();
-		BigInteger serial = BigInteger.valueOf(Math.abs(new SecureRandom().nextInt()));
-		Date dateNotBefore = new Date(System.currentTimeMillis() - (30 * DAY_IN_MILLIS));
-		Date dateNotAfter = new Date(System.currentTimeMillis() + (3650 * DAY_IN_MILLIS));
-		X500Name subject = new X500NameBuilder(BCStyle.INSTANCE).addRDN(BCStyle.OU, RDN_OU_VALUE).addRDN(BCStyle.O, RDN_O_VALUE).addRDN(BCStyle.CN, domainName).build();
-		SubjectPublicKeyInfo publicKeyInfo = new SubjectPublicKeyInfo(ASN1Sequence.getInstance(keyPair.getPublic().getEncoded()));
+    public String getPassword() {
+        return password;
+    }
 
-		X509v3CertificateBuilder x509v3CertificateBuilder = new X509v3CertificateBuilder(issuer, serial, dateNotBefore, dateNotAfter, subject, publicKeyInfo);
+    public void setPassword(String password) {
+        this.password = Objects.requireNonNull(password, "Password is required");
+    }
 
-		Provider provider = new BouncyCastleProvider();
+    public String getRdnOuValue() {
+        return rdnOuValue;
+    }
 
-		try {
-			ContentSigner signer = new JcaContentSignerBuilder(signatureAlgorithm).setProvider(provider).build(keyPair.getPrivate());
+    public void setRdnOuValue(String rdnOuValue) {
+        this.rdnOuValue = rdnOuValue;
+    }
 
-			return new JcaX509CertificateConverter().setProvider(provider).getCertificate(x509v3CertificateBuilder.build(signer));
-		} catch (OperatorCreationException e) {
-			throw new JettyKeystoreException(e);
-		} catch (CertificateException e) {
-			throw new JettyKeystoreException(e);
-		}
-	}
+    public String getRdnOValue() {
+        return rdnOValue;
+    }
 
-	private KeyStore generateKeyStore(KeyPair keyPair, X509Certificate x509Certificate, String alias, String password) throws JettyKeystoreException {
-		try {
-			KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
-			keyStore.load(null, null);
+    public void setRdnOValue(String rdnOValue) {
+        this.rdnOValue = rdnOValue;
+    }
 
-			PrivateKeyEntry privateKeyEntry = new PrivateKeyEntry(keyPair.getPrivate(), new Certificate[] { x509Certificate });
-			keyStore.setEntry(alias, privateKeyEntry, new KeyStore.PasswordProtection(password.toCharArray()));
+    public int getDateNotBeforeNumberOfDays() {
+        return dateNotBeforeNumberOfDays;
+    }
 
-			return keyStore;
-		} catch (KeyStoreException e) {
-			throw new JettyKeystoreException(e);
-		} catch (NoSuchAlgorithmException e) {
-			throw new JettyKeystoreException(e);
-		} catch (CertificateException e) {
-			throw new JettyKeystoreException(e);
-		} catch (IOException e) {
-			throw new JettyKeystoreException(e);
-		}
-	}
+    public void setDateNotBeforeNumberOfDays(int dateNotBeforeNumberOfDays) {
+        this.dateNotBeforeNumberOfDays = dateNotBeforeNumberOfDays;
+    }
 
-	private void saveKeyStore(KeyStore keyStore, File file, String password) throws JettyKeystoreException {
-		FileOutputStream fileInputStream = null;
-		try {
-			fileInputStream = new FileOutputStream(file);
-			keyStore.store(fileInputStream, password.toCharArray());
-		} catch (FileNotFoundException e) {
-			throw new JettyKeystoreException(e);
-		} catch (KeyStoreException e) {
-			throw new JettyKeystoreException(e);
-		} catch (NoSuchAlgorithmException e) {
-			throw new JettyKeystoreException(e);
-		} catch (CertificateException e) {
-			throw new JettyKeystoreException(e);
-		} catch (IOException e) {
-			throw new JettyKeystoreException(e);
-		} finally {
-			if (fileInputStream != null) {
-				try {
-					fileInputStream.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-	}
+    public int getDateNotAfterNumberOfDays() {
+        return dateNotAfterNumberOfDays;
+    }
+
+    public void setDateNotAfterNumberOfDays(int dateNotAfterNumberOfDays) {
+        this.dateNotAfterNumberOfDays = dateNotAfterNumberOfDays;
+    }
+
+    public void generateAndSave(File file) throws JettyKeystoreException {
+        KeyStore keyStore = generate();
+        saveKeyStore(keyStore, file, password);
+    }
+
+    public KeyStore generate() throws JettyKeystoreException {
+        KeyPair keyPair = generateKeyPair(algorithm);
+        X509Certificate x509Certificate = generateX509Certificate(keyPair, domainName, signatureAlgorithm, rdnOuValue, rdnOValue, dateNotBeforeNumberOfDays,
+                dateNotAfterNumberOfDays);
+
+        return generateKeyStore(keyPair, x509Certificate, alias, password);
+    }
+
+    private static X509Certificate generateX509Certificate(KeyPair keyPair, String domainName, String signatureAlgorithm, String rdnOuValue, String rdnOValue,
+            int dateNotBeforeNumberOfDays, int dateNotAfterNumberOfDays) throws JettyKeystoreException {
+
+        X500Name issuer = new X500NameBuilder(BCStyle.INSTANCE).addRDN(BCStyle.OU, rdnOuValue).addRDN(BCStyle.O, rdnOValue).addRDN(BCStyle.CN, domainName).build();
+        BigInteger serial = BigInteger.valueOf(Math.abs(new SecureRandom().nextInt()));
+        Date dateNotBefore = new Date(System.currentTimeMillis() - (dateNotBeforeNumberOfDays * DAY_IN_MILLIS));
+        Date dateNotAfter = new Date(System.currentTimeMillis() + (dateNotAfterNumberOfDays * DAY_IN_MILLIS));
+        X500Name subject = new X500NameBuilder(BCStyle.INSTANCE).addRDN(BCStyle.OU, rdnOuValue).addRDN(BCStyle.O, rdnOValue).addRDN(BCStyle.CN, domainName).build();
+        SubjectPublicKeyInfo publicKeyInfo = new SubjectPublicKeyInfo(ASN1Sequence.getInstance(keyPair.getPublic().getEncoded()));
+
+        X509v3CertificateBuilder x509v3CertificateBuilder = new X509v3CertificateBuilder(issuer, serial, dateNotBefore, dateNotAfter, subject, publicKeyInfo);
+
+        Provider provider = new BouncyCastleProvider();
+
+        try {
+            ContentSigner signer = new JcaContentSignerBuilder(signatureAlgorithm).setProvider(provider).build(keyPair.getPrivate());
+
+            return new JcaX509CertificateConverter().setProvider(provider).getCertificate(x509v3CertificateBuilder.build(signer));
+        } catch (OperatorCreationException e) {
+            throw new JettyKeystoreException(e);
+        } catch (CertificateException e) {
+            throw new JettyKeystoreException(e);
+        }
+    }
+
+    private static KeyPair generateKeyPair(String algorithm) throws JettyKeystoreException {
+        try {
+            KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(algorithm);
+            return keyPairGenerator.generateKeyPair();
+        } catch (NoSuchAlgorithmException e) {
+            throw new JettyKeystoreException(e);
+        }
+    }
+
+    private static KeyStore generateKeyStore(KeyPair keyPair, X509Certificate x509Certificate, String alias, String password) throws JettyKeystoreException {
+        try {
+            KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+            keyStore.load(null, null);
+
+            PrivateKeyEntry privateKeyEntry = new PrivateKeyEntry(keyPair.getPrivate(), new Certificate[] { x509Certificate });
+            keyStore.setEntry(alias, privateKeyEntry, new KeyStore.PasswordProtection(password.toCharArray()));
+
+            return keyStore;
+        } catch (KeyStoreException e) {
+            throw new JettyKeystoreException(e);
+        } catch (NoSuchAlgorithmException e) {
+            throw new JettyKeystoreException(e);
+        } catch (CertificateException e) {
+            throw new JettyKeystoreException(e);
+        } catch (IOException e) {
+            throw new JettyKeystoreException(e);
+        }
+    }
+
+    private static void saveKeyStore(KeyStore keyStore, File file, String password) throws JettyKeystoreException {
+        FileOutputStream fileInputStream = null;
+        try {
+            fileInputStream = new FileOutputStream(file);
+            keyStore.store(fileInputStream, password.toCharArray());
+        } catch (FileNotFoundException e) {
+            throw new JettyKeystoreException(e);
+        } catch (KeyStoreException e) {
+            throw new JettyKeystoreException(e);
+        } catch (NoSuchAlgorithmException e) {
+            throw new JettyKeystoreException(e);
+        } catch (CertificateException e) {
+            throw new JettyKeystoreException(e);
+        } catch (IOException e) {
+            throw new JettyKeystoreException(e);
+        } finally {
+            if (fileInputStream != null) {
+                try {
+                    fileInputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 }

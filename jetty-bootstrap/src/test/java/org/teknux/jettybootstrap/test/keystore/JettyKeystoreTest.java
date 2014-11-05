@@ -42,28 +42,28 @@ import org.teknux.jettybootstrap.keystore.JettyKeystoreException;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class JettyKeystoreTest {
 
-	private static final String KEYSTORE_DOMAINNAME = "unknown";
-	private static final String KEYSTORE_ALIAS = "jettybootstraptest";
-	private static final String KEYSTORE_PASSWORD = "jettybootstraptest";
+    private static final String KEYSTORE_DOMAINNAME = "unknowntest";
+    private static final String KEYSTORE_ALIAS = "jettybootstraptest";
+    private static final String KEYSTORE_PASSWORD = "jettybootstraptest";
 
-	@Test
-	public void do01KeystoreTest() throws JettyKeystoreException, KeyStoreException, InvalidKeyException, CertificateException, NoSuchAlgorithmException, NoSuchProviderException,
-			SignatureException {
-		JettyKeystore jettyKeystore = new JettyKeystore(KEYSTORE_DOMAINNAME, KEYSTORE_ALIAS, KEYSTORE_PASSWORD);
+    @Test
+    public void do01KeystoreTest() throws JettyKeystoreException, KeyStoreException, InvalidKeyException, CertificateException, NoSuchAlgorithmException, NoSuchProviderException,
+            SignatureException {
+        JettyKeystore jettyKeystore = new JettyKeystore(KEYSTORE_DOMAINNAME, KEYSTORE_ALIAS, KEYSTORE_PASSWORD);
 
-		Assert.assertNotEquals(null, jettyKeystore);
+        Assert.assertNotEquals(null, jettyKeystore);
 
-		KeyStore keyStore = jettyKeystore.generate();
+        KeyStore keyStore = jettyKeystore.generate();
 
-		Assert.assertNotEquals(null, keyStore);
+        Assert.assertNotEquals(null, keyStore);
 
-		Certificate certificate = keyStore.getCertificate(KEYSTORE_ALIAS);
+        Certificate certificate = keyStore.getCertificate(KEYSTORE_ALIAS);
 
-		Assert.assertNotEquals(null, certificate);
-		Assert.assertEquals("X509CertificateObject", certificate.getClass().getSimpleName());
-		X509Certificate x509Certificate = (X509Certificate) certificate;
+        Assert.assertNotEquals(null, certificate);
+        Assert.assertEquals("X509CertificateObject", certificate.getClass().getSimpleName());
+        X509Certificate x509Certificate = (X509Certificate) certificate;
 
-		x509Certificate.checkValidity();
-		x509Certificate.verify(keyStore.getCertificate(KEYSTORE_ALIAS).getPublicKey());
-	}
+        x509Certificate.checkValidity();
+        x509Certificate.verify(keyStore.getCertificate(KEYSTORE_ALIAS).getPublicKey());
+    }
 }
