@@ -66,8 +66,8 @@ public class JettyBootstrap {
     public static final File TEMP_DIRECTORY_SYSTEMP = new File(System.getProperty("java.io.tmpdir") + File.separator + TEMP_DIRECTORY_NAME);
     protected static final File TEMP_DIRECTORY_DEFAULT = TEMP_DIRECTORY_JARDIR;
 
-    private static final String RESOURCE_WEBAPP = "/webapp";
-    private static final String CONTEXT_PATH_ROOT = "/";
+    public static final String RESOURCE_WEBAPP = "/webapp";
+    public static final String CONTEXT_PATH_ROOT = "/";
 
     private final IJettyConfiguration iJettyConfiguration;
     private boolean isInitializedConfiguration = false;

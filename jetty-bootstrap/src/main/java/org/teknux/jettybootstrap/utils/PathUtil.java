@@ -26,9 +26,11 @@ import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
+
 public class PathUtil {
+
     private static final String CHARSET_UTF8 = "UTF-8";
-    
+
     /**
      * Get Jar location
      * 
@@ -37,22 +39,23 @@ public class PathUtil {
     public static String getJarDir() {
         return getJarDir(PathUtil.class);
     }
-    
+
     /**
      * Get Jar location
      * 
-     * @param clazz Based on class location
+     * @param clazz
+     *            Based on class location
      * @return String
      */
     public static String getJarDir(Class<?> clazz) {
         return decodeUrl(new File(clazz.getProtectionDomain().getCodeSource().getLocation().getPath()).getParent());
     }
-    
+
     /**
      * Decode Url
      * 
      * @param url
-     * @return
+     * @return decoded url
      */
     private static String decodeUrl(String url) {
         if (url == null) {
