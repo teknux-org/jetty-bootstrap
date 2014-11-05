@@ -59,6 +59,8 @@ public class JettyBootstrap {
 
     private final Logger logger = LoggerFactory.getLogger(JettyBootstrap.class);
 
+    private static final String DEFAULT_KEYSTORE_FILENAME = "default.keystore";
+
     private static final String TEMP_DIRECTORY_NAME = ".temp";
     public static final File TEMP_DIRECTORY_JARDIR = new File(PathUtil.getJarDir() + File.separator + TEMP_DIRECTORY_NAME);
     public static final File TEMP_DIRECTORY_SYSTEMP = new File(System.getProperty("java.io.tmpdir") + File.separator + TEMP_DIRECTORY_NAME);
@@ -492,9 +494,14 @@ public class JettyBootstrap {
             }
 
             logger.trace("Check connectors...");
-            if (iJettyConfiguration.hasJettyConnector(JettyConnector.HTTPS) &&
-                (iJettyConfiguration.getSslKeyStorePath() == null || iJettyConfiguration.getSslKeyStorePath().isEmpty())) {
-                File keystoreFile = new File(iJettyConfiguration.getTempDirectory().getPath() + File.separator + iJettyConfiguration.getSslKeyStoreFileName());
+            if (iJettyConfiguration.hasJettyConnector(JettyConnector.HTTPS)) {
+                String keystoreFilePath = iJettyConfiguration.getSslKeyStorePath();
+
+                if (keystoreFilePath == null || keystoreFilePath.isEmpty()) {
+                    keystoreFilePath = iJettyConfiguration.getTempDirectory().getPath() + File.separator + DEFAULT_KEYSTORE_FILENAME;
+                }
+
+                File keystoreFile = new File(keystoreFilePath);
 
                 if (!keystoreFile.exists()) {
                     try {
@@ -512,7 +519,7 @@ public class JettyBootstrap {
                         throw new JettyBootstrapException("Can't generate keyStore", e);
                     }
                 }
-                iJettyConfiguration.setSslKeyStorePath(keystoreFile.getPath());
+                iJettyConfiguration.setSslKeyStorePath(keystoreFilePath);
                 iJettyConfiguration.setSslKeyStorePassword(iJettyConfiguration.getSslKeyStorePassword());
             }
 

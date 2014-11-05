@@ -203,20 +203,6 @@ public interface IJettyConfiguration extends Cloneable {
     void setSslKeyStorePath(String sslKeyStorePath);
 
     /**
-     * Get the SSL keystore filename
-     * 
-     * @return the filename
-     */
-    String getSslKeyStoreFileName();
-
-    /**
-     * Set the SSL keystore filename
-     * 
-     * @param sslKeyStoreFileName
-     */
-    void setSslKeyStoreFileName(String sslKeyStoreFileName);
-
-    /**
      * Get the SSL keystore domain name
      * 
      * @return sslKeyStoreDomainName

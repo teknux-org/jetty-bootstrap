@@ -49,7 +49,6 @@ public class JettyConfiguration implements IJettyConfiguration {
     private boolean redirectWebAppsOnHttpsConnector = false;
 
     private String sslKeyStorePath = null;
-    private String sslKeyStoreFileName = "default.keystore";
     private String sslKeyStoreDomainName = "unknown";
     private String sslKeyStoreAlias = "jettybootstrap";
     private String sslKeyStorePassword = "jettybootstrap";
@@ -257,24 +256,6 @@ public class JettyConfiguration implements IJettyConfiguration {
     @Override
     public void setSslKeyStorePath(String sslKeyStorePath) {
         this.sslKeyStorePath = sslKeyStorePath;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.teknux.jettybootstrap.configuration.IJettyConfiguration#getSslKeyStoreFileName()
-     */
-    @Override
-    public String getSslKeyStoreFileName() {
-        return sslKeyStoreFileName;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see org.teknux.jettybootstrap.configuration.IJettyConfiguration#setSslKeyStoreFileName(java.lang.String)
-     */
-    @Override
-    public void setSslKeyStoreFileName(String sslKeyStoreFileName) {
-        this.sslKeyStoreFileName = sslKeyStoreFileName;
     }
 
     /*
@@ -543,12 +524,12 @@ public class JettyConfiguration implements IJettyConfiguration {
     public String toString() {
         return "JettyConfiguration [autoJoinOnStart=" + autoJoinOnStart + ", maxThreads=" + maxThreads + ", stopAtShutdown=" + stopAtShutdown + ", stopTimeout=" + stopTimeout +
             ", idleTimeout=" + idleTimeout + ", host=" + host + ", port=" + port + ", sslPort=" + sslPort + ", jettyConnectors=" + jettyConnectors +
-            ", redirectWebAppsOnHttpsConnector=" + redirectWebAppsOnHttpsConnector + ", sslKeyStorePath=" + sslKeyStorePath + ", sslKeyStoreFileName=" + sslKeyStoreFileName +
-            ", sslKeyStoreDomainName=" + sslKeyStoreDomainName + ", sslKeyStoreAlias=" + sslKeyStoreAlias + ", sslKeyStorePassword=" + sslKeyStorePassword +
-            ", sslKeyStoreAlgorithm=" + sslKeyStoreAlgorithm + ", sslKeyStoreSignatureAlgorithm=" + sslKeyStoreSignatureAlgorithm + ", sslKeyStoreRdnOuValue=" +
-            sslKeyStoreRdnOuValue + ", sslKeyStoreRdnOValue=" + sslKeyStoreRdnOValue + ", sslKeyStoreDateNotBeforeNumberOfDays=" + sslKeyStoreDateNotBeforeNumberOfDays +
-            ", sslKeyStoreDateNotAfterNumberOfDays=" + sslKeyStoreDateNotAfterNumberOfDays + ", tempDirectory=" + tempDirectory + ", persistAppTempDirectories=" +
-            persistAppTempDirectories + ", cleanTempDir=" + cleanTempDir + ", parentLoaderPriority=" + parentLoaderPriority + ", throwIfStartupException=" +
-            throwIfStartupException + ", maxInactiveInterval=" + maxInactiveInterval + "]";
+            ", redirectWebAppsOnHttpsConnector=" + redirectWebAppsOnHttpsConnector + ", sslKeyStorePath=" + sslKeyStorePath + ", sslKeyStoreDomainName=" + sslKeyStoreDomainName +
+            ", sslKeyStoreAlias=" + sslKeyStoreAlias + ", sslKeyStorePassword=" + sslKeyStorePassword + ", sslKeyStoreAlgorithm=" + sslKeyStoreAlgorithm +
+            ", sslKeyStoreSignatureAlgorithm=" + sslKeyStoreSignatureAlgorithm + ", sslKeyStoreRdnOuValue=" + sslKeyStoreRdnOuValue + ", sslKeyStoreRdnOValue=" +
+            sslKeyStoreRdnOValue + ", sslKeyStoreDateNotBeforeNumberOfDays=" + sslKeyStoreDateNotBeforeNumberOfDays + ", sslKeyStoreDateNotAfterNumberOfDays=" +
+            sslKeyStoreDateNotAfterNumberOfDays + ", tempDirectory=" + tempDirectory + ", persistAppTempDirectories=" + persistAppTempDirectories + ", cleanTempDir=" +
+            cleanTempDir + ", parentLoaderPriority=" + parentLoaderPriority + ", throwIfStartupException=" + throwIfStartupException + ", maxInactiveInterval=" +
+            maxInactiveInterval + "]";
     }
 }
