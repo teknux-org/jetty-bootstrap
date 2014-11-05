@@ -58,12 +58,12 @@ public class JettyKeystore {
     public static final String ALGORITHM_RSA = "RSA";
     public static final String SIGNATURE_ALGORITHM_SHA256WITHRSA = "SHA256WithRSAEncryption";
 
-    private static final String DEFAULT_ALGORITHM = ALGORITHM_RSA;
-    private static final String DEFAULT_SIGNATURE_ALGORITHM = SIGNATURE_ALGORITHM_SHA256WITHRSA;
-    private static final String DEFAULT_RDN_OU_VALUE = "None";
-    private static final String DEFAULT_RDN_O_VALUE = "None";
-    private static final int DEFAULT_DATE_NOT_BEFORE_NUMBER_OF_DAYS = 30;
-    private static final int DEFAULT_DATE_NOT_AFTER_NUMBER_OF_DAYS = 3650;
+    public static final String DEFAULT_ALGORITHM = ALGORITHM_RSA;
+    public static final String DEFAULT_SIGNATURE_ALGORITHM = SIGNATURE_ALGORITHM_SHA256WITHRSA;
+    public static final String DEFAULT_RDN_OU_VALUE = "None";
+    public static final String DEFAULT_RDN_O_VALUE = "None";
+    public static final int DEFAULT_DATE_NOT_BEFORE_NUMBER_OF_DAYS = 30;
+    public static final int DEFAULT_DATE_NOT_AFTER_NUMBER_OF_DAYS = 3650;
 
     private static final Long DAY_IN_MILLIS = 1000L * 60 * 60 * 24;
 

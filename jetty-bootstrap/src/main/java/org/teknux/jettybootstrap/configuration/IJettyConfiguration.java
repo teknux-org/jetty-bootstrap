@@ -28,265 +28,377 @@ import org.eclipse.jetty.server.AbstractConnector;
 
 
 /**
- * This interface represents all the available configuration
- * options for the jetty server
+ * This interface represents all the available configuration options for the jetty server
  */
 public interface IJettyConfiguration extends Cloneable {
 
     IJettyConfiguration clone();
-    
-	/**
-	 * @return <code>true</code> to join jetty with main
-	 *         thread.
-	 */
-	boolean isAutoJoinOnStart();
 
-	/**
-	 * Set whether or not main thread should join jetty
-	 * ones.
-	 * 
-	 * @param autoJoinOnStart boolean
-	 */
-	void setAutoJoinOnStart(boolean autoJoinOnStart);
+    /**
+     * @return <code>true</code> to join jetty with main thread.
+     */
+    boolean isAutoJoinOnStart();
 
-	/**
-	 * @return maximum number of threads jetty is allowed
-	 *         handle.
-	 */
-	int getMaxThreads();
+    /**
+     * Set whether or not main thread should join jetty ones.
+     * 
+     * @param autoJoinOnStart
+     *            boolean
+     */
+    void setAutoJoinOnStart(boolean autoJoinOnStart);
 
-	/**
-	 * Set the maximum number of threads jetty is allowed
-	 * handle.
-	 * 
-	 * @param maxThreads int
-	 */
-	void setMaxThreads(int maxThreads);
+    /**
+     * @return maximum number of threads jetty is allowed handle.
+     */
+    int getMaxThreads();
 
-	/**
-	 * Is jetty server must be stopped whenever the
-	 * jettybootstrap stops. Otherwise jetty remains
-	 * running.
-	 * 
-	 * @return <code>true</code> to stop jetty at
-	 *         application stop. <code>false</code> to keep
-	 *         jetty running after the application life.
-	 */
-	boolean isStopAtShutdown();
+    /**
+     * Set the maximum number of threads jetty is allowed handle.
+     * 
+     * @param maxThreads
+     *            int
+     */
+    void setMaxThreads(int maxThreads);
 
-	/**
-	 * Set whether or not the jetty server must be stopped
-	 * whenever the main application stops. Otherwise jetty
-	 * remains running.
-	 * 
-	 * @param stopAtShutdown boolean
-	 */
-	void setStopAtShutdown(boolean stopAtShutdown);
+    /**
+     * Is jetty server must be stopped whenever the jettybootstrap stops. Otherwise jetty remains running.
+     * 
+     * @return <code>true</code> to stop jetty at application stop. <code>false</code> to keep jetty running after the application life.
+     */
+    boolean isStopAtShutdown();
 
-	/**
-	 * @return the timeout before forcing jetty to stop.
-	 */
-	long getStopTimeout();
+    /**
+     * Set whether or not the jetty server must be stopped whenever the main application stops. Otherwise jetty remains running.
+     * 
+     * @param stopAtShutdown
+     *            boolean
+     */
+    void setStopAtShutdown(boolean stopAtShutdown);
 
-	/**
-	 * Set the timeout before forcing jetty to stop.
-	 * 
-	 * @param stopTimeout long
-	 */
-	void setStopTimeout(long stopTimeout);
+    /**
+     * @return the timeout before forcing jetty to stop.
+     */
+    long getStopTimeout();
 
-	/**
-	 * Get the connectors max idle time for a connection.
-	 * This applies to all connectors.
-	 * 
-	 * @see AbstractConnector#setIdleTimeout
-	 * @return the idle time.
-	 */
-	long getIdleTimeout();
+    /**
+     * Set the timeout before forcing jetty to stop.
+     * 
+     * @param stopTimeout
+     *            long
+     */
+    void setStopTimeout(long stopTimeout);
 
-	/**
-	 * Set the connectors max idle time for a connection.
-	 * This applies to all connectors.
-	 * 
-	 * @see AbstractConnector#setIdleTimeout
-	 * @param idleTimeout long
-	 */
-	void setIdleTimeout(long idleTimeout);
+    /**
+     * Get the connectors max idle time for a connection. This applies to all connectors.
+     * 
+     * @see AbstractConnector#setIdleTimeout
+     * @return the idle time.
+     */
+    long getIdleTimeout();
 
-	/**
-	 * Get the server host IP/Name.
-	 * 
-	 * @return String
-	 */
-	String getHost();
+    /**
+     * Set the connectors max idle time for a connection. This applies to all connectors.
+     * 
+     * @see AbstractConnector#setIdleTimeout
+     * @param idleTimeout
+     *            long
+     */
+    void setIdleTimeout(long idleTimeout);
 
-	/**
-	 * Set the server host IP/Name.
-	 * 
-	 * @param host String
-	 */
-	void setHost(String host);
+    /**
+     * Get the server host IP/Name.
+     * 
+     * @return String
+     */
+    String getHost();
 
-	/**
-	 * Get the HTTP port number.
-	 * 
-	 * @return int
-	 */
-	int getPort();
+    /**
+     * Set the server host IP/Name.
+     * 
+     * @param host
+     *            String
+     */
+    void setHost(String host);
 
-	/**
-	 * Set the HTTP port number.
-	 * 
-	 * @param port int
-	 */
-	void setPort(int port);
+    /**
+     * Get the HTTP port number.
+     * 
+     * @return int
+     */
+    int getPort();
 
-	/**
-	 * Get the port number for SSL (HTTPS).
-	 * 
-	 * @return int
-	 */
-	int getSslPort();
+    /**
+     * Set the HTTP port number.
+     * 
+     * @param port
+     *            int
+     */
+    void setPort(int port);
 
-	/**
-	 * Set the port number used for SSL (HTTPS).
-	 * 
-	 * @param sslPort int
-	 */
-	void setSslPort(int sslPort);
+    /**
+     * Get the port number for SSL (HTTPS).
+     * 
+     * @return int
+     */
+    int getSslPort();
 
-	/**
-	 * Check whether or not the given {@link JettyConnector}
-	 * has to be supported by the server.
-	 * 
-	 * @param jettyConnector JettyConnector
-	 * @return boolean
-	 */
-	boolean hasJettyConnector(JettyConnector jettyConnector);
+    /**
+     * Set the port number used for SSL (HTTPS).
+     * 
+     * @param sslPort
+     *            int
+     */
+    void setSslPort(int sslPort);
 
-	/**
-	 * Get the collection of connectors the server as to
-	 * use.
-	 * 
-	 * @return Set of JettyConnector
-	 */
-	Set<JettyConnector> getJettyConnectors();
+    /**
+     * Check whether or not the given {@link JettyConnector} has to be supported by the server.
+     * 
+     * @param jettyConnector
+     *            JettyConnector
+     * @return boolean
+     */
+    boolean hasJettyConnector(JettyConnector jettyConnector);
 
-	/**
-	 * Set what connectors the server has to use.
-	 * 
-	 * @param jettyConnectors JettyConnector Array
-	 */
-	void setJettyConnectors(JettyConnector... jettyConnectors);
+    /**
+     * Get the collection of connectors the server as to use.
+     * 
+     * @return Set of JettyConnector
+     */
+    Set<JettyConnector> getJettyConnectors();
 
-	/**
-	 * @return <code>true</code> if all http requests have
-	 *         to be redirected to https. <code>false</code>
-	 *         otherwise.
-	 */
-	boolean isRedirectWebAppsOnHttpsConnector();
+    /**
+     * Set what connectors the server has to use.
+     * 
+     * @param jettyConnectors
+     *            JettyConnector Array
+     */
+    void setJettyConnectors(JettyConnector... jettyConnectors);
 
-	/**
-	 * Set whether or not the server must redirect http
-	 * request to https.
-	 * 
-	 * @param redirectWebAppsOnHttpsConnector
-	 *            <code>true</code> to redirect all http
-	 *            request to https. <code>false</code>
-	 *            otherwise.
-	 */
-	void setRedirectWebAppsOnHttpsConnector(boolean redirectWebAppsOnHttpsConnector);
+    /**
+     * @return <code>true</code> if all http requests have to be redirected to https. <code>false</code> otherwise.
+     */
+    boolean isRedirectWebAppsOnHttpsConnector();
 
-	/**
-	 * Get the password of the SSL keystore file.
-	 * 
-	 * @return the SSL keystore file password
-	 */
-	String getSslKeyStorePassword();
+    /**
+     * Set whether or not the server must redirect http request to https.
+     * 
+     * @param redirectWebAppsOnHttpsConnector
+     *            <code>true</code> to redirect all http request to https. <code>false</code> otherwise.
+     */
+    void setRedirectWebAppsOnHttpsConnector(boolean redirectWebAppsOnHttpsConnector);
 
-	/**
-	 * Set the password of the SSL keystore file.
-	 * 
-	 * @param sslKeyStorePassword String
-	 */
-	void setSslKeyStorePassword(String sslKeyStorePassword);
+    /**
+     * Get the SSL keystore file path, used for HTTPS support.
+     * 
+     * @return the path of the SSL keystore file.
+     */
+    String getSslKeyStorePath();
 
-	/**
-	 * Get the SSL keystore file path, used for HTTPS
-	 * support.
-	 * 
-	 * @return the path of the SSL keystore file.
-	 */
-	String getSslKeyStorePath();
+    /**
+     * Set the SSL keystore file path used for HTTPS support.
+     * 
+     * @param sslKeyStorePath
+     *            String
+     */
+    void setSslKeyStorePath(String sslKeyStorePath);
 
-	/**
-	 * Set the SSL keystore file path used for HTTPS
-	 * support.
-	 * 
-	 * @param sslKeyStorePath String
-	 */
-	void setSslKeyStorePath(String sslKeyStorePath);
+    /**
+     * Get the SSL keystore filename
+     * 
+     * @return the filename
+     */
+    String getSslKeyStoreFileName();
 
-	/**
-	 * @return the temporary directory used to deploy
-	 *         applications.
-	 */
-	File getTempDirectory();
+    /**
+     * Set the SSL keystore filename
+     * 
+     * @param sslKeyStoreFileName
+     */
+    void setSslKeyStoreFileName(String sslKeyStoreFileName);
 
-	/**
-	 * Set the temporary directory used to deploy
-	 * applications.
-	 * 
-	 * @param tempDirectory File
-	 */
-	void setTempDirectory(File tempDirectory);
+    /**
+     * Get the SSL keystore domain name
+     * 
+     * @return sslKeyStoreDomainName
+     */
+    String getSslKeyStoreDomainName();
 
-	/**
-	 * @return <code>true</code> in case the applications
-	 *         temporary directory contents must be
-	 *         preserved over server stop/start.
-	 *         <code>false</code> otherwise.
-	 */
-	boolean isPersistAppTempDirectories();
+    /**
+     * Set the SSL keystore domain name
+     * 
+     * @param sslKeyStoreDomainName
+     */
+    void setSslKeyStoreDomainName(String sslKeyStoreDomainName);
 
-	/**
-	 * Set whether or not the applications temporary
-	 * directory must be preserved over restart.
-	 * 
-	 * @param persistTempDirectory boolean
-	 */
-	void setPersistAppTempDirectories(boolean persistTempDirectory);
+    /**
+     * Get the SSL keystore alias
+     * 
+     * @return sslKeyStoreAlias
+     */
+    String getSslKeyStoreAlias();
 
-	/**
-	 * @return <code>true</code> in case the server has to
-	 *         clear the temp directory before starting.
-	 */
-	boolean isCleanTempDir();
+    /**
+     * Set the SSL keystore alias
+     * 
+     * @param sslKeyStoreAlias
+     */
+    void setSslKeyStoreAlias(String sslKeyStoreAlias);
 
-	/**
-	 * Set whether or not a clear of the temp directory is
-	 * needed before starting up the server.
-	 * 
-	 * @param cleanTempDir boolean
-	 */
-	void setCleanTempDir(boolean cleanTempDir);
+    /**
+     * Get the password of the SSL keystore file.
+     * 
+     * @return the SSL keystore file password
+     */
+    String getSslKeyStorePassword();
 
-	boolean isParentLoaderPriority();
+    /**
+     * Set the password of the SSL keystore file.
+     * 
+     * @param sslKeyStorePassword
+     *            String
+     */
+    void setSslKeyStorePassword(String sslKeyStorePassword);
 
-	void setParentLoaderPriority(boolean parentLoaderPriority);
-	
-	/**
-	 * @return <code>true</code> if server is setup to stop when a web application startup fails
-	 */
-	boolean isThrowIfStartupException();
-	
-	/**
-	 * Set whether or not the server should stop when a web application startup fails
-	 * 
-	 * @param throwIfStartupException boolean
-	 */
-	void setThrowIfStartupException(boolean throwIfStartupException);
-	
+    /**
+     * Get the SSL keystore algorithm
+     * 
+     * @return sslKeyStoreAlgorithm
+     */
+    String getSslKeyStoreAlgorithm();
+
+    /**
+     * Set the SSL keystore algorithm
+     * 
+     * @param sslKeyStoreAlgorithm
+     */
+    void setSslKeyStoreAlgorithm(String sslKeyStoreAlgorithm);
+
+    /**
+     * Get the SSL keystore signature algorithm
+     * 
+     * @return sslKeyStoreSignatureAlgorithm
+     */
+    String getSslKeyStoreSignatureAlgorithm();
+
+    /**
+     * Set the SSL keystore signature algorithm
+     * 
+     * @param sslKeyStoreSignatureAlgorithm
+     */
+    void setSslKeyStoreSignatureAlgorithm(String sslKeyStoreSignatureAlgorithm);
+
+    /**
+     * Get the SSL keystore RDN OU Value
+     * 
+     * @return sslKeyStoreRdnOuValue
+     */
+    String getSslKeyStoreRdnOuValue();
+
+    /**
+     * Set the SSL keystore RDN OU Value
+     * 
+     * @param sslKeyStoreRdnOuValue
+     */
+    void setSslKeyStoreRdnOuValue(String sslKeyStoreRdnOuValue);
+
+    /**
+     * Get the SSL keystore RDN O Value
+     * 
+     * @return sslKeyStoreRdnOValue
+     */
+    String getSslKeyStoreRdnOValue();
+
+    /**
+     * Set the SSL keystore RDN O Value
+     * 
+     * @param sslKeyStoreRdnOValue
+     */
+    void setSslKeyStoreRdnOValue(String sslKeyStoreRdnOValue);
+
+    /**
+     * Get the SSL keystore number of days before validity
+     * 
+     * @return sslKeyStoreDateNotBeforeNumberOfDays
+     */
+    int getSslKeyStoreDateNotBeforeNumberOfDays();
+
+    /**
+     * Set the ssl keystore number of days before validaty
+     * 
+     * @param sslKeyStoreDateNotBeforeNumberOfDays
+     */
+    void setSslKeyStoreDateNotBeforeNumberOfDays(int sslKeyStoreDateNotBeforeNumberOfDays);
+
+    /**
+     * Get the SSL keystore number of days after validity
+     * 
+     * @return sslKeyStoreDateNotAgterNumberOfDays
+     */
+    int getSslKeyStoreDateNotAfterNumberOfDays();
+
+    /**
+     * Set the ssl keystore number of days after validaty
+     * 
+     * @param sslKeyStoreDateNotAfterNumberOfDays
+     */
+    void setSslKeyStoreDateNotAfterNumberOfDays(int sslKeyStoreDateNotAfterNumberOfDays);
+
+    /**
+     * @return the temporary directory used to deploy applications.
+     */
+    File getTempDirectory();
+
+    /**
+     * Set the temporary directory used to deploy applications.
+     * 
+     * @param tempDirectory
+     *            File
+     */
+    void setTempDirectory(File tempDirectory);
+
+    /**
+     * @return <code>true</code> in case the applications temporary directory contents must be preserved over server stop/start. <code>false</code> otherwise.
+     */
+    boolean isPersistAppTempDirectories();
+
+    /**
+     * Set whether or not the applications temporary directory must be preserved over restart.
+     * 
+     * @param persistTempDirectory
+     *            boolean
+     */
+    void setPersistAppTempDirectories(boolean persistTempDirectory);
+
+    /**
+     * @return <code>true</code> in case the server has to clear the temp directory before starting.
+     */
+    boolean isCleanTempDir();
+
+    /**
+     * Set whether or not a clear of the temp directory is needed before starting up the server.
+     * 
+     * @param cleanTempDir
+     *            boolean
+     */
+    void setCleanTempDir(boolean cleanTempDir);
+
+    boolean isParentLoaderPriority();
+
+    void setParentLoaderPriority(boolean parentLoaderPriority);
+
+    /**
+     * @return <code>true</code> if server is setup to stop when a web application startup fails
+     */
+    boolean isThrowIfStartupException();
+
+    /**
+     * Set whether or not the server should stop when a web application startup fails
+     * 
+     * @param throwIfStartupException
+     *            boolean
+     */
+    void setThrowIfStartupException(boolean throwIfStartupException);
+
     /**
      * @return the max period of inactivity, after which the session is invalidated, in seconds.
      */
@@ -295,7 +407,8 @@ public interface IJettyConfiguration extends Cloneable {
     /**
      * Sets the max period of inactivity, after which the session is invalidated, in seconds.
      *
-     * @param seconds the max inactivity period, in seconds.
+     * @param seconds
+     *            the max inactivity period, in seconds.
      */
     public void setMaxInactiveInterval(int seconds);
 }

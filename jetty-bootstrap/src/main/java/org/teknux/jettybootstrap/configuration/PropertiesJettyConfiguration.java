@@ -30,198 +30,246 @@ import org.teknux.jettybootstrap.utils.PropertiesUtil;
 
 
 /**
- * {@link IJettyConfiguration} implementation based on
- * properties. By default (empty constructor), system
- * properties are used. In addition (lower priority), a
- * {@link Properties} object can be passed to first look
- * into it for configuration values.
+ * {@link IJettyConfiguration} implementation based on properties. By default (empty constructor), system properties are used. In addition (lower priority), a {@link Properties}
+ * object can be passed to first look into it for configuration values.
  * <p>
- * Partial configuration is supported since this is an
- * override of defaults.
+ * Partial configuration is supported since this is an override of defaults.
  * 
  * @author "Francois EYL"
  */
 public class PropertiesJettyConfiguration extends JettyConfiguration {
 
-	public static final String CONNECTOR_SEPARATOR = ",";
+    public static final String CONNECTOR_SEPARATOR = ",";
 
-	public static final String KEY_AUTO_JOIN_ON_START = "autoJoinOnStart";
-	public static final String KEY_MAX_THREADS = "maxThreads";
-	public static final String KEY_STOP_AT_SHUTDOWN = "stopAtShutdown";
-	public static final String KEY_STOP_TIMEOUT = "stopTimeout";
-	public static final String KEY_IDLE_TIMEOUT = "idleTimeout";
-	public static final String KEY_HOST = "host";
-	public static final String KEY_PORT = "port";
-	public static final String KEY_SSL_PORT = "sslPort";
-	public static final String KEY_CONNECTORS = "connectors";
-	public static final String KEY_REDIRECT_WEBAPPS_ON_HTTPS = "redirectWebAppsOnHttpsConnector";
-	public static final String KEY_SSL_KEYSTORE_PASSWORD = "sslKeystorePassword";
-	public static final String KEY_SSL_KEYSTORE_PATH = "sslKeystorePath";
-	public static final String KEY_TEMP_DIR = "tempDirectory";
-	public static final String KEY_PERSIST_APP_TEMP_DIR = "persistAppTempDirectories";
-	public static final String KEY_CLEAN_TEMP_DIR = "cleanTempDir";
-	public static final String KEY_PARENT_LOADER_PRIORITY = "parentLoaderPriority";
-	public static final String KEY_THROW_IF_STARTUP_EXCEPTION = "throwIfStartupException";
-	public static final String KEY_MAX_INACTIVE_INTERVAL = "maxInactiveInterval";
+    public static final String KEY_AUTO_JOIN_ON_START = "autoJoinOnStart";
+    public static final String KEY_MAX_THREADS = "maxThreads";
+    public static final String KEY_STOP_AT_SHUTDOWN = "stopAtShutdown";
+    public static final String KEY_STOP_TIMEOUT = "stopTimeout";
+    public static final String KEY_IDLE_TIMEOUT = "idleTimeout";
+    public static final String KEY_HOST = "host";
+    public static final String KEY_PORT = "port";
+    public static final String KEY_SSL_PORT = "sslPort";
+    public static final String KEY_CONNECTORS = "connectors";
+    public static final String KEY_REDIRECT_WEBAPPS_ON_HTTPS = "redirectWebAppsOnHttpsConnector";
 
-	/**
-	 * Basic constructor. Only system properties are used to
-	 * map jetty configuration.
-	 */
-	public PropertiesJettyConfiguration() {
-		this(null);
-	}
+    public static final String KEY_SSL_KEYSTORE_PATH = "sslKeystorePath";
+    public static final String KEY_SSL_KEYSTORE_FILENAME = "sslKeystoreFilename";
+    public static final String KEY_SSL_KEYSTORE_DOMAINNAME = "sslKeyStoreDomainName";
+    public static final String KEY_SSL_KEYSTORE_ALIAS = "sslKeyStoreAlias";
+    public static final String KEY_SSL_KEYSTORE_PASSWORD = "sslKeystorePassword";
+    public static final String KEY_SSL_KEYSTORE_ALGORITHM = "sslKeyStoreAlgorithm";
+    public static final String KEY_SSL_KEYSTORE_SIGNATURE_ALGORITHM = "sslKeyStoreSignatureAlgorithm";
+    public static final String KEY_SSL_KEYSTORE_RDN_OU_VALUE = "sslKeyStoreRdnOuValue";
+    public static final String KEY_SSL_KEYSTORE_RDN_O_VALUE = "sslKeyStoreRdnOValue";
+    public static final String KEY_SSL_KEYSTORE_DATE_NOT_BEFORE_NUMBER_OF_DAYS = "sslKeyStoreDateNotBeforeNumberOfDays";
+    public static final String KEY_SSL_KEYSTORE_DATE_NOT_AFTER_NUMBER_OF_DAYS = "sslKeyStoreDateNotAfterNumberOfDays";
 
-	/**
-	 * First load the given {@link Properties} to map jetty
-	 * configuration, system properties are applied after.
-	 * This means system properties have higher priorities
-	 * that the provided ones.
-	 * 
-	 * @param properties Properties
-	 */
-	public PropertiesJettyConfiguration(Properties properties) {
-		this(properties, false);
-	}
+    public static final String KEY_TEMP_DIR = "tempDirectory";
+    public static final String KEY_PERSIST_APP_TEMP_DIR = "persistAppTempDirectories";
+    public static final String KEY_CLEAN_TEMP_DIR = "cleanTempDir";
+    public static final String KEY_PARENT_LOADER_PRIORITY = "parentLoaderPriority";
+    public static final String KEY_THROW_IF_STARTUP_EXCEPTION = "throwIfStartupException";
+    public static final String KEY_MAX_INACTIVE_INTERVAL = "maxInactiveInterval";
 
-	/**
-	 * First load the given {@link Properties} to map jetty
-	 * configuration, system properties are applied after.
-	 * This means system properties have higher priorities
-	 * that the provided ones.
-	 * 
-	 * @param properties Properties
-	 * @param ignoreSystemProperties boolean
-	 */
-	public PropertiesJettyConfiguration(Properties properties, boolean ignoreSystemProperties) {
-		if (properties != null) {
-			//load given properties first
-			loadProperties(properties);
-		}
+    /**
+     * Basic constructor. Only system properties are used to map jetty configuration.
+     */
+    public PropertiesJettyConfiguration() {
+        this(null);
+    }
 
-		if (!ignoreSystemProperties) {
-			//load system properties
-			loadProperties(System.getProperties());
-		}
-	}
+    /**
+     * First load the given {@link Properties} to map jetty configuration, system properties are applied after. This means system properties have higher priorities that the
+     * provided ones.
+     * 
+     * @param properties
+     *            Properties
+     */
+    public PropertiesJettyConfiguration(Properties properties) {
+        this(properties, false);
+    }
 
-	private void loadProperties(Properties properties) {
-		Boolean autoJoin = PropertiesUtil.parseBoolean(properties, KEY_AUTO_JOIN_ON_START);
-		if (autoJoin != null) {
-			setAutoJoinOnStart(autoJoin);
-		}
+    /**
+     * First load the given {@link Properties} to map jetty configuration, system properties are applied after. This means system properties have higher priorities that the
+     * provided ones.
+     * 
+     * @param properties
+     *            Properties
+     * @param ignoreSystemProperties
+     *            boolean
+     */
+    public PropertiesJettyConfiguration(Properties properties, boolean ignoreSystemProperties) {
+        if (properties != null) {
+            //load given properties first
+            loadProperties(properties);
+        }
 
-		Integer maxThreads = PropertiesUtil.parseInt(properties, KEY_MAX_THREADS);
-		if (maxThreads != null) {
-			setMaxThreads(maxThreads);
-		}
+        if (!ignoreSystemProperties) {
+            //load system properties
+            loadProperties(System.getProperties());
+        }
+    }
 
-		Boolean stopAtShutdown = PropertiesUtil.parseBoolean(properties, KEY_STOP_AT_SHUTDOWN);
-		if (stopAtShutdown != null) {
-			setStopAtShutdown(stopAtShutdown);
-		}
+    private void loadProperties(Properties properties) {
+        Boolean autoJoin = PropertiesUtil.parseBoolean(properties, KEY_AUTO_JOIN_ON_START);
+        if (autoJoin != null) {
+            setAutoJoinOnStart(autoJoin);
+        }
 
-		Long stopTimeout = PropertiesUtil.parseLong(properties, KEY_STOP_TIMEOUT);
-		if (stopTimeout != null) {
-			setStopTimeout(stopTimeout);
-		}
+        Integer maxThreads = PropertiesUtil.parseInt(properties, KEY_MAX_THREADS);
+        if (maxThreads != null) {
+            setMaxThreads(maxThreads);
+        }
 
-		Long idleTimeout = PropertiesUtil.parseLong(properties, KEY_IDLE_TIMEOUT);
-		if (idleTimeout != null) {
-			setIdleTimeout(idleTimeout);
-		}
+        Boolean stopAtShutdown = PropertiesUtil.parseBoolean(properties, KEY_STOP_AT_SHUTDOWN);
+        if (stopAtShutdown != null) {
+            setStopAtShutdown(stopAtShutdown);
+        }
 
-		String host = properties.getProperty(KEY_HOST);
-		if (host != null) {
-			setHost(host);
-		}
+        Long stopTimeout = PropertiesUtil.parseLong(properties, KEY_STOP_TIMEOUT);
+        if (stopTimeout != null) {
+            setStopTimeout(stopTimeout);
+        }
 
-		Integer port = PropertiesUtil.parseInt(properties, KEY_PORT);
-		if (port != null) {
-			setPort(port);
-		}
+        Long idleTimeout = PropertiesUtil.parseLong(properties, KEY_IDLE_TIMEOUT);
+        if (idleTimeout != null) {
+            setIdleTimeout(idleTimeout);
+        }
 
-		Integer sslPort = PropertiesUtil.parseInt(properties, KEY_SSL_PORT);
-		if (sslPort != null) {
-			setSslPort(sslPort);
-		}
+        String host = properties.getProperty(KEY_HOST);
+        if (host != null) {
+            setHost(host);
+        }
 
-		JettyConnector[] connectors = parseConnectors(PropertiesUtil.parseArray(properties, KEY_CONNECTORS, CONNECTOR_SEPARATOR));
-		if (connectors != null) {
-			setJettyConnectors(connectors);
-		}
+        Integer port = PropertiesUtil.parseInt(properties, KEY_PORT);
+        if (port != null) {
+            setPort(port);
+        }
 
-		Boolean redirectOnSSL = PropertiesUtil.parseBoolean(properties, KEY_REDIRECT_WEBAPPS_ON_HTTPS);
-		if (redirectOnSSL != null) {
-			setRedirectWebAppsOnHttpsConnector(redirectOnSSL);
-		}
+        Integer sslPort = PropertiesUtil.parseInt(properties, KEY_SSL_PORT);
+        if (sslPort != null) {
+            setSslPort(sslPort);
+        }
 
-		String sslKeystorePath = properties.getProperty(KEY_SSL_KEYSTORE_PATH);
-		if (sslKeystorePath != null) {
-			setSslKeyStorePath(sslKeystorePath);
-		}
+        JettyConnector[] connectors = parseConnectors(PropertiesUtil.parseArray(properties, KEY_CONNECTORS, CONNECTOR_SEPARATOR));
+        if (connectors != null) {
+            setJettyConnectors(connectors);
+        }
 
-		String sslKeystorePwd = properties.getProperty(KEY_SSL_KEYSTORE_PASSWORD);
-		if (sslKeystorePwd != null) {
-			setSslKeyStorePassword(sslKeystorePwd);
-		}
+        Boolean redirectOnSSL = PropertiesUtil.parseBoolean(properties, KEY_REDIRECT_WEBAPPS_ON_HTTPS);
+        if (redirectOnSSL != null) {
+            setRedirectWebAppsOnHttpsConnector(redirectOnSSL);
+        }
 
-		String tempDir = properties.getProperty(KEY_TEMP_DIR);
-		if (tempDir != null) {
-			setTempDirectory(new File(tempDir));
-		}
+        String sslKeystorePath = properties.getProperty(KEY_SSL_KEYSTORE_PATH);
+        if (sslKeystorePath != null) {
+            setSslKeyStorePath(sslKeystorePath);
+        }
 
-		Boolean persistAppTempDir = PropertiesUtil.parseBoolean(properties, KEY_PERSIST_APP_TEMP_DIR);
-		if (persistAppTempDir != null) {
-			setPersistAppTempDirectories(persistAppTempDir);
-		}
+        String sslKeystoreFileName = properties.getProperty(KEY_SSL_KEYSTORE_FILENAME);
+        if (sslKeystoreFileName != null) {
+            setSslKeyStoreFileName(sslKeystoreFileName);
+        }
 
-		Boolean cleanTempDir = PropertiesUtil.parseBoolean(properties, KEY_CLEAN_TEMP_DIR);
-		if (cleanTempDir != null) {
-			setCleanTempDir(cleanTempDir);
-		}
+        String sslKeystoreDomainName = properties.getProperty(KEY_SSL_KEYSTORE_DOMAINNAME);
+        if (sslKeystoreDomainName != null) {
+            setSslKeyStoreDomainName(sslKeystoreDomainName);
+        }
 
-		Boolean parentLoaderPriority = PropertiesUtil.parseBoolean(properties, KEY_PARENT_LOADER_PRIORITY);
-		if (parentLoaderPriority != null) {
-			setParentLoaderPriority(parentLoaderPriority);
-		}
-		
-		Boolean throwIfStartupException = PropertiesUtil.parseBoolean(properties, KEY_THROW_IF_STARTUP_EXCEPTION);
+        String sslKeystoreAlias = properties.getProperty(KEY_SSL_KEYSTORE_ALIAS);
+        if (sslKeystoreAlias != null) {
+            setSslKeyStoreAlias(sslKeystoreAlias);
+        }
+
+        String sslKeystorePassword = properties.getProperty(KEY_SSL_KEYSTORE_PASSWORD);
+        if (sslKeystorePassword != null) {
+            setSslKeyStorePassword(sslKeystorePassword);
+        }
+
+        String sslKeystoreAlgorithm = properties.getProperty(KEY_SSL_KEYSTORE_ALGORITHM);
+        if (sslKeystoreAlgorithm != null) {
+            setSslKeyStoreAlgorithm(sslKeystoreAlgorithm);
+        }
+
+        String sslKeystoreSignatureAlgorithm = properties.getProperty(KEY_SSL_KEYSTORE_SIGNATURE_ALGORITHM);
+        if (sslKeystoreSignatureAlgorithm != null) {
+            setSslKeyStoreSignatureAlgorithm(sslKeystoreSignatureAlgorithm);
+        }
+
+        String sslKeystoreRdnOuValue = properties.getProperty(KEY_SSL_KEYSTORE_RDN_OU_VALUE);
+        if (sslKeystoreRdnOuValue != null) {
+            setSslKeyStoreRdnOuValue(sslKeystoreRdnOuValue);
+        }
+
+        String sslKeystoreRdnOValue = properties.getProperty(KEY_SSL_KEYSTORE_RDN_O_VALUE);
+        if (sslKeystoreRdnOValue != null) {
+            setSslKeyStoreRdnOValue(sslKeystoreRdnOValue);
+        }
+
+        Integer sslKeyStoreDateNotBeforeNumberOfDays = PropertiesUtil.parseInt(properties, KEY_SSL_KEYSTORE_DATE_NOT_BEFORE_NUMBER_OF_DAYS);
+        if (sslKeyStoreDateNotBeforeNumberOfDays != null) {
+            setSslKeyStoreDateNotBeforeNumberOfDays(sslKeyStoreDateNotBeforeNumberOfDays);
+        }
+
+        Integer sslKeyStoreDateNotAfterNumberOfDays = PropertiesUtil.parseInt(properties, KEY_SSL_KEYSTORE_DATE_NOT_AFTER_NUMBER_OF_DAYS);
+        if (sslKeyStoreDateNotAfterNumberOfDays != null) {
+            setSslKeyStoreDateNotAfterNumberOfDays(sslKeyStoreDateNotAfterNumberOfDays);
+        }
+
+        String tempDir = properties.getProperty(KEY_TEMP_DIR);
+        if (tempDir != null) {
+            setTempDirectory(new File(tempDir));
+        }
+
+        Boolean persistAppTempDir = PropertiesUtil.parseBoolean(properties, KEY_PERSIST_APP_TEMP_DIR);
+        if (persistAppTempDir != null) {
+            setPersistAppTempDirectories(persistAppTempDir);
+        }
+
+        Boolean cleanTempDir = PropertiesUtil.parseBoolean(properties, KEY_CLEAN_TEMP_DIR);
+        if (cleanTempDir != null) {
+            setCleanTempDir(cleanTempDir);
+        }
+
+        Boolean parentLoaderPriority = PropertiesUtil.parseBoolean(properties, KEY_PARENT_LOADER_PRIORITY);
+        if (parentLoaderPriority != null) {
+            setParentLoaderPriority(parentLoaderPriority);
+        }
+
+        Boolean throwIfStartupException = PropertiesUtil.parseBoolean(properties, KEY_THROW_IF_STARTUP_EXCEPTION);
         if (throwIfStartupException != null) {
             setThrowIfStartupException(throwIfStartupException);
         }
-        
+
         Integer maxInactiveInterval = PropertiesUtil.parseInt(properties, KEY_MAX_INACTIVE_INTERVAL);
         if (maxInactiveInterval != null) {
             setMaxInactiveInterval(maxInactiveInterval);
         }
-	}
+    }
 
-	/**
-	 * Parse the given array of String and return an array
-	 * of {@link JettyConnector}. Invalid entry from input
-	 * array are ignored, returns <code>null</code> when no
-	 * value match from input array.
-	 * 
-	 * @param connectors Connector Array
-	 * @return array of {@link JettyConnector}
-	 *         <code>null</code> in case nothing match.
-	 */
-	public static JettyConnector[] parseConnectors(String[] connectors) {
-		if (connectors == null) {
-			return null;
-		}
+    /**
+     * Parse the given array of String and return an array of {@link JettyConnector}. Invalid entry from input array are ignored, returns <code>null</code> when no value match from
+     * input array.
+     * 
+     * @param connectors
+     *            Connector Array
+     * @return array of {@link JettyConnector} <code>null</code> in case nothing match.
+     */
+    public static JettyConnector[] parseConnectors(String[] connectors) {
+        if (connectors == null) {
+            return null;
+        }
 
-		List<JettyConnector> array = new ArrayList<JettyConnector>();
-		for (String coonectorString : connectors) {
-			try {
-				array.add(JettyConnector.valueOf(coonectorString));
-			} catch (IllegalArgumentException e) {
-				//nothing to do here
-			}
+        List<JettyConnector> array = new ArrayList<JettyConnector>();
+        for (String coonectorString : connectors) {
+            try {
+                array.add(JettyConnector.valueOf(coonectorString));
+            } catch (IllegalArgumentException e) {
+                //nothing to do here
+            }
 
-		}
+        }
 
-		return !array.isEmpty() ? array.toArray(new JettyConnector[array.size()]) : null;
-	}
+        return !array.isEmpty() ? array.toArray(new JettyConnector[array.size()]) : null;
+    }
 }

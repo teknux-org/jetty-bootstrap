@@ -59,11 +59,6 @@ public class JettyBootstrap {
 
     private final Logger logger = LoggerFactory.getLogger(JettyBootstrap.class);
 
-    private static final String DEFAULT_KEYSTORE_FILENAME = "default.keystore";
-    private static final String DEFAULT_KEYSTORE_DOMAINNAME = "unknown";
-    private static final String DEFAULT_KEYSTORE_ALIAS = "jettybootstrap";
-    private static final String DEFAULT_KEYSTORE_PASSWORD = "jettybootstrap";
-
     private static final String TEMP_DIRECTORY_NAME = ".temp";
     public static final File TEMP_DIRECTORY_JARDIR = new File(PathUtil.getJarDir() + File.separator + TEMP_DIRECTORY_NAME);
     public static final File TEMP_DIRECTORY_SYSTEMP = new File(System.getProperty("java.io.tmpdir") + File.separator + TEMP_DIRECTORY_NAME);
@@ -499,18 +494,26 @@ public class JettyBootstrap {
             logger.trace("Check connectors...");
             if (iJettyConfiguration.hasJettyConnector(JettyConnector.HTTPS) &&
                 (iJettyConfiguration.getSslKeyStorePath() == null || iJettyConfiguration.getSslKeyStorePath().isEmpty())) {
-                File keystoreFile = new File(iJettyConfiguration.getTempDirectory().getPath() + File.separator + DEFAULT_KEYSTORE_FILENAME);
+                File keystoreFile = new File(iJettyConfiguration.getTempDirectory().getPath() + File.separator + iJettyConfiguration.getSslKeyStoreFileName());
 
                 if (!keystoreFile.exists()) {
                     try {
-                        JettyKeystore jettyKeystore = new JettyKeystore(DEFAULT_KEYSTORE_DOMAINNAME, DEFAULT_KEYSTORE_ALIAS, DEFAULT_KEYSTORE_PASSWORD);
+                        JettyKeystore jettyKeystore = new JettyKeystore(iJettyConfiguration.getSslKeyStoreDomainName(), iJettyConfiguration.getSslKeyStoreAlias(),
+                                iJettyConfiguration.getSslKeyStorePassword());
+                        jettyKeystore.setAlgorithm(iJettyConfiguration.getSslKeyStoreAlgorithm());
+                        jettyKeystore.setSignatureAlgorithm(iJettyConfiguration.getSslKeyStoreSignatureAlgorithm());
+                        jettyKeystore.setRdnOuValue(iJettyConfiguration.getSslKeyStoreRdnOuValue());
+                        jettyKeystore.setRdnOValue(iJettyConfiguration.getSslKeyStoreRdnOValue());
+                        jettyKeystore.setDateNotBeforeNumberOfDays(iJettyConfiguration.getSslKeyStoreDateNotBeforeNumberOfDays());
+                        jettyKeystore.setDateNotAfterNumberOfDays(iJettyConfiguration.getSslKeyStoreDateNotAfterNumberOfDays());
+
                         jettyKeystore.generateAndSave(keystoreFile);
                     } catch (JettyKeystoreException e) {
                         throw new JettyBootstrapException("Can't generate keyStore", e);
                     }
                 }
                 iJettyConfiguration.setSslKeyStorePath(keystoreFile.getPath());
-                iJettyConfiguration.setSslKeyStorePassword(DEFAULT_KEYSTORE_PASSWORD);
+                iJettyConfiguration.setSslKeyStorePassword(iJettyConfiguration.getSslKeyStorePassword());
             }
 
             if (iJettyConfiguration.isRedirectWebAppsOnHttpsConnector() &&
