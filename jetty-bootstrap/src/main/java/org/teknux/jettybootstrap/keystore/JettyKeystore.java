@@ -32,11 +32,11 @@ import java.security.KeyStore;
 import java.security.KeyStore.PrivateKeyEntry;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
 import java.security.Provider;
 import java.security.SecureRandom;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 import java.util.Date;
 import java.util.Objects;
 
@@ -160,13 +160,12 @@ public class JettyKeystore {
 
     public KeyStore generate() throws JettyKeystoreException {
         KeyPair keyPair = generateKeyPair(algorithm);
-        X509Certificate x509Certificate = generateX509Certificate(keyPair, domainName, signatureAlgorithm, rdnOuValue, rdnOValue, dateNotBeforeNumberOfDays,
-                dateNotAfterNumberOfDays);
+        Certificate certificate = generateX509Certificate(keyPair, domainName, signatureAlgorithm, rdnOuValue, rdnOValue, dateNotBeforeNumberOfDays, dateNotAfterNumberOfDays);
 
-        return generateKeyStore(keyPair, x509Certificate, alias, password);
+        return generateKeyStore(keyPair.getPrivate(), certificate, alias, password);
     }
 
-    private static X509Certificate generateX509Certificate(KeyPair keyPair, String domainName, String signatureAlgorithm, String rdnOuValue, String rdnOValue,
+    private static Certificate generateX509Certificate(KeyPair keyPair, String domainName, String signatureAlgorithm, String rdnOuValue, String rdnOValue,
             int dateNotBeforeNumberOfDays, int dateNotAfterNumberOfDays) throws JettyKeystoreException {
 
         X500NameBuilder issuerX500Namebuilder = new X500NameBuilder(BCStyle.INSTANCE);
@@ -217,12 +216,12 @@ public class JettyKeystore {
         }
     }
 
-    private static KeyStore generateKeyStore(KeyPair keyPair, X509Certificate x509Certificate, String alias, String password) throws JettyKeystoreException {
+    private static KeyStore generateKeyStore(PrivateKey privateKey, Certificate certificate, String alias, String password) throws JettyKeystoreException {
         try {
             KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
             keyStore.load(null, null);
 
-            PrivateKeyEntry privateKeyEntry = new PrivateKeyEntry(keyPair.getPrivate(), new Certificate[] { x509Certificate });
+            PrivateKeyEntry privateKeyEntry = new PrivateKeyEntry(privateKey, new Certificate[] { certificate });
             keyStore.setEntry(alias, privateKeyEntry, new KeyStore.PasswordProtection(password.toCharArray()));
 
             return keyStore;
