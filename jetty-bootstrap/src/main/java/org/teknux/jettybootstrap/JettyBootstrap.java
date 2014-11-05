@@ -138,7 +138,7 @@ public class JettyBootstrap {
     public JettyBootstrap startServer(Boolean join) throws JettyBootstrapException {
         logger.info("Starting Server...");
 
-        IJettyConfiguration iJettyConfiguration = getConfiguration();
+        IJettyConfiguration iJettyConfiguration = getInitializedConfiguration();
         initServer(iJettyConfiguration);
 
         try {
@@ -245,7 +245,7 @@ public class JettyBootstrap {
      *             on failure
      */
     public WebAppContext addWarApp(String war, String contextPath) throws JettyBootstrapException {
-        WarAppJettyHandler warAppJettyHandler = new WarAppJettyHandler(getConfiguration());
+        WarAppJettyHandler warAppJettyHandler = new WarAppJettyHandler(getInitializedConfiguration());
         warAppJettyHandler.setWar(war);
         warAppJettyHandler.setContextPath(contextPath);
 
@@ -280,7 +280,7 @@ public class JettyBootstrap {
      *             on failed
      */
     public WebAppContext addWarAppFromClasspath(String warFromClasspath, String contextPath) throws JettyBootstrapException {
-        WarAppFromClasspathJettyHandler warAppFromClasspathJettyHandler = new WarAppFromClasspathJettyHandler(getConfiguration());
+        WarAppFromClasspathJettyHandler warAppFromClasspathJettyHandler = new WarAppFromClasspathJettyHandler(getInitializedConfiguration());
         warAppFromClasspathJettyHandler.setWarFromClasspath(warFromClasspath);
         warAppFromClasspathJettyHandler.setContextPath(contextPath);
 
@@ -319,7 +319,7 @@ public class JettyBootstrap {
      *             on failed
      */
     public WebAppContext addExplodedWarApp(String explodedWar, String descriptor, String contextPath) throws JettyBootstrapException {
-        ExplodedWarAppJettyHandler explodedWarAppJettyHandler = new ExplodedWarAppJettyHandler(getConfiguration());
+        ExplodedWarAppJettyHandler explodedWarAppJettyHandler = new ExplodedWarAppJettyHandler(getInitializedConfiguration());
         explodedWarAppJettyHandler.setWebAppBase(explodedWar);
         explodedWarAppJettyHandler.setDescriptor(descriptor);
         explodedWarAppJettyHandler.setContextPath(contextPath);
@@ -372,7 +372,7 @@ public class JettyBootstrap {
      *             on failed
      */
     public WebAppContext addExplodedWarAppFromClasspath(String explodedWar, String descriptor, String contextPath) throws JettyBootstrapException {
-        ExplodedWarAppJettyHandler explodedWarAppJettyHandler = new ExplodedWarAppJettyHandler(getConfiguration());
+        ExplodedWarAppJettyHandler explodedWarAppJettyHandler = new ExplodedWarAppJettyHandler(getInitializedConfiguration());
         explodedWarAppJettyHandler.setWebAppBaseFromClasspath(explodedWar);
         explodedWarAppJettyHandler.setDescriptor(descriptor);
         explodedWarAppJettyHandler.setContextPath(contextPath);
@@ -435,7 +435,7 @@ public class JettyBootstrap {
      *             if an error occurs during {@link #initServer(IJettyConfiguration)}
      */
     public Server getServer() throws JettyBootstrapException {
-        initServer(getConfiguration());
+        initServer(getInitializedConfiguration());
 
         return server;
     }
@@ -455,7 +455,9 @@ public class JettyBootstrap {
 
             server.setHandler(handlers);
 
-            createShutdownHook(iJettyConfiguration);
+            if (iJettyConfiguration.isStopAtShutdown()) {
+                createShutdownHook(iJettyConfiguration);
+            }
         }
     }
 
@@ -467,7 +469,7 @@ public class JettyBootstrap {
      * @throws JettyBootstrapException
      *             on failure
      */
-    protected IJettyConfiguration getConfiguration() throws JettyBootstrapException {
+    protected IJettyConfiguration getInitializedConfiguration() throws JettyBootstrapException {
         if (!isInitializedConfiguration) {
             logger.debug("Init Configuration...");
 
@@ -596,23 +598,6 @@ public class JettyBootstrap {
     }
 
     /**
-     * Convenient method used to gracefully stop Jetty server. Invoked by the registered shutdown hook.
-     * 
-     * @param iJettyConfiguration
-     *            Jetty Configuration
-     */
-    protected void shutdown(IJettyConfiguration iJettyConfiguration) {
-        try {
-            if (iJettyConfiguration.isStopAtShutdown()) {
-                logger.debug("Shutting Down...");
-                stopServer();
-            }
-        } catch (Exception e) {
-            logger.error("Shutdown", e);
-        }
-    }
-
-    /**
      * Create Shutdown Hook.
      * 
      * @param iJettyConfiguration
@@ -624,7 +609,12 @@ public class JettyBootstrap {
         Runtime.getRuntime().addShutdownHook(new Thread() {
 
             public void run() {
-                shutdown(iJettyConfiguration);
+                try {
+                    logger.debug("Shutting Down...");
+                    stopServer();
+                } catch (Exception e) {
+                    logger.error("Shutdown", e);
+                }
             }
         });
     }
