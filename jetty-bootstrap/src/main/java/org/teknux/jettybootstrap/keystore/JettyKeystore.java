@@ -60,8 +60,6 @@ public class JettyKeystore {
 
     public static final String DEFAULT_ALGORITHM = ALGORITHM_RSA;
     public static final String DEFAULT_SIGNATURE_ALGORITHM = SIGNATURE_ALGORITHM_SHA256WITHRSA;
-    public static final String DEFAULT_RDN_OU_VALUE = "None";
-    public static final String DEFAULT_RDN_O_VALUE = "None";
     public static final int DEFAULT_DATE_NOT_BEFORE_NUMBER_OF_DAYS = 30;
     public static final int DEFAULT_DATE_NOT_AFTER_NUMBER_OF_DAYS = 3650;
 
@@ -72,8 +70,8 @@ public class JettyKeystore {
     private String domainName;
     private String alias;
     private String password;
-    private String rdnOuValue = DEFAULT_RDN_OU_VALUE;
-    private String rdnOValue = DEFAULT_RDN_O_VALUE;
+    private String rdnOuValue;
+    private String rdnOValue;
     private int dateNotBeforeNumberOfDays = DEFAULT_DATE_NOT_BEFORE_NUMBER_OF_DAYS;
     private int dateNotAfterNumberOfDays = DEFAULT_DATE_NOT_AFTER_NUMBER_OF_DAYS;
 
@@ -171,11 +169,28 @@ public class JettyKeystore {
     private static X509Certificate generateX509Certificate(KeyPair keyPair, String domainName, String signatureAlgorithm, String rdnOuValue, String rdnOValue,
             int dateNotBeforeNumberOfDays, int dateNotAfterNumberOfDays) throws JettyKeystoreException {
 
-        X500Name issuer = new X500NameBuilder(BCStyle.INSTANCE).addRDN(BCStyle.OU, rdnOuValue).addRDN(BCStyle.O, rdnOValue).addRDN(BCStyle.CN, domainName).build();
+        X500NameBuilder issuerX500Namebuilder = new X500NameBuilder(BCStyle.INSTANCE);
+        if (rdnOuValue != null) {
+            issuerX500Namebuilder.addRDN(BCStyle.OU, rdnOuValue);
+        }
+        if (rdnOValue != null) {
+            issuerX500Namebuilder.addRDN(BCStyle.O, rdnOValue);
+        }
+        X500Name issuer = issuerX500Namebuilder.addRDN(BCStyle.CN, domainName).build();
+
         BigInteger serial = BigInteger.valueOf(Math.abs(new SecureRandom().nextInt()));
         Date dateNotBefore = new Date(System.currentTimeMillis() - (dateNotBeforeNumberOfDays * DAY_IN_MILLIS));
         Date dateNotAfter = new Date(System.currentTimeMillis() + (dateNotAfterNumberOfDays * DAY_IN_MILLIS));
-        X500Name subject = new X500NameBuilder(BCStyle.INSTANCE).addRDN(BCStyle.OU, rdnOuValue).addRDN(BCStyle.O, rdnOValue).addRDN(BCStyle.CN, domainName).build();
+
+        X500NameBuilder subjectX500Namebuilder = new X500NameBuilder(BCStyle.INSTANCE);
+        if (rdnOuValue != null) {
+            subjectX500Namebuilder.addRDN(BCStyle.OU, rdnOuValue);
+        }
+        if (rdnOValue != null) {
+            subjectX500Namebuilder.addRDN(BCStyle.O, rdnOValue);
+        }
+        X500Name subject = subjectX500Namebuilder.addRDN(BCStyle.CN, domainName).build();
+
         SubjectPublicKeyInfo publicKeyInfo = new SubjectPublicKeyInfo(ASN1Sequence.getInstance(keyPair.getPublic().getEncoded()));
 
         X509v3CertificateBuilder x509v3CertificateBuilder = new X509v3CertificateBuilder(issuer, serial, dateNotBefore, dateNotAfter, subject, publicKeyInfo);

@@ -54,8 +54,8 @@ public class JettyConfiguration implements IJettyConfiguration {
     private String sslKeyStorePassword = "jettybootstrap";
     private String sslKeyStoreAlgorithm = JettyKeystore.DEFAULT_ALGORITHM;
     private String sslKeyStoreSignatureAlgorithm = JettyKeystore.DEFAULT_SIGNATURE_ALGORITHM;
-    private String sslKeyStoreRdnOuValue = JettyKeystore.DEFAULT_RDN_OU_VALUE;
-    private String sslKeyStoreRdnOValue = JettyKeystore.DEFAULT_RDN_O_VALUE;
+    private String sslKeyStoreRdnOuValue = null;
+    private String sslKeyStoreRdnOValue = null;
     private int sslKeyStoreDateNotBeforeNumberOfDays = JettyKeystore.DEFAULT_DATE_NOT_BEFORE_NUMBER_OF_DAYS;
     private int sslKeyStoreDateNotAfterNumberOfDays = JettyKeystore.DEFAULT_DATE_NOT_AFTER_NUMBER_OF_DAYS;
 
