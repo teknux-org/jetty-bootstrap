@@ -497,8 +497,8 @@ public class JettyBootstrap {
             logger.trace("Check connectors...");
             if (iJettyConfiguration.hasJettyConnector(JettyConnector.HTTPS)) {
 
-                //Checks keystore path if SSL private key and SSL certificate are not specified
-                if ((iJettyConfiguration.getSslPrivateKeyPath() == null || iJettyConfiguration.getSslPrivateKeyPath().isEmpty()) &&
+                //Checks keystore path if SSL private key or SSL certificate are not specified
+                if ((iJettyConfiguration.getSslPrivateKeyPath() == null || iJettyConfiguration.getSslPrivateKeyPath().isEmpty()) ||
                     (iJettyConfiguration.getSslCertificatePath() == null || iJettyConfiguration.getSslCertificatePath().isEmpty())) {
 
                     //If keystore path is not specified, use default keystore path
@@ -599,8 +599,8 @@ public class JettyBootstrap {
 
             SslContextFactory sslContextFactory = new SslContextFactory();
 
-            //Use keystore path if SSL private key and SSL certificate are not specified
-            if ((iJettyConfiguration.getSslPrivateKeyPath() == null || iJettyConfiguration.getSslPrivateKeyPath().isEmpty()) &&
+            //Use keystore path if SSL private key or SSL certificate are not specified
+            if ((iJettyConfiguration.getSslPrivateKeyPath() == null || iJettyConfiguration.getSslPrivateKeyPath().isEmpty()) ||
                 (iJettyConfiguration.getSslCertificatePath() == null || iJettyConfiguration.getSslCertificatePath().isEmpty())) {
 
                 sslContextFactory.setKeyStorePath(iJettyConfiguration.getSslKeyStorePath());
