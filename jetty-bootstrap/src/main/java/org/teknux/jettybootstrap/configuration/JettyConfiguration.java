@@ -48,6 +48,8 @@ public class JettyConfiguration implements IJettyConfiguration {
     private Set<JettyConnector> jettyConnectors = new HashSet<JettyConnector>(Arrays.asList(JettyConnector.HTTP));
     private boolean redirectWebAppsOnHttpsConnector = false;
 
+    private String sslPrivateKeyPath = null;
+    private String sslCertificatePath = null;
     private String sslKeyStorePath = null;
     private String sslKeyStoreDomainName = "unknown";
     private String sslKeyStoreAlias = "jettybootstrap";
@@ -240,6 +242,42 @@ public class JettyConfiguration implements IJettyConfiguration {
     @Override
     public void setRedirectWebAppsOnHttpsConnector(boolean redirectWebAppsOnHttpsConnector) {
         this.redirectWebAppsOnHttpsConnector = redirectWebAppsOnHttpsConnector;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.teknux.jettybootstrap.configuration.IJettyConfiguration#getSslPrivateKeyPath()
+     */
+    @Override
+    public String getSslPrivateKeyPath() {
+        return sslPrivateKeyPath;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.teknux.jettybootstrap.configuration.IJettyConfiguration#setSslPrivateKeyPath(java.lang.String)
+     */
+    @Override
+    public void setSslPrivateKeyPath(String sslPrivateKeyPath) {
+        this.sslPrivateKeyPath = sslPrivateKeyPath;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.teknux.jettybootstrap.configuration.IJettyConfiguration#getSslCertificatePath()
+     */
+    @Override
+    public String getSslCertificatePath() {
+        return sslCertificatePath;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.teknux.jettybootstrap.configuration.IJettyConfiguration#setSslCertificatePath(java.lang.String)
+     */
+    @Override
+    public void setSslCertificatePath(String sslCertificatePath) {
+        this.sslCertificatePath = sslCertificatePath;
     }
 
     /* (non-Javadoc)

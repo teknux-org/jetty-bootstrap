@@ -52,6 +52,8 @@ public class PropertiesJettyConfiguration extends JettyConfiguration {
     public static final String KEY_CONNECTORS = "connectors";
     public static final String KEY_REDIRECT_WEBAPPS_ON_HTTPS = "redirectWebAppsOnHttpsConnector";
 
+    public static final String KEY_SSL_PRIVATEKEY_PATH = "sslPrivateKeyPath";
+    public static final String KEY_SSL_CERTIFICATE_PATH = "sslCertificatePath";
     public static final String KEY_SSL_KEYSTORE_PATH = "sslKeystorePath";
     public static final String KEY_SSL_KEYSTORE_DOMAINNAME = "sslKeyStoreDomainName";
     public static final String KEY_SSL_KEYSTORE_ALIAS = "sslKeyStoreAlias";
@@ -158,6 +160,16 @@ public class PropertiesJettyConfiguration extends JettyConfiguration {
         Boolean redirectOnSSL = PropertiesUtil.parseBoolean(properties, KEY_REDIRECT_WEBAPPS_ON_HTTPS);
         if (redirectOnSSL != null) {
             setRedirectWebAppsOnHttpsConnector(redirectOnSSL);
+        }
+
+        String sslPrivateKeyPath = properties.getProperty(KEY_SSL_PRIVATEKEY_PATH);
+        if (sslPrivateKeyPath != null) {
+            setSslPrivateKeyPath(sslPrivateKeyPath);
+        }
+
+        String sslCertificatePath = properties.getProperty(KEY_SSL_CERTIFICATE_PATH);
+        if (sslCertificatePath != null) {
+            setSslCertificatePath(sslCertificatePath);
         }
 
         String sslKeystorePath = properties.getProperty(KEY_SSL_KEYSTORE_PATH);

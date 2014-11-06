@@ -188,6 +188,34 @@ public interface IJettyConfiguration extends Cloneable {
     void setRedirectWebAppsOnHttpsConnector(boolean redirectWebAppsOnHttpsConnector);
 
     /**
+     * Get the SSL private key path, used for HTTPS support.
+     * 
+     * @return sslPrivateKeyPath
+     */
+    String getSslPrivateKeyPath();
+
+    /**
+     * Set the SSL private key path, used for HTTPS support.
+     * 
+     * @param sslPrivateKeyPath
+     */
+    void setSslPrivateKeyPath(String sslPrivateKeyPath);
+
+    /**
+     * Get the SSL certificate path, used for HTTPS support.
+     * 
+     * @return sslCertificatePath
+     */
+    String getSslCertificatePath();
+
+    /**
+     * Set the SSL certificate path, use for HTTPS support.
+     * 
+     * @param sslCertificatePath
+     */
+    void setSslCertificatePath(String sslCertificatePath);
+
+    /**
      * Get the SSL keystore file path, used for HTTPS support.
      * 
      * @return the path of the SSL keystore file.

@@ -54,6 +54,9 @@ public class PropertiesJettyConfigurationTest {
         System.setProperty(PropertiesJettyConfiguration.KEY_SSL_PORT, "5555");
         System.setProperty(PropertiesJettyConfiguration.KEY_CONNECTORS, "HTTPS");
         System.setProperty(PropertiesJettyConfiguration.KEY_REDIRECT_WEBAPPS_ON_HTTPS, "false");
+        System.setProperty(PropertiesJettyConfiguration.KEY_SSL_PRIVATEKEY_PATH, "./privatekey1.key");
+        System.setProperty(PropertiesJettyConfiguration.KEY_SSL_CERTIFICATE_PATH, "./certificate1.crt");
+        System.setProperty(PropertiesJettyConfiguration.KEY_SSL_KEYSTORE_PATH, "./keystore1");
         System.setProperty(PropertiesJettyConfiguration.KEY_SSL_KEYSTORE_PATH, "./keystore1");
         System.setProperty(PropertiesJettyConfiguration.KEY_SSL_KEYSTORE_DOMAINNAME, "domain1");
         System.setProperty(PropertiesJettyConfiguration.KEY_SSL_KEYSTORE_ALIAS, "alias1");
@@ -82,6 +85,8 @@ public class PropertiesJettyConfigurationTest {
         Assert.assertTrue(cfg.getJettyConnectors().size() == 1);
         Assert.assertTrue(cfg.getJettyConnectors().contains(JettyConnector.HTTPS));
         Assert.assertEquals(false, cfg.isRedirectWebAppsOnHttpsConnector());
+        Assert.assertEquals("./privatekey1.key", cfg.getSslPrivateKeyPath());
+        Assert.assertEquals("./certificate1.crt", cfg.getSslCertificatePath());
         Assert.assertEquals("./keystore1", cfg.getSslKeyStorePath());
         Assert.assertEquals("domain1", cfg.getSslKeyStoreDomainName());
         Assert.assertEquals("alias1", cfg.getSslKeyStoreAlias());
@@ -109,6 +114,8 @@ public class PropertiesJettyConfigurationTest {
         properties.setProperty(PropertiesJettyConfiguration.KEY_SSL_PORT, "8443");
         properties.setProperty(PropertiesJettyConfiguration.KEY_CONNECTORS, "HTTP,HTTPS");
         properties.setProperty(PropertiesJettyConfiguration.KEY_REDIRECT_WEBAPPS_ON_HTTPS, "true");
+        properties.setProperty(PropertiesJettyConfiguration.KEY_SSL_PRIVATEKEY_PATH, "./privatekey2.key");
+        properties.setProperty(PropertiesJettyConfiguration.KEY_SSL_CERTIFICATE_PATH, "./certificate2.crt");
         properties.setProperty(PropertiesJettyConfiguration.KEY_SSL_KEYSTORE_PATH, "./keystore2");
         properties.setProperty(PropertiesJettyConfiguration.KEY_SSL_KEYSTORE_DOMAINNAME, "domain2");
         properties.setProperty(PropertiesJettyConfiguration.KEY_SSL_KEYSTORE_ALIAS, "alias2");
@@ -138,6 +145,8 @@ public class PropertiesJettyConfigurationTest {
         Assert.assertTrue(cfg.getJettyConnectors().contains(JettyConnector.HTTPS));
         Assert.assertTrue(cfg.getJettyConnectors().contains(JettyConnector.HTTP));
         Assert.assertEquals(true, cfg.isRedirectWebAppsOnHttpsConnector());
+        Assert.assertEquals("./privatekey2.key", cfg.getSslPrivateKeyPath());
+        Assert.assertEquals("./certificate2.crt", cfg.getSslCertificatePath());
         Assert.assertEquals("./keystore2", cfg.getSslKeyStorePath());
         Assert.assertEquals("domain2", cfg.getSslKeyStoreDomainName());
         Assert.assertEquals("alias2", cfg.getSslKeyStoreAlias());
@@ -166,6 +175,8 @@ public class PropertiesJettyConfigurationTest {
         Assert.assertTrue(cfg.getJettyConnectors().size() == 1);
         Assert.assertTrue(cfg.getJettyConnectors().contains(JettyConnector.HTTPS));
         Assert.assertEquals(false, cfg.isRedirectWebAppsOnHttpsConnector());
+        Assert.assertEquals("./privatekey1.key", cfg.getSslPrivateKeyPath());
+        Assert.assertEquals("./certificate1.crt", cfg.getSslCertificatePath());
         Assert.assertEquals("./keystore1", cfg.getSslKeyStorePath());
         Assert.assertEquals("domain1", cfg.getSslKeyStoreDomainName());
         Assert.assertEquals("alias1", cfg.getSslKeyStoreAlias());
