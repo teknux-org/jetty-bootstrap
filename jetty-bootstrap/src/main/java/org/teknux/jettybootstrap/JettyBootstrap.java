@@ -609,7 +609,7 @@ public class JettyBootstrap {
                 jettyKeystore.setAlgorithm(iJettyConfiguration.getSslKeyStoreAlgorithm());
                 try {
                     KeyStore keyStore = jettyKeystore
-                            .convertToKeyStore(new File(iJettyConfiguration.getSslCertificatePath()), new File(iJettyConfiguration.getSslPrivateKeyPath()));
+                            .convertToKeyStore(new File(iJettyConfiguration.getSslPrivateKeyPath()), new File(iJettyConfiguration.getSslCertificatePath()));
 
                     sslContextFactory.setKeyStore(keyStore);
                 } catch (JettyKeystoreException e) {

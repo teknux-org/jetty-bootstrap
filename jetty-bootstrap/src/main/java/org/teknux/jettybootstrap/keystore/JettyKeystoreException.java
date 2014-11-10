@@ -23,17 +23,38 @@ package org.teknux.jettybootstrap.keystore;
 
 public class JettyKeystoreException extends Exception {
 
-	private static final long serialVersionUID = 3855898924513137363L;
+    private static final long serialVersionUID = 1L;
 
-	public JettyKeystoreException(String s) {
-		super(s);
-	}
+    public static final int ERROR_READ_PRIVATE_KEY = 0;
+    public static final int ERROR_READ_CERTIFICATE = 1;
+    public static final int ERROR_LOAD_PRIVATE_KEY = 2;
+    public static final int ERROR_LOAD_CERTIFICATE = 3;
+    public static final int ERROR_CREATE_KEYS = 4;
+    public static final int ERROR_CREATE_CERTIFICATE = 5;
+    public static final int ERROR_CREATE_KEYSTORE = 6;
+    public static final int ERROR_SAVE_KEYSTORE = 7;
 
-	public JettyKeystoreException(Throwable throwable) {
-		super(throwable);
-	}
+    private final int type;
 
-	public JettyKeystoreException(String s, Throwable throwable) {
-		super(s, throwable);
-	}
+    public JettyKeystoreException(int type, String s) {
+        super(s);
+
+        this.type = type;
+    }
+
+    public JettyKeystoreException(int type, Throwable throwable) {
+        super(throwable);
+
+        this.type = type;
+    }
+
+    public JettyKeystoreException(int type, String s, Throwable throwable) {
+        super(s, throwable);
+
+        this.type = type;
+    }
+
+    public int getType() {
+        return type;
+    }
 }

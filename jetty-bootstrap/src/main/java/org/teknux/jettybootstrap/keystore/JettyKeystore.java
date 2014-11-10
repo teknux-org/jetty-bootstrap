@@ -22,6 +22,7 @@
 package org.teknux.jettybootstrap.keystore;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -45,7 +46,7 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Date;
 import java.util.Objects;
 
-import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.bouncycastle.asn1.ASN1Sequence;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x500.X500NameBuilder;
@@ -58,6 +59,7 @@ import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.bouncycastle.util.encoders.Base64;
+import org.bouncycastle.util.encoders.DecoderException;
 
 
 public class JettyKeystore {
@@ -172,28 +174,67 @@ public class JettyKeystore {
         saveKeyStore(keyStore, file, password);
     }
 
-    public KeyStore convertToKeyStore(File certificateFile, File privateKeyFile) throws JettyKeystoreException {
+    public KeyStore convertToKeyStore(File privateKeyFile, File certificateFile) throws JettyKeystoreException {
         if (!Objects.requireNonNull(privateKeyFile, "PrivateKeyFile is required").canRead()) {
-            throw new JettyKeystoreException("Can not read private key file");
+            throw new JettyKeystoreException(JettyKeystoreException.ERROR_READ_PRIVATE_KEY, "Can not read private key file");
         }
         if (!Objects.requireNonNull(certificateFile, "CertificateFile is required").canRead()) {
-            throw new JettyKeystoreException("Can not read certificate file");
+            throw new JettyKeystoreException(JettyKeystoreException.ERROR_READ_CERTIFICATE, "Can not read certificate file");
         }
 
-        PrivateKey privateKey = loadPrivateKey(privateKeyFile, algorithm);
-        Certificate certificate = loadCertificate(certificateFile);
+        FileInputStream privateKeyOutputStream = null;
+        FileInputStream certificateOutputStream = null;
+        try {
+            try {
+                privateKeyOutputStream = new FileInputStream(privateKeyFile);
+
+            } catch (FileNotFoundException e) {
+                throw new JettyKeystoreException(JettyKeystoreException.ERROR_READ_PRIVATE_KEY, "Can not read private key file", e);
+            }
+
+            try {
+                certificateOutputStream = new FileInputStream(certificateFile);
+            } catch (FileNotFoundException e) {
+                throw new JettyKeystoreException(JettyKeystoreException.ERROR_READ_CERTIFICATE, "Can not read certificate file", e);
+            }
+
+            return convertToKeyStore(privateKeyOutputStream, certificateOutputStream);
+        } finally {
+            if (privateKeyOutputStream != null) {
+                try {
+                    privateKeyOutputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (certificateOutputStream != null) {
+                try {
+                    certificateOutputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public KeyStore convertToKeyStore(InputStream privateKeyInputStream, InputStream certificateInputStream) throws JettyKeystoreException {
+        Objects.requireNonNull(privateKeyInputStream, "PrivateKeyFile is required");
+        Objects.requireNonNull(certificateInputStream, "CertificateFile is required");
+
+        PrivateKey privateKey = loadPrivateKey(privateKeyInputStream, algorithm);
+        Certificate certificate = loadCertificate(certificateInputStream);
 
         KeyStore keyStore = createKeyStore(privateKey, certificate, alias, password);
 
         return keyStore;
     }
 
-    public void convertToKeyStoreAndSave(File certificateFile, File privateKeyFile, File file) throws JettyKeystoreException {
-        Objects.requireNonNull(certificateFile, "CertificateFile is required");
+    public void convertToKeyStoreAndSave(File privateKeyFile, File certificateFile, File file) throws JettyKeystoreException {
         Objects.requireNonNull(privateKeyFile, "PrivateKeyFile is required");
+        Objects.requireNonNull(certificateFile, "CertificateFile is required");
         Objects.requireNonNull(file, "File is required");
 
-        KeyStore keyStore = convertToKeyStore(certificateFile, privateKeyFile);
+        KeyStore keyStore = convertToKeyStore(privateKeyFile, certificateFile);
         saveKeyStore(keyStore, file, password);
     }
 
@@ -232,10 +273,8 @@ public class JettyKeystore {
             ContentSigner signer = new JcaContentSignerBuilder(signatureAlgorithm).setProvider(provider).build(keyPair.getPrivate());
 
             return new JcaX509CertificateConverter().setProvider(provider).getCertificate(x509v3CertificateBuilder.build(signer));
-        } catch (OperatorCreationException e) {
-            throw new JettyKeystoreException("Can not generate certificate", e);
-        } catch (CertificateException e) {
-            throw new JettyKeystoreException("Can not generate certificate", e);
+        } catch (OperatorCreationException | CertificateException e) {
+            throw new JettyKeystoreException(JettyKeystoreException.ERROR_CREATE_CERTIFICATE, "Can not generate certificate", e);
         }
     }
 
@@ -244,38 +283,26 @@ public class JettyKeystore {
             KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(algorithm);
             return keyPairGenerator.generateKeyPair();
         } catch (NoSuchAlgorithmException e) {
-            throw new JettyKeystoreException("Can not generate private and public keys", e);
+            throw new JettyKeystoreException(JettyKeystoreException.ERROR_CREATE_KEYS, "Can not generate private and public keys", e);
         }
     }
 
-    private static Certificate loadCertificate(File certificatePath) throws JettyKeystoreException {
-        InputStream certstream = null;
+    private static Certificate loadCertificate(InputStream certificateOutputStream) throws JettyKeystoreException {
 
         try {
             CertificateFactory certificateFactory;
             certificateFactory = CertificateFactory.getInstance(CERTIFICATE_TYPE_X509);
-            certstream = FileUtils.openInputStream(certificatePath);
-            Certificate certificate = certificateFactory.generateCertificate(certstream);
+            Certificate certificate = certificateFactory.generateCertificate(certificateOutputStream);
 
             return certificate;
         } catch (CertificateException e) {
-            throw new JettyKeystoreException("Can not load certificate", e);
-        } catch (IOException e) {
-            throw new JettyKeystoreException("Can not load certificate", e);
-        } finally {
-            if (certstream != null) {
-                try {
-                    certstream.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+            throw new JettyKeystoreException(JettyKeystoreException.ERROR_LOAD_CERTIFICATE, "Can not load certificate", e);
         }
     }
 
-    private static PrivateKey loadPrivateKey(File keyPath, String algorithm) throws JettyKeystoreException {
+    private static PrivateKey loadPrivateKey(InputStream privateKeyOutputStream, String algorithm) throws JettyKeystoreException {
         try {
-            String contentKeyFile = FileUtils.readFileToString(keyPath);
+            String contentKeyFile = IOUtils.toString(privateKeyOutputStream);
             String contentKeyFileWithoutHeaderAndFooter = contentKeyFile.replaceAll(PRIVATE_KEY_HEADER_FOOTER_PATTERN, "");
             byte[] decodedKeyFile = Base64.decode(contentKeyFileWithoutHeaderAndFooter);
 
@@ -285,12 +312,8 @@ public class JettyKeystore {
             PrivateKey privateKey = keyFactory.generatePrivate(privateKeySpec);
 
             return privateKey;
-        } catch (IOException e) {
-            throw new JettyKeystoreException("Can not load private key", e);
-        } catch (NoSuchAlgorithmException e) {
-            throw new JettyKeystoreException("Can not load private key", e);
-        } catch (InvalidKeySpecException e) {
-            throw new JettyKeystoreException("Can not load private key", e);
+        } catch (IOException | NoSuchAlgorithmException | InvalidKeySpecException | DecoderException e) {
+            throw new JettyKeystoreException(JettyKeystoreException.ERROR_LOAD_PRIVATE_KEY, "Can not load private key", e);
         }
     }
 
@@ -303,14 +326,8 @@ public class JettyKeystore {
             keyStore.setEntry(alias, privateKeyEntry, new KeyStore.PasswordProtection(password.toCharArray()));
 
             return keyStore;
-        } catch (KeyStoreException e) {
-            throw new JettyKeystoreException("Can not create keystore file", e);
-        } catch (NoSuchAlgorithmException e) {
-            throw new JettyKeystoreException("Can not create keystore file", e);
-        } catch (CertificateException e) {
-            throw new JettyKeystoreException("Can not create keystore file", e);
-        } catch (IOException e) {
-            throw new JettyKeystoreException("Can not create keystore file", e);
+        } catch (KeyStoreException | NoSuchAlgorithmException | CertificateException | IOException e) {
+            throw new JettyKeystoreException(JettyKeystoreException.ERROR_CREATE_KEYSTORE, "Can not create keystore file", e);
         }
     }
 
@@ -320,16 +337,8 @@ public class JettyKeystore {
         try {
             fileInputStream = new FileOutputStream(file);
             keyStore.store(fileInputStream, password.toCharArray());
-        } catch (FileNotFoundException e) {
-            throw new JettyKeystoreException("Can not save keystore file", e);
-        } catch (KeyStoreException e) {
-            throw new JettyKeystoreException("Can not save keystore file", e);
-        } catch (NoSuchAlgorithmException e) {
-            throw new JettyKeystoreException("Can not save keystore file", e);
-        } catch (CertificateException e) {
-            throw new JettyKeystoreException("Can not save keystore file", e);
-        } catch (IOException e) {
-            throw new JettyKeystoreException("Can not save keystore file", e);
+        } catch (KeyStoreException | NoSuchAlgorithmException | CertificateException | IOException e) {
+            throw new JettyKeystoreException(JettyKeystoreException.ERROR_SAVE_KEYSTORE, "Can not save keystore file", e);
         } finally {
             if (fileInputStream != null) {
                 try {
