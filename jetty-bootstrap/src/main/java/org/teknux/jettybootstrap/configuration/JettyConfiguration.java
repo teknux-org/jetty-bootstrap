@@ -22,6 +22,7 @@
 package org.teknux.jettybootstrap.configuration;
 
 import java.io.File;
+import java.security.KeyStore;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -50,6 +51,7 @@ public class JettyConfiguration implements IJettyConfiguration {
 
     private String sslPrivateKeyPath = null;
     private String sslCertificatePath = null;
+    private KeyStore sslKeyStore = null;
     private String sslKeyStorePath = null;
     private String sslKeyStoreDomainName = "unknown";
     private String sslKeyStoreAlias = "jettybootstrap";
@@ -278,6 +280,22 @@ public class JettyConfiguration implements IJettyConfiguration {
     @Override
     public void setSslCertificatePath(String sslCertificatePath) {
         this.sslCertificatePath = sslCertificatePath;
+    }
+
+    /* (non-Javadoc)
+     * @see org.teknux.jettybootstrap.configuration.IJettyConfiguration#getSslKeyStore()
+     */
+    @Override
+    public KeyStore getSslKeyStore() {
+        return sslKeyStore;
+    }
+
+    /* (non-Javadoc)
+     * @see org.teknux.jettybootstrap.configuration.IJettyConfiguration#setSslKeyStore(java.security.Keystore)
+     */
+    @Override
+    public void setSslKeyStore(KeyStore sslKeyStore) {
+        this.sslKeyStore = sslKeyStore;
     }
 
     /* (non-Javadoc)

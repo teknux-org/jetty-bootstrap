@@ -22,6 +22,7 @@
 package org.teknux.jettybootstrap.configuration;
 
 import java.io.File;
+import java.security.KeyStore;
 import java.util.Set;
 
 import org.eclipse.jetty.server.AbstractConnector;
@@ -216,6 +217,21 @@ public interface IJettyConfiguration extends Cloneable {
     void setSslCertificatePath(String sslCertificatePath);
 
     /**
+     * Get the SSL keystore, used for HTTPS support.
+     * 
+     * @return sslKeystore
+     */
+    KeyStore getSslKeyStore();
+
+    /**
+     * Set the SSL keystore, used for HTTPS support.
+     * 
+     * @param sslKeyStore
+     *            KeyStore
+     */
+    void setSslKeyStore(KeyStore sslKeyStore);
+
+    /**
      * Get the SSL keystore file path, used for HTTPS support.
      * 
      * @return the path of the SSL keystore file.
@@ -223,7 +239,7 @@ public interface IJettyConfiguration extends Cloneable {
     String getSslKeyStorePath();
 
     /**
-     * Set the SSL keystore file path used for HTTPS support.
+     * Set the SSL keystore file path, used for HTTPS support.
      * 
      * @param sslKeyStorePath
      *            String
