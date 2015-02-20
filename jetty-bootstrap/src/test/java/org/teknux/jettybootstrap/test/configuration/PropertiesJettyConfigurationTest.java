@@ -28,7 +28,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.teknux.jettybootstrap.configuration.JettyConnector;
 import org.teknux.jettybootstrap.configuration.PropertiesJettyConfiguration;
-import org.teknux.jettybootstrap.keystore.JettyKeystore;
+import org.teknux.jettybootstrap.keystore.JettyKeystoreGeneratorBuilder;
 
 
 public class PropertiesJettyConfigurationTest {
@@ -61,8 +61,8 @@ public class PropertiesJettyConfigurationTest {
         System.setProperty(PropertiesJettyConfiguration.KEY_SSL_KEYSTORE_DOMAINNAME, "domain1");
         System.setProperty(PropertiesJettyConfiguration.KEY_SSL_KEYSTORE_ALIAS, "alias1");
         System.setProperty(PropertiesJettyConfiguration.KEY_SSL_KEYSTORE_PASSWORD, "pwd1");
-        System.setProperty(PropertiesJettyConfiguration.KEY_SSL_KEYSTORE_ALGORITHM, JettyKeystore.ALGORITHM_RSA);
-        System.setProperty(PropertiesJettyConfiguration.KEY_SSL_KEYSTORE_SIGNATURE_ALGORITHM, JettyKeystore.SIGNATURE_ALGORITHM_SHA256WITHRSA);
+        System.setProperty(PropertiesJettyConfiguration.KEY_SSL_KEYSTORE_ALGORITHM, JettyKeystoreGeneratorBuilder.ALGORITHM_RSA);
+        System.setProperty(PropertiesJettyConfiguration.KEY_SSL_KEYSTORE_SIGNATURE_ALGORITHM, JettyKeystoreGeneratorBuilder.SIGNATURE_ALGORITHM_SHA256WITHRSA);
         System.setProperty(PropertiesJettyConfiguration.KEY_SSL_KEYSTORE_RDN_OU_VALUE, "rdnou1");
         System.setProperty(PropertiesJettyConfiguration.KEY_SSL_KEYSTORE_RDN_O_VALUE, "rdno1");
         System.setProperty(PropertiesJettyConfiguration.KEY_SSL_KEYSTORE_DATE_NOT_BEFORE_NUMBER_OF_DAYS, "10");
@@ -91,8 +91,8 @@ public class PropertiesJettyConfigurationTest {
         Assert.assertEquals("domain1", cfg.getSslKeyStoreDomainName());
         Assert.assertEquals("alias1", cfg.getSslKeyStoreAlias());
         Assert.assertEquals("pwd1", cfg.getSslKeyStorePassword());
-        Assert.assertEquals(JettyKeystore.ALGORITHM_RSA, cfg.getSslKeyStoreAlgorithm());
-        Assert.assertEquals(JettyKeystore.SIGNATURE_ALGORITHM_SHA256WITHRSA, cfg.getSslKeyStoreSignatureAlgorithm());
+        Assert.assertEquals(JettyKeystoreGeneratorBuilder.ALGORITHM_RSA, cfg.getSslKeyStoreAlgorithm());
+        Assert.assertEquals(JettyKeystoreGeneratorBuilder.SIGNATURE_ALGORITHM_SHA256WITHRSA, cfg.getSslKeyStoreSignatureAlgorithm());
         Assert.assertEquals("rdnou1", cfg.getSslKeyStoreRdnOuValue());
         Assert.assertEquals("rdno1", cfg.getSslKeyStoreRdnOValue());
         Assert.assertEquals(10, cfg.getSslKeyStoreDateNotBeforeNumberOfDays());
@@ -120,8 +120,8 @@ public class PropertiesJettyConfigurationTest {
         properties.setProperty(PropertiesJettyConfiguration.KEY_SSL_KEYSTORE_DOMAINNAME, "domain2");
         properties.setProperty(PropertiesJettyConfiguration.KEY_SSL_KEYSTORE_ALIAS, "alias2");
         properties.setProperty(PropertiesJettyConfiguration.KEY_SSL_KEYSTORE_PASSWORD, "pwd2");
-        properties.setProperty(PropertiesJettyConfiguration.KEY_SSL_KEYSTORE_ALGORITHM, JettyKeystore.ALGORITHM_RSA);
-        properties.setProperty(PropertiesJettyConfiguration.KEY_SSL_KEYSTORE_SIGNATURE_ALGORITHM, JettyKeystore.SIGNATURE_ALGORITHM_SHA256WITHRSA);
+        properties.setProperty(PropertiesJettyConfiguration.KEY_SSL_KEYSTORE_ALGORITHM, JettyKeystoreGeneratorBuilder.ALGORITHM_RSA);
+        properties.setProperty(PropertiesJettyConfiguration.KEY_SSL_KEYSTORE_SIGNATURE_ALGORITHM, JettyKeystoreGeneratorBuilder.SIGNATURE_ALGORITHM_SHA256WITHRSA);
         properties.setProperty(PropertiesJettyConfiguration.KEY_SSL_KEYSTORE_RDN_OU_VALUE, "rdnou2");
         properties.setProperty(PropertiesJettyConfiguration.KEY_SSL_KEYSTORE_RDN_O_VALUE, "rdno2");
         properties.setProperty(PropertiesJettyConfiguration.KEY_SSL_KEYSTORE_DATE_NOT_BEFORE_NUMBER_OF_DAYS, "15");
@@ -151,8 +151,8 @@ public class PropertiesJettyConfigurationTest {
         Assert.assertEquals("domain2", cfg.getSslKeyStoreDomainName());
         Assert.assertEquals("alias2", cfg.getSslKeyStoreAlias());
         Assert.assertEquals("pwd2", cfg.getSslKeyStorePassword());
-        Assert.assertEquals(JettyKeystore.ALGORITHM_RSA, cfg.getSslKeyStoreAlgorithm());
-        Assert.assertEquals(JettyKeystore.SIGNATURE_ALGORITHM_SHA256WITHRSA, cfg.getSslKeyStoreSignatureAlgorithm());
+        Assert.assertEquals(JettyKeystoreGeneratorBuilder.ALGORITHM_RSA, cfg.getSslKeyStoreAlgorithm());
+        Assert.assertEquals(JettyKeystoreGeneratorBuilder.SIGNATURE_ALGORITHM_SHA256WITHRSA, cfg.getSslKeyStoreSignatureAlgorithm());
         Assert.assertEquals("rdnou2", cfg.getSslKeyStoreRdnOuValue());
         Assert.assertEquals("rdno2", cfg.getSslKeyStoreRdnOValue());
         Assert.assertEquals(15, cfg.getSslKeyStoreDateNotBeforeNumberOfDays());
@@ -181,8 +181,8 @@ public class PropertiesJettyConfigurationTest {
         Assert.assertEquals("domain1", cfg.getSslKeyStoreDomainName());
         Assert.assertEquals("alias1", cfg.getSslKeyStoreAlias());
         Assert.assertEquals("pwd1", cfg.getSslKeyStorePassword());
-        Assert.assertEquals(JettyKeystore.ALGORITHM_RSA, cfg.getSslKeyStoreAlgorithm());
-        Assert.assertEquals(JettyKeystore.SIGNATURE_ALGORITHM_SHA256WITHRSA, cfg.getSslKeyStoreSignatureAlgorithm());
+        Assert.assertEquals(JettyKeystoreGeneratorBuilder.ALGORITHM_RSA, cfg.getSslKeyStoreAlgorithm());
+        Assert.assertEquals(JettyKeystoreGeneratorBuilder.SIGNATURE_ALGORITHM_SHA256WITHRSA, cfg.getSslKeyStoreSignatureAlgorithm());
         Assert.assertEquals("rdnou1", cfg.getSslKeyStoreRdnOuValue());
         Assert.assertEquals("rdno1", cfg.getSslKeyStoreRdnOValue());
         Assert.assertEquals(10, cfg.getSslKeyStoreDateNotBeforeNumberOfDays());

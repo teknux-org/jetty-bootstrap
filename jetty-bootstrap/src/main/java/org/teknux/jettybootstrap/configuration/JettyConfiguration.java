@@ -27,7 +27,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.teknux.jettybootstrap.keystore.JettyKeystore;
+import org.teknux.jettybootstrap.keystore.JettyKeystoreGeneratorBuilder;
 
 
 /**
@@ -56,12 +56,12 @@ public class JettyConfiguration implements IJettyConfiguration {
     private String sslKeyStoreDomainName = "unknown";
     private String sslKeyStoreAlias = "jettybootstrap";
     private String sslKeyStorePassword = "jettybootstrap";
-    private String sslKeyStoreAlgorithm = JettyKeystore.DEFAULT_ALGORITHM;
-    private String sslKeyStoreSignatureAlgorithm = JettyKeystore.DEFAULT_SIGNATURE_ALGORITHM;
+    private String sslKeyStoreAlgorithm = JettyKeystoreGeneratorBuilder.DEFAULT_ALGORITHM;
+    private String sslKeyStoreSignatureAlgorithm = JettyKeystoreGeneratorBuilder.DEFAULT_SIGNATURE_ALGORITHM;
     private String sslKeyStoreRdnOuValue = null;
     private String sslKeyStoreRdnOValue = null;
-    private int sslKeyStoreDateNotBeforeNumberOfDays = JettyKeystore.DEFAULT_DATE_NOT_BEFORE_NUMBER_OF_DAYS;
-    private int sslKeyStoreDateNotAfterNumberOfDays = JettyKeystore.DEFAULT_DATE_NOT_AFTER_NUMBER_OF_DAYS;
+    private int sslKeyStoreDateNotBeforeNumberOfDays = JettyKeystoreGeneratorBuilder.DEFAULT_DATE_NOT_BEFORE_NUMBER_OF_DAYS;
+    private int sslKeyStoreDateNotAfterNumberOfDays = JettyKeystoreGeneratorBuilder.DEFAULT_DATE_NOT_AFTER_NUMBER_OF_DAYS;
 
     private File tempDirectory = null;
     private boolean persistAppTempDirectories = false;

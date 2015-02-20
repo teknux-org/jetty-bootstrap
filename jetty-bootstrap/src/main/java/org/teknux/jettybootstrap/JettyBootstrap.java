@@ -22,7 +22,9 @@
 package org.teknux.jettybootstrap;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,8 +50,9 @@ import org.teknux.jettybootstrap.handler.ExplodedWarAppJettyHandler;
 import org.teknux.jettybootstrap.handler.JettyHandler;
 import org.teknux.jettybootstrap.handler.WarAppFromClasspathJettyHandler;
 import org.teknux.jettybootstrap.handler.WarAppJettyHandler;
-import org.teknux.jettybootstrap.keystore.JettyKeystore;
+import org.teknux.jettybootstrap.keystore.JettyKeystoreConvertorBuilder;
 import org.teknux.jettybootstrap.keystore.JettyKeystoreException;
+import org.teknux.jettybootstrap.keystore.JettyKeystoreGeneratorBuilder;
 import org.teknux.jettybootstrap.utils.PathUtil;
 
 
@@ -511,15 +514,17 @@ public class JettyBootstrap {
                     File keystoreFile = new File(iJettyConfiguration.getSslKeyStorePath());
                     if (!keystoreFile.exists()) {
                         try {
-                            JettyKeystore jettyKeystore = new JettyKeystore(iJettyConfiguration.getSslKeyStoreAlias(), iJettyConfiguration.getSslKeyStorePassword());
-                            jettyKeystore.setAlgorithm(iJettyConfiguration.getSslKeyStoreAlgorithm());
-                            jettyKeystore.setSignatureAlgorithm(iJettyConfiguration.getSslKeyStoreSignatureAlgorithm());
-                            jettyKeystore.setRdnOuValue(iJettyConfiguration.getSslKeyStoreRdnOuValue());
-                            jettyKeystore.setRdnOValue(iJettyConfiguration.getSslKeyStoreRdnOValue());
-                            jettyKeystore.setDateNotBeforeNumberOfDays(iJettyConfiguration.getSslKeyStoreDateNotBeforeNumberOfDays());
-                            jettyKeystore.setDateNotAfterNumberOfDays(iJettyConfiguration.getSslKeyStoreDateNotAfterNumberOfDays());
+                            JettyKeystoreGeneratorBuilder jettyKeystoreGeneratorBuilder = new JettyKeystoreGeneratorBuilder();
+                            jettyKeystoreGeneratorBuilder.setAlgorithm(iJettyConfiguration.getSslKeyStoreAlgorithm());
+                            jettyKeystoreGeneratorBuilder.setSignatureAlgorithm(iJettyConfiguration.getSslKeyStoreSignatureAlgorithm());
+                            jettyKeystoreGeneratorBuilder.setRdnOuValue(iJettyConfiguration.getSslKeyStoreRdnOuValue());
+                            jettyKeystoreGeneratorBuilder.setRdnOValue(iJettyConfiguration.getSslKeyStoreRdnOValue());
+                            jettyKeystoreGeneratorBuilder.setDateNotBeforeNumberOfDays(iJettyConfiguration.getSslKeyStoreDateNotBeforeNumberOfDays());
+                            jettyKeystoreGeneratorBuilder.setDateNotAfterNumberOfDays(iJettyConfiguration.getSslKeyStoreDateNotAfterNumberOfDays());
 
-                            jettyKeystore.generateKeyStoreAndSave(iJettyConfiguration.getSslKeyStoreDomainName(), keystoreFile);
+                            KeyStore keyStore = jettyKeystoreGeneratorBuilder.build(iJettyConfiguration.getSslKeyStoreDomainName(), iJettyConfiguration.getSslKeyStoreAlias(),
+                                    iJettyConfiguration.getSslKeyStorePassword());
+                            JettyKeystoreGeneratorBuilder.saveKeyStore(keyStore, keystoreFile, iJettyConfiguration.getSslKeyStorePassword());
                         } catch (JettyKeystoreException e) {
                             throw new JettyBootstrapException("Can't generate keyStore", e);
                         }
@@ -605,15 +610,28 @@ public class JettyBootstrap {
             } else if (iJettyConfiguration.getSslPrivateKeyPath() != null && !iJettyConfiguration.getSslPrivateKeyPath().isEmpty() &&
                 iJettyConfiguration.getSslCertificatePath() != null && !iJettyConfiguration.getSslCertificatePath().isEmpty()) { //Use private key and certificate if available
 
-                JettyKeystore jettyKeystore = new JettyKeystore(iJettyConfiguration.getSslKeyStoreAlias(), iJettyConfiguration.getSslKeyStorePassword());
-                jettyKeystore.setAlgorithm(iJettyConfiguration.getSslKeyStoreAlgorithm());
+                JettyKeystoreConvertorBuilder jettyKeystoreConvertorBuilder = new JettyKeystoreConvertorBuilder();
                 try {
-                    KeyStore keyStore = jettyKeystore
-                            .convertToKeyStore(new File(iJettyConfiguration.getSslPrivateKeyPath()), new File(iJettyConfiguration.getSslCertificatePath()));
+                    File sslPrivateKeyFile = new File(iJettyConfiguration.getSslPrivateKeyPath());
+                    if (!sslPrivateKeyFile.exists() || !sslPrivateKeyFile.canRead()) {
+                        throw new JettyKeystoreException(JettyKeystoreException.ERROR_LOAD_PRIVATE_KEY_PKCS8, "Private key not exists or unreadable");
+                    }
+                    File sslCertificateFile = new File(iJettyConfiguration.getSslCertificatePath());
+                    if (!sslCertificateFile.exists() || !sslCertificateFile.canRead()) {
+                        throw new JettyKeystoreException(JettyKeystoreException.ERROR_LOAD_CERTIFICATE_PKCS8, "Certificate not exists or unreadable");
+                    }
+
+                    try (InputStream sslPrivateKeyInputStream = new FileInputStream(sslPrivateKeyFile);
+                            InputStream sslCertificateInputStream = new FileInputStream(sslCertificateFile)) {
+
+                        jettyKeystoreConvertorBuilder.setCertificateFromPKCS8(sslCertificateInputStream).setPrivateKeyFromPKCS8(sslPrivateKeyInputStream);
+                    }
+
+                    KeyStore keyStore = jettyKeystoreConvertorBuilder.build(iJettyConfiguration.getSslKeyStoreAlias(), iJettyConfiguration.getSslKeyStorePassword());
 
                     sslContextFactory.setKeyStore(keyStore);
-                } catch (JettyKeystoreException e) {
-                    throw new JettyBootstrapException("Can not load SSL certificate or SSL private key", e);
+                } catch (JettyKeystoreException | IOException e) {
+                    throw new JettyBootstrapException("Can not load SSL private key or SSL certificate", e);
                 }
             } else { //Use keystore path
                 sslContextFactory.setKeyStorePath(iJettyConfiguration.getSslKeyStorePath());

@@ -25,14 +25,18 @@ public class JettyKeystoreException extends Exception {
 
     private static final long serialVersionUID = 1L;
 
-    public static final int ERROR_READ_PRIVATE_KEY = 0;
-    public static final int ERROR_READ_CERTIFICATE = 1;
-    public static final int ERROR_LOAD_PRIVATE_KEY = 2;
-    public static final int ERROR_LOAD_CERTIFICATE = 3;
-    public static final int ERROR_CREATE_KEYS = 4;
-    public static final int ERROR_CREATE_CERTIFICATE = 5;
-    public static final int ERROR_CREATE_KEYSTORE = 6;
-    public static final int ERROR_SAVE_KEYSTORE = 7;
+    public static final int ERROR_LOAD_KEYSTORE = 0;
+    public static final int ERROR_LOAD_PKCS8 = 1;
+    public static final int ERROR_LOAD_PKCS12 = 2;
+    public static final int ERROR_LOAD_PRIVATE_KEY_PKCS8 = 3;
+    public static final int ERROR_LOAD_PRIVATE_KEY_PKCS12 = 4;
+    public static final int ERROR_LOAD_CERTIFICATE_PKCS8 = 5;
+    public static final int ERROR_LOAD_CERTIFICATE_PKCS12 = 6;
+    public static final int ERROR_CREATE_KEYS = 7;
+    public static final int ERROR_CREATE_CERTIFICATE = 8;
+    public static final int ERROR_CREATE_KEYSTORE = 9;
+    public static final int ERROR_SAVE_KEYSTORE = 10;
+    public static final int ERROR_UNREACHABLE_PRIVATE_KEY_ENTRY = 11;
 
     private final int type;
 
