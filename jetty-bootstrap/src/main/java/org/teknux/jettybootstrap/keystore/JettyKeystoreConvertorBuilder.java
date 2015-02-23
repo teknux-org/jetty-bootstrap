@@ -53,7 +53,11 @@ public class JettyKeystoreConvertorBuilder extends AbstractJettyKeystore {
     }
 
     public JettyKeystoreConvertorBuilder setKeystore(InputStream inputStream, String password) throws JettyKeystoreException {
-        return setKeystore(inputStream, password, null, KEYSTORE_TYPE_JKS);
+        return setKeystore(inputStream, password, null);
+    }
+
+    public JettyKeystoreConvertorBuilder setKeystore(InputStream inputStream, String password, String alias) throws JettyKeystoreException {
+        return setKeystore(inputStream, password, alias, KEYSTORE_TYPE_JKS);
     }
 
     public JettyKeystoreConvertorBuilder setKeystore(InputStream inputStream, String password, String alias, String type) throws JettyKeystoreException {
@@ -63,6 +67,50 @@ public class JettyKeystoreConvertorBuilder extends AbstractJettyKeystore {
             PrivateKeyEntry privateKeyEntry = getPrivateKeyEntryOfKeyStore(keystore, password, alias);
 
             privateKey = privateKeyEntry.getPrivateKey();
+            certificate = privateKeyEntry.getCertificate();
+        } catch (JettyKeystoreException e) {
+            throw new JettyKeystoreException(JettyKeystoreException.ERROR_LOAD_KEYSTORE, "Can not load file (Keystore)", e);
+        }
+
+        return this;
+    }
+
+    public JettyKeystoreConvertorBuilder setPrivateKeyFromKeystore(InputStream inputStream, String password) throws JettyKeystoreException {
+        return setPrivateKeyFromKeystore(inputStream, password, null);
+    }
+
+    public JettyKeystoreConvertorBuilder setPrivateKeyFromKeystore(InputStream inputStream, String password, String alias) throws JettyKeystoreException {
+        return setPrivateKeyFromKeystore(inputStream, password, alias, KEYSTORE_TYPE_JKS);
+    }
+
+    public JettyKeystoreConvertorBuilder setPrivateKeyFromKeystore(InputStream inputStream, String password, String alias, String type) throws JettyKeystoreException {
+        KeyStore keystore = loadKeyStore(inputStream, password, type);
+
+        try {
+            PrivateKeyEntry privateKeyEntry = getPrivateKeyEntryOfKeyStore(keystore, password, alias);
+
+            privateKey = privateKeyEntry.getPrivateKey();
+        } catch (JettyKeystoreException e) {
+            throw new JettyKeystoreException(JettyKeystoreException.ERROR_LOAD_KEYSTORE, "Can not load file (Keystore)", e);
+        }
+
+        return this;
+    }
+
+    public JettyKeystoreConvertorBuilder setCertificateFromKeystore(InputStream inputStream, String password) throws JettyKeystoreException {
+        return setCertificateFromKeystore(inputStream, password, null);
+    }
+
+    public JettyKeystoreConvertorBuilder setCertificateFromKeystore(InputStream inputStream, String password, String alias) throws JettyKeystoreException {
+        return setCertificateFromKeystore(inputStream, password, alias, KEYSTORE_TYPE_JKS);
+    }
+
+    public JettyKeystoreConvertorBuilder setCertificateFromKeystore(InputStream inputStream, String password, String alias, String type) throws JettyKeystoreException {
+        KeyStore keystore = loadKeyStore(inputStream, password, type);
+
+        try {
+            PrivateKeyEntry privateKeyEntry = getPrivateKeyEntryOfKeyStore(keystore, password, alias);
+
             certificate = privateKeyEntry.getCertificate();
         } catch (JettyKeystoreException e) {
             throw new JettyKeystoreException(JettyKeystoreException.ERROR_LOAD_KEYSTORE, "Can not load file (Keystore)", e);
@@ -138,13 +186,8 @@ public class JettyKeystoreConvertorBuilder extends AbstractJettyKeystore {
     }
 
     public JettyKeystoreConvertorBuilder setPKCS12(InputStream inputStream, String password, String alias) throws JettyKeystoreException {
-        KeyStore keystore = loadKeyStore(inputStream, password, KEYSTORE_TYPE_PKCS12);
-
         try {
-            PrivateKeyEntry privateKeyEntry = getPrivateKeyEntryOfKeyStore(keystore, password, alias);
-
-            privateKey = privateKeyEntry.getPrivateKey();
-            certificate = privateKeyEntry.getCertificate();
+            setKeystore(inputStream, password, alias, KEYSTORE_TYPE_PKCS12);
         } catch (JettyKeystoreException e) {
             throw new JettyKeystoreException(JettyKeystoreException.ERROR_LOAD_PKCS12, "Can not load file (PKCS12)", e);
         }
@@ -157,15 +200,11 @@ public class JettyKeystoreConvertorBuilder extends AbstractJettyKeystore {
     }
 
     public JettyKeystoreConvertorBuilder setPrivateKeyFromPKCS12(InputStream inputStream, String password, String alias) throws JettyKeystoreException {
-        KeyStore keystore = loadKeyStore(inputStream, password, KEYSTORE_TYPE_PKCS12);
-
         try {
-            privateKey = getPrivateKeyEntryOfKeyStore(keystore, password, alias).getPrivateKey();
+            return setPrivateKeyFromKeystore(inputStream, password, alias, KEYSTORE_TYPE_PKCS12);
         } catch (JettyKeystoreException e) {
             throw new JettyKeystoreException(JettyKeystoreException.ERROR_LOAD_PRIVATE_KEY_PKCS12, "Can not load private key (PKCS12)", e);
         }
-
-        return this;
     }
 
     public JettyKeystoreConvertorBuilder setCertificateFromPKCS12(InputStream inputStream, String password) throws JettyKeystoreException {
@@ -173,12 +212,8 @@ public class JettyKeystoreConvertorBuilder extends AbstractJettyKeystore {
     }
 
     public JettyKeystoreConvertorBuilder setCertificateFromPKCS12(InputStream inputStream, String password, String alias) throws JettyKeystoreException {
-        KeyStore keystore = loadKeyStore(inputStream, password, KEYSTORE_TYPE_PKCS12);
-
         try {
-            certificate = getPrivateKeyEntryOfKeyStore(keystore, password, alias).getCertificate();
-
-            return this;
+            return setCertificateFromKeystore(inputStream, password, alias, KEYSTORE_TYPE_PKCS12);
         } catch (JettyKeystoreException e) {
             throw new JettyKeystoreException(JettyKeystoreException.ERROR_LOAD_CERTIFICATE_PKCS12, "Can not load certificate (PKCS12)", e);
         }

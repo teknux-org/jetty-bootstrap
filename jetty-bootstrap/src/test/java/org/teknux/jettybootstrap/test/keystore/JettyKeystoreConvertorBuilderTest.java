@@ -43,7 +43,7 @@ public class JettyKeystoreConvertorBuilderTest extends AbstractJettyKeystoreTest
     @Test
     public void do01KeystoreTest() throws JettyKeystoreException, InvalidKeyException, KeyStoreException, CertificateException, NoSuchAlgorithmException, NoSuchProviderException,
             SignatureException {
-        InputStream inputStream = getClass().getResourceAsStream("/org/teknux/jettybootstrap/test/keystore/jks/keystore.jks");
+        InputStream inputStream = getClass().getResourceAsStream("/org/teknux/jettybootstrap/test/keystore/jks/test.jks");
 
         KeyStore keystore = new JettyKeystoreConvertorBuilder().setKeystore(inputStream, "test").build(KEYSTORE_ALIAS, KEYSTORE_PASSWORD);
 
@@ -51,7 +51,31 @@ public class JettyKeystoreConvertorBuilderTest extends AbstractJettyKeystoreTest
     }
 
     @Test
-    public void do02PemTest() throws JettyKeystoreException, InvalidKeyException, KeyStoreException, CertificateException, NoSuchAlgorithmException, NoSuchProviderException,
+    public void do02KeyAndKeystoreTest() throws JettyKeystoreException, InvalidKeyException, KeyStoreException, CertificateException, NoSuchAlgorithmException,
+            NoSuchProviderException, SignatureException {
+        InputStream keyInputStream = getClass().getResourceAsStream("/org/teknux/jettybootstrap/test/keystore/jks/test.key");
+        InputStream crtInputStream = getClass().getResourceAsStream("/org/teknux/jettybootstrap/test/keystore/jks/test.jks");
+
+        KeyStore keystore = new JettyKeystoreConvertorBuilder().setPrivateKeyFromPKCS8(keyInputStream).setCertificateFromKeystore(crtInputStream, "test")
+                .build(KEYSTORE_ALIAS, KEYSTORE_PASSWORD);
+
+        checkValidity(keystore, KEYSTORE_ALIAS);
+    }
+
+    @Test
+    public void do03KeystoreAndCrtTest() throws JettyKeystoreException, InvalidKeyException, KeyStoreException, CertificateException, NoSuchAlgorithmException,
+            NoSuchProviderException, SignatureException {
+        InputStream keyInputStream = getClass().getResourceAsStream("/org/teknux/jettybootstrap/test/keystore/jks/test.jks");
+        InputStream crtInputStream = getClass().getResourceAsStream("/org/teknux/jettybootstrap/test/keystore/jks/test.crt");
+
+        KeyStore keystore = new JettyKeystoreConvertorBuilder().setPrivateKeyFromKeystore(keyInputStream, "test").setCertificateFromPKCS8(crtInputStream)
+                .build(KEYSTORE_ALIAS, KEYSTORE_PASSWORD);
+
+        checkValidity(keystore, KEYSTORE_ALIAS);
+    }
+
+    @Test
+    public void do04PemTest() throws JettyKeystoreException, InvalidKeyException, KeyStoreException, CertificateException, NoSuchAlgorithmException, NoSuchProviderException,
             SignatureException {
         InputStream inputStream = getClass().getResourceAsStream("/org/teknux/jettybootstrap/test/keystore/pkcs8/test.pem");
 
@@ -61,40 +85,43 @@ public class JettyKeystoreConvertorBuilderTest extends AbstractJettyKeystoreTest
     }
 
     @Test
-    public void do03KeyAndCrtTest() throws JettyKeystoreException, InvalidKeyException, KeyStoreException, CertificateException, NoSuchAlgorithmException, NoSuchProviderException,
+    public void do05KeyAndCrtTest() throws JettyKeystoreException, InvalidKeyException, KeyStoreException, CertificateException, NoSuchAlgorithmException, NoSuchProviderException,
             SignatureException {
         InputStream keyInputStream = getClass().getResourceAsStream("/org/teknux/jettybootstrap/test/keystore/pkcs8/test.key");
         InputStream crtInputStream = getClass().getResourceAsStream("/org/teknux/jettybootstrap/test/keystore/pkcs8/test.crt");
 
-        KeyStore keystore = new JettyKeystoreConvertorBuilder().setPrivateKeyFromPKCS8(keyInputStream).setCertificateFromPKCS8(crtInputStream).build(KEYSTORE_ALIAS, KEYSTORE_PASSWORD);
+        KeyStore keystore = new JettyKeystoreConvertorBuilder().setPrivateKeyFromPKCS8(keyInputStream).setCertificateFromPKCS8(crtInputStream)
+                .build(KEYSTORE_ALIAS, KEYSTORE_PASSWORD);
 
         checkValidity(keystore, KEYSTORE_ALIAS);
     }
 
     @Test
-    public void do04KeyAndPemTest() throws JettyKeystoreException, InvalidKeyException, KeyStoreException, CertificateException, NoSuchAlgorithmException, NoSuchProviderException,
+    public void do06KeyAndPemTest() throws JettyKeystoreException, InvalidKeyException, KeyStoreException, CertificateException, NoSuchAlgorithmException, NoSuchProviderException,
             SignatureException {
         InputStream keyInputStream = getClass().getResourceAsStream("/org/teknux/jettybootstrap/test/keystore/pkcs8/test.key");
         InputStream crtInputStream = getClass().getResourceAsStream("/org/teknux/jettybootstrap/test/keystore/pkcs8/test.pem");
 
-        KeyStore keystore = new JettyKeystoreConvertorBuilder().setPrivateKeyFromPKCS8(keyInputStream).setCertificateFromPKCS8(crtInputStream).build(KEYSTORE_ALIAS, KEYSTORE_PASSWORD);
+        KeyStore keystore = new JettyKeystoreConvertorBuilder().setPrivateKeyFromPKCS8(keyInputStream).setCertificateFromPKCS8(crtInputStream)
+                .build(KEYSTORE_ALIAS, KEYSTORE_PASSWORD);
 
         checkValidity(keystore, KEYSTORE_ALIAS);
     }
 
     @Test
-    public void do05PemAndCrtTest() throws JettyKeystoreException, InvalidKeyException, KeyStoreException, CertificateException, NoSuchAlgorithmException, NoSuchProviderException,
+    public void do07PemAndCrtTest() throws JettyKeystoreException, InvalidKeyException, KeyStoreException, CertificateException, NoSuchAlgorithmException, NoSuchProviderException,
             SignatureException {
         InputStream keyInputStream = getClass().getResourceAsStream("/org/teknux/jettybootstrap/test/keystore/pkcs8/test.pem");
         InputStream crtInputStream = getClass().getResourceAsStream("/org/teknux/jettybootstrap/test/keystore/pkcs8/test.crt");
 
-        KeyStore keystore = new JettyKeystoreConvertorBuilder().setPrivateKeyFromPKCS8(keyInputStream).setCertificateFromPKCS8(crtInputStream).build(KEYSTORE_ALIAS, KEYSTORE_PASSWORD);
+        KeyStore keystore = new JettyKeystoreConvertorBuilder().setPrivateKeyFromPKCS8(keyInputStream).setCertificateFromPKCS8(crtInputStream)
+                .build(KEYSTORE_ALIAS, KEYSTORE_PASSWORD);
 
         checkValidity(keystore, KEYSTORE_ALIAS);
     }
 
     @Test
-    public void do06P12Test() throws JettyKeystoreException, InvalidKeyException, KeyStoreException, CertificateException, NoSuchAlgorithmException, NoSuchProviderException,
+    public void do08P12Test() throws JettyKeystoreException, InvalidKeyException, KeyStoreException, CertificateException, NoSuchAlgorithmException, NoSuchProviderException,
             SignatureException {
         InputStream inputStream = getClass().getResourceAsStream("/org/teknux/jettybootstrap/test/keystore/pkcs12/test.p12");
 
@@ -104,7 +131,7 @@ public class JettyKeystoreConvertorBuilderTest extends AbstractJettyKeystoreTest
     }
 
     @Test
-    public void do07KeyAndP12Test() throws JettyKeystoreException, InvalidKeyException, KeyStoreException, CertificateException, NoSuchAlgorithmException, NoSuchProviderException,
+    public void do09KeyAndP12Test() throws JettyKeystoreException, InvalidKeyException, KeyStoreException, CertificateException, NoSuchAlgorithmException, NoSuchProviderException,
             SignatureException {
         InputStream keyInputStream = getClass().getResourceAsStream("/org/teknux/jettybootstrap/test/keystore/pkcs12/test.key");
         InputStream crtInputStream = getClass().getResourceAsStream("/org/teknux/jettybootstrap/test/keystore/pkcs12/test.p12");
@@ -116,7 +143,7 @@ public class JettyKeystoreConvertorBuilderTest extends AbstractJettyKeystoreTest
     }
 
     @Test
-    public void do08P12AndCrtTest() throws JettyKeystoreException, InvalidKeyException, KeyStoreException, CertificateException, NoSuchAlgorithmException, NoSuchProviderException,
+    public void do10P12AndCrtTest() throws JettyKeystoreException, InvalidKeyException, KeyStoreException, CertificateException, NoSuchAlgorithmException, NoSuchProviderException,
             SignatureException {
         InputStream keyInputStream = getClass().getResourceAsStream("/org/teknux/jettybootstrap/test/keystore/pkcs12/test.p12");
         InputStream crtInputStream = getClass().getResourceAsStream("/org/teknux/jettybootstrap/test/keystore/pkcs12/test.crt");
