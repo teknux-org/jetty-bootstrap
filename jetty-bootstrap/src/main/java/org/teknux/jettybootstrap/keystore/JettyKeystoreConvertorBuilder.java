@@ -42,11 +42,21 @@ public class JettyKeystoreConvertorBuilder extends AbstractJettyKeystore {
     private Certificate certificate;
 
     public KeyStore build(String alias, String password) throws JettyKeystoreException {
+        return build(alias, password, true);
+    }
+
+    public KeyStore build(String alias, String password, boolean checkValidity) throws JettyKeystoreException {
         Objects.requireNonNull(alias, "Alias is required");
         Objects.requireNonNull(password, "Password is required");
 
         if (privateKey != null && certificate != null) {
-            return createKeyStore(privateKey, certificate, alias, password);
+            KeyStore keystore = createKeyStore(privateKey, certificate, alias, password);
+
+            if (checkValidity) {
+                checkValidity(keystore, alias);
+            }
+
+            return keystore;
         } else {
             throw new JettyKeystoreException(JettyKeystoreException.ERROR_CREATE_KEYSTORE, "Can not create keystore file");
         }
@@ -259,5 +269,9 @@ public class JettyKeystoreConvertorBuilder extends AbstractJettyKeystore {
         } catch (KeyStoreException | NoSuchAlgorithmException | UnrecoverableEntryException e) {
             throw new JettyKeystoreException(JettyKeystoreException.ERROR_UNREACHABLE_PRIVATE_KEY_ENTRY, "Can not find private key entry", e);
         }
+    }
+
+    public void checkValidity() throws JettyKeystoreException {
+        build("testAlias", "testPassword", true);
     }
 }

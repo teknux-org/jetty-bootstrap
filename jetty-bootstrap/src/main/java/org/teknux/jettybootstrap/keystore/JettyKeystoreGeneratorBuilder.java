@@ -129,6 +129,10 @@ public class JettyKeystoreGeneratorBuilder extends AbstractJettyKeystore {
     }
 
     public KeyStore build(String domainName, String alias, String password) throws JettyKeystoreException {
+        return build(domainName, alias, password, true);
+    }
+
+    public KeyStore build(String domainName, String alias, String password, boolean checkValidity) throws JettyKeystoreException {
         Objects.requireNonNull(domainName, "DomainName is required");
         Objects.requireNonNull(alias, "Alias is required");
         Objects.requireNonNull(password, "Password is required");
@@ -137,6 +141,10 @@ public class JettyKeystoreGeneratorBuilder extends AbstractJettyKeystore {
         Certificate certificate = generateCertificate(keyPair, domainName, signatureAlgorithm, rdnOuValue, rdnOValue, dateNotBeforeNumberOfDays, dateNotAfterNumberOfDays);
 
         KeyStore keystore = createKeyStore(keyPair.getPrivate(), certificate, alias, password);
+
+        if (checkValidity) {
+            checkValidity(keystore, alias);
+        }
 
         return keystore;
     }
@@ -198,5 +206,9 @@ public class JettyKeystoreGeneratorBuilder extends AbstractJettyKeystore {
         } catch (KeyStoreException | NoSuchAlgorithmException | CertificateException | IOException e) {
             throw new JettyKeystoreException(JettyKeystoreException.ERROR_SAVE_KEYSTORE, "Can not save keystore file", e);
         }
+    }
+
+    public void checkValidity() throws JettyKeystoreException {
+        build("testDomain", "testAlias", "testPassword", true);
     }
 }

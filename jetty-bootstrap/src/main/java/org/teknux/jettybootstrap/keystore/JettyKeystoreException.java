@@ -37,6 +37,7 @@ public class JettyKeystoreException extends Exception {
     public static final int ERROR_CREATE_KEYSTORE = 9;
     public static final int ERROR_SAVE_KEYSTORE = 10;
     public static final int ERROR_UNREACHABLE_PRIVATE_KEY_ENTRY = 11;
+    public static final int ERROR_INVALID_KEYSTORE = 12;
 
     private final int type;
 

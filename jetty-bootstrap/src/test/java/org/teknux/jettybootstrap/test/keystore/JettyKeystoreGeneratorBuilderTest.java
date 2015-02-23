@@ -29,7 +29,6 @@ import java.security.NoSuchProviderException;
 import java.security.SignatureException;
 import java.security.cert.CertificateException;
 
-import org.junit.Assert;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
@@ -47,12 +46,10 @@ public class JettyKeystoreGeneratorBuilderTest {
     @Test
     public void do01GenerateKeystoreTest() throws JettyKeystoreException, KeyStoreException, InvalidKeyException, CertificateException, NoSuchAlgorithmException,
             NoSuchProviderException, SignatureException {
-        JettyKeystoreGeneratorBuilder jettyKeystore = new JettyKeystoreGeneratorBuilder();
+        JettyKeystoreGeneratorBuilder jettyKeystoreGeneratorBuilder = new JettyKeystoreGeneratorBuilder();
+        jettyKeystoreGeneratorBuilder.checkValidity();
 
-        Assert.assertNotEquals(null, jettyKeystore);
-
-        KeyStore keystore = jettyKeystore.build(KEYSTORE_DOMAINNAME, KEYSTORE_ALIAS, KEYSTORE_PASSWORD);
-
+        KeyStore keystore = jettyKeystoreGeneratorBuilder.build(KEYSTORE_DOMAINNAME, KEYSTORE_ALIAS, KEYSTORE_PASSWORD);
         JettyKeystoreGeneratorBuilder.checkValidity(keystore, KEYSTORE_ALIAS);
     }
 }
