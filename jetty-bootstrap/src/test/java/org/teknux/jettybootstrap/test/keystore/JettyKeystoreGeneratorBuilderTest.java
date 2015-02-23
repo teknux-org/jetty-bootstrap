@@ -38,8 +38,10 @@ import org.teknux.jettybootstrap.keystore.JettyKeystoreGeneratorBuilder;
 
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class JettyKeystoreGeneratorBuilderTest extends AbstractJettyKeystoreTest {
+public class JettyKeystoreGeneratorBuilderTest {
 
+    protected static final String KEYSTORE_ALIAS = "jettybootstraptest";
+    protected static final String KEYSTORE_PASSWORD = "jettybootstraptest";
     private static final String KEYSTORE_DOMAINNAME = "unknowntest";
 
     @Test
@@ -51,6 +53,6 @@ public class JettyKeystoreGeneratorBuilderTest extends AbstractJettyKeystoreTest
 
         KeyStore keystore = jettyKeystore.build(KEYSTORE_DOMAINNAME, KEYSTORE_ALIAS, KEYSTORE_PASSWORD);
 
-        checkValidity(keystore, KEYSTORE_ALIAS);
+        JettyKeystoreGeneratorBuilder.checkValidity(keystore, KEYSTORE_ALIAS);
     }
 }

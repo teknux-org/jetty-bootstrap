@@ -38,7 +38,10 @@ import org.teknux.jettybootstrap.keystore.JettyKeystoreException;
 
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class JettyKeystoreConvertorBuilderTest extends AbstractJettyKeystoreTest {
+public class JettyKeystoreConvertorBuilderTest {
+
+    protected static final String KEYSTORE_ALIAS = "jettybootstraptest";
+    protected static final String KEYSTORE_PASSWORD = "jettybootstraptest";
 
     @Test
     public void do01KeystoreTest() throws JettyKeystoreException, InvalidKeyException, KeyStoreException, CertificateException, NoSuchAlgorithmException, NoSuchProviderException,
@@ -47,7 +50,7 @@ public class JettyKeystoreConvertorBuilderTest extends AbstractJettyKeystoreTest
 
         KeyStore keystore = new JettyKeystoreConvertorBuilder().setKeystore(inputStream, "test").build(KEYSTORE_ALIAS, KEYSTORE_PASSWORD);
 
-        checkValidity(keystore, KEYSTORE_ALIAS);
+        JettyKeystoreConvertorBuilder.checkValidity(keystore, KEYSTORE_ALIAS);
     }
 
     @Test
@@ -59,7 +62,7 @@ public class JettyKeystoreConvertorBuilderTest extends AbstractJettyKeystoreTest
         KeyStore keystore = new JettyKeystoreConvertorBuilder().setPrivateKeyFromPKCS8(keyInputStream).setCertificateFromKeystore(crtInputStream, "test")
                 .build(KEYSTORE_ALIAS, KEYSTORE_PASSWORD);
 
-        checkValidity(keystore, KEYSTORE_ALIAS);
+        JettyKeystoreConvertorBuilder.checkValidity(keystore, KEYSTORE_ALIAS);
     }
 
     @Test
@@ -71,7 +74,7 @@ public class JettyKeystoreConvertorBuilderTest extends AbstractJettyKeystoreTest
         KeyStore keystore = new JettyKeystoreConvertorBuilder().setPrivateKeyFromKeystore(keyInputStream, "test").setCertificateFromPKCS8(crtInputStream)
                 .build(KEYSTORE_ALIAS, KEYSTORE_PASSWORD);
 
-        checkValidity(keystore, KEYSTORE_ALIAS);
+        JettyKeystoreConvertorBuilder.checkValidity(keystore, KEYSTORE_ALIAS);
     }
 
     @Test
@@ -81,7 +84,7 @@ public class JettyKeystoreConvertorBuilderTest extends AbstractJettyKeystoreTest
 
         KeyStore keystore = new JettyKeystoreConvertorBuilder().setPKCS8(inputStream).build(KEYSTORE_ALIAS, "test");
 
-        checkValidity(keystore, KEYSTORE_ALIAS);
+        JettyKeystoreConvertorBuilder.checkValidity(keystore, KEYSTORE_ALIAS);
     }
 
     @Test
@@ -93,7 +96,7 @@ public class JettyKeystoreConvertorBuilderTest extends AbstractJettyKeystoreTest
         KeyStore keystore = new JettyKeystoreConvertorBuilder().setPrivateKeyFromPKCS8(keyInputStream).setCertificateFromPKCS8(crtInputStream)
                 .build(KEYSTORE_ALIAS, KEYSTORE_PASSWORD);
 
-        checkValidity(keystore, KEYSTORE_ALIAS);
+        JettyKeystoreConvertorBuilder.checkValidity(keystore, KEYSTORE_ALIAS);
     }
 
     @Test
@@ -105,7 +108,7 @@ public class JettyKeystoreConvertorBuilderTest extends AbstractJettyKeystoreTest
         KeyStore keystore = new JettyKeystoreConvertorBuilder().setPrivateKeyFromPKCS8(keyInputStream).setCertificateFromPKCS8(crtInputStream)
                 .build(KEYSTORE_ALIAS, KEYSTORE_PASSWORD);
 
-        checkValidity(keystore, KEYSTORE_ALIAS);
+        JettyKeystoreConvertorBuilder.checkValidity(keystore, KEYSTORE_ALIAS);
     }
 
     @Test
@@ -117,7 +120,7 @@ public class JettyKeystoreConvertorBuilderTest extends AbstractJettyKeystoreTest
         KeyStore keystore = new JettyKeystoreConvertorBuilder().setPrivateKeyFromPKCS8(keyInputStream).setCertificateFromPKCS8(crtInputStream)
                 .build(KEYSTORE_ALIAS, KEYSTORE_PASSWORD);
 
-        checkValidity(keystore, KEYSTORE_ALIAS);
+        JettyKeystoreConvertorBuilder.checkValidity(keystore, KEYSTORE_ALIAS);
     }
 
     @Test
@@ -127,7 +130,7 @@ public class JettyKeystoreConvertorBuilderTest extends AbstractJettyKeystoreTest
 
         KeyStore keystore = new JettyKeystoreConvertorBuilder().setPKCS12(inputStream, "test").build(KEYSTORE_ALIAS, KEYSTORE_PASSWORD);
 
-        checkValidity(keystore, KEYSTORE_ALIAS);
+        JettyKeystoreConvertorBuilder.checkValidity(keystore, KEYSTORE_ALIAS);
     }
 
     @Test
@@ -139,7 +142,7 @@ public class JettyKeystoreConvertorBuilderTest extends AbstractJettyKeystoreTest
         KeyStore keystore = new JettyKeystoreConvertorBuilder().setPrivateKeyFromPKCS8(keyInputStream).setCertificateFromPKCS12(crtInputStream, "test")
                 .build(KEYSTORE_ALIAS, KEYSTORE_PASSWORD);
 
-        checkValidity(keystore, KEYSTORE_ALIAS);
+        JettyKeystoreConvertorBuilder.checkValidity(keystore, KEYSTORE_ALIAS);
     }
 
     @Test
@@ -151,6 +154,6 @@ public class JettyKeystoreConvertorBuilderTest extends AbstractJettyKeystoreTest
         KeyStore keystore = new JettyKeystoreConvertorBuilder().setPrivateKeyFromPKCS12(keyInputStream, "test").setCertificateFromPKCS8(crtInputStream)
                 .build(KEYSTORE_ALIAS, KEYSTORE_PASSWORD);
 
-        checkValidity(keystore, KEYSTORE_ALIAS);
+        JettyKeystoreConvertorBuilder.checkValidity(keystore, KEYSTORE_ALIAS);
     }
 }
