@@ -33,7 +33,7 @@ public class AbstractJettyKeystore {
         }
     }
 
-    public static void checkValidity(KeyStore keystore, String keystoreAlias) throws JettyKeystoreException {
+    public static void checkValidity(KeyStore keystore, String keystoreAlias, boolean checkValidity, boolean verifySignature) throws JettyKeystoreException {
         try {
             Objects.requireNonNull(keystore, "Keystore can not be null");
             Certificate certificate = keystore.getCertificate(keystoreAlias);
@@ -41,10 +41,14 @@ public class AbstractJettyKeystore {
             Objects.requireNonNull(certificate, "Certificate is unreacheable");
             X509Certificate x509Certificate = (X509Certificate) certificate;
 
-            x509Certificate.checkValidity();
-            x509Certificate.verify(certificate.getPublicKey());
+            if (checkValidity) {
+                x509Certificate.checkValidity();
+            }
+            if (verifySignature) {
+                x509Certificate.verify(certificate.getPublicKey());
+            }
         } catch (NullPointerException | InvalidKeyException | CertificateException | NoSuchAlgorithmException | NoSuchProviderException | SignatureException | KeyStoreException e) {
-            throw new JettyKeystoreException(JettyKeystoreException.ERROR_INVALID_KEYSTORE, "Keystore is not valid");
+            throw new JettyKeystoreException(JettyKeystoreException.ERROR_INVALID_KEYSTORE, "Keystore is not valid", e);
         }
     }
 }

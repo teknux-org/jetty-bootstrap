@@ -47,9 +47,9 @@ public class JettyKeystoreGeneratorBuilderTest {
     public void do01GenerateKeystoreTest() throws JettyKeystoreException, KeyStoreException, InvalidKeyException, CertificateException, NoSuchAlgorithmException,
             NoSuchProviderException, SignatureException {
         JettyKeystoreGeneratorBuilder jettyKeystoreGeneratorBuilder = new JettyKeystoreGeneratorBuilder();
-        jettyKeystoreGeneratorBuilder.checkValidity();
+        jettyKeystoreGeneratorBuilder.checkValidity(true, true);
 
         KeyStore keystore = jettyKeystoreGeneratorBuilder.build(KEYSTORE_DOMAINNAME, KEYSTORE_ALIAS, KEYSTORE_PASSWORD);
-        JettyKeystoreGeneratorBuilder.checkValidity(keystore, KEYSTORE_ALIAS);
+        JettyKeystoreGeneratorBuilder.checkValidity(keystore, KEYSTORE_ALIAS, true, true);
     }
 }

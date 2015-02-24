@@ -42,18 +42,18 @@ public class JettyKeystoreConvertorBuilder extends AbstractJettyKeystore {
     private Certificate certificate;
 
     public KeyStore build(String alias, String password) throws JettyKeystoreException {
-        return build(alias, password, true);
+        return build(alias, password, true, false);
     }
 
-    public KeyStore build(String alias, String password, boolean checkValidity) throws JettyKeystoreException {
+    public KeyStore build(String alias, String password, boolean checkValidity, boolean verifySignature) throws JettyKeystoreException {
         Objects.requireNonNull(alias, "Alias is required");
         Objects.requireNonNull(password, "Password is required");
 
         if (privateKey != null && certificate != null) {
             KeyStore keystore = createKeyStore(privateKey, certificate, alias, password);
 
-            if (checkValidity) {
-                checkValidity(keystore, alias);
+            if (checkValidity | verifySignature) {
+                checkValidity(keystore, alias, checkValidity, verifySignature);
             }
 
             return keystore;
@@ -271,7 +271,7 @@ public class JettyKeystoreConvertorBuilder extends AbstractJettyKeystore {
         }
     }
 
-    public void checkValidity() throws JettyKeystoreException {
-        build("testAlias", "testPassword", true);
+    public void checkValidity(boolean checkValidity, boolean verifySignature) throws JettyKeystoreException {
+        build("testAlias", "testPassword", checkValidity, verifySignature);
     }
 }
