@@ -189,6 +189,20 @@ public interface IJettyConfiguration extends Cloneable {
     void setRedirectWebAppsOnHttpsConnector(boolean redirectWebAppsOnHttpsConnector);
 
     /**
+     * Get the SSL private key format, used for HTTPS support.
+     * 
+     * @return sslPrivateKeyFormat
+     */
+    JettySslFileFormat getSslPrivateKeyFormat();
+
+    /**
+     * Set the SSL private key format, used for HTTPS support.
+     * 
+     * @param sslPrivateKeyFormat
+     */
+    void setSslPrivateKeyFormat(JettySslFileFormat sslPrivateKeyFormat);
+
+    /**
      * Get the SSL private key path, used for HTTPS support.
      * 
      * @return sslPrivateKeyPath
@@ -203,6 +217,34 @@ public interface IJettyConfiguration extends Cloneable {
     void setSslPrivateKeyPath(String sslPrivateKeyPath);
 
     /**
+     * Get the SSL private key password, used for HTTPS support.
+     * 
+     * @return sslPrivateKeyPassword
+     */
+    String getSslPrivateKeyPassword();
+
+    /**
+     * Set the SSL private key password, used for HTTPS support.
+     * 
+     * @param sslPrivateKeyPassword
+     */
+    void setSslPrivateKeyPassword(String sslPrivateKeyPassword);
+
+    /**
+     * Get the SSL certificate format, used for HTTPS support.
+     * 
+     * @return sslCertificateFormat
+     */
+    JettySslFileFormat getSslCertificateFormat();
+
+    /**
+     * Set the SSL certificate format, used for HTTPS support.
+     * 
+     * @param sslCertificateFormat
+     */
+    void setSslCertificateFormat(JettySslFileFormat sslCertificateFormat);
+
+    /**
      * Get the SSL certificate path, used for HTTPS support.
      * 
      * @return sslCertificatePath
@@ -215,6 +257,20 @@ public interface IJettyConfiguration extends Cloneable {
      * @param sslCertificatePath
      */
     void setSslCertificatePath(String sslCertificatePath);
+
+    /**
+     * Get the SSL certificate password, used for HTTPS support.
+     * 
+     * @return sslCertificatePassword
+     */
+    String getSslCertificatePassword();
+
+    /**
+     * Set the SSL certificate password, used for HTTPS support.
+     * 
+     * @param sslCertificatePassword
+     */
+    void setSslCertificatePassword(String sslCertificatePassword);
 
     /**
      * Get the SSL keystore, used for HTTPS support.

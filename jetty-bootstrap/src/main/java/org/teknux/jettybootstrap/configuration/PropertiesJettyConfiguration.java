@@ -52,8 +52,12 @@ public class PropertiesJettyConfiguration extends JettyConfiguration {
     public static final String KEY_CONNECTORS = "connectors";
     public static final String KEY_REDIRECT_WEBAPPS_ON_HTTPS = "redirectWebAppsOnHttpsConnector";
 
+    public static final String KEY_SSL_PRIVATEKEY_FORMAT = "sslPrivateKeyFormat";
     public static final String KEY_SSL_PRIVATEKEY_PATH = "sslPrivateKeyPath";
+    public static final String KEY_SSL_PRIVATEKEY_PASSWORD = "sslPrivateKeyPassword";
+    public static final String KEY_SSL_CERTIFICATE_FORMAT = "sslCertificateFormat";
     public static final String KEY_SSL_CERTIFICATE_PATH = "sslCertificatePath";
+    public static final String KEY_SSL_CERTIFICATE_PASSWORD = "sslCertificatePassword";
     public static final String KEY_SSL_KEYSTORE_PATH = "sslKeystorePath";
     public static final String KEY_SSL_KEYSTORE_DOMAINNAME = "sslKeyStoreDomainName";
     public static final String KEY_SSL_KEYSTORE_ALIAS = "sslKeyStoreAlias";
@@ -162,14 +166,34 @@ public class PropertiesJettyConfiguration extends JettyConfiguration {
             setRedirectWebAppsOnHttpsConnector(redirectOnSSL);
         }
 
+        JettySslFileFormat sslPrivateKeyFormat = JettySslFileFormat.getByName(properties.getProperty(KEY_SSL_PRIVATEKEY_FORMAT));
+        if (sslPrivateKeyFormat != null) {
+            setSslPrivateKeyFormat(sslPrivateKeyFormat);
+        }
+
         String sslPrivateKeyPath = properties.getProperty(KEY_SSL_PRIVATEKEY_PATH);
         if (sslPrivateKeyPath != null) {
             setSslPrivateKeyPath(sslPrivateKeyPath);
         }
 
+        String sslPrivateKeyPassword = properties.getProperty(KEY_SSL_PRIVATEKEY_PASSWORD);
+        if (sslPrivateKeyPassword != null) {
+            setSslPrivateKeyPassword(sslPrivateKeyPassword);
+        }
+
+        JettySslFileFormat sslCertificateFormat = JettySslFileFormat.getByName(properties.getProperty(KEY_SSL_CERTIFICATE_FORMAT));
+        if (sslCertificateFormat != null) {
+            setSslCertificateFormat(sslCertificateFormat);
+        }
+
         String sslCertificatePath = properties.getProperty(KEY_SSL_CERTIFICATE_PATH);
         if (sslCertificatePath != null) {
             setSslCertificatePath(sslCertificatePath);
+        }
+
+        String sslCertificatePassword = properties.getProperty(KEY_SSL_CERTIFICATE_PASSWORD);
+        if (sslCertificatePassword != null) {
+            setSslCertificatePassword(sslCertificatePassword);
         }
 
         String sslKeystorePath = properties.getProperty(KEY_SSL_KEYSTORE_PATH);

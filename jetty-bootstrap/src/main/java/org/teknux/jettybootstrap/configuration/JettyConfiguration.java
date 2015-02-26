@@ -49,8 +49,12 @@ public class JettyConfiguration implements IJettyConfiguration {
     private Set<JettyConnector> jettyConnectors = new HashSet<JettyConnector>(Arrays.asList(JettyConnector.HTTP));
     private boolean redirectWebAppsOnHttpsConnector = false;
 
+    private JettySslFileFormat sslPrivateKeyFormat = JettySslFileFormat.PKCS8;
     private String sslPrivateKeyPath = null;
+    private String sslPrivateKeyPassword = null;
+    private JettySslFileFormat sslCertificateFormat = JettySslFileFormat.PKCS8;
     private String sslCertificatePath = null;
+    private String sslCertificatePassword = null;
     private KeyStore sslKeyStore = null;
     private String sslKeyStorePath = null;
     private String sslKeyStoreDomainName = "unknown";
@@ -248,6 +252,24 @@ public class JettyConfiguration implements IJettyConfiguration {
 
     /*
      * (non-Javadoc)
+     * @see org.teknux.jettybootstrap.configuration.IJettyConfiguration#getSslPrivateKeyFormat()
+     */
+    @Override
+    public JettySslFileFormat getSslPrivateKeyFormat() {
+        return sslPrivateKeyFormat;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.teknux.jettybootstrap.configuration.IJettyConfiguration#setSslPrivateKeyFormat(org.teknux.jettybootstrap.configuration.JettySslFileFormat)
+     */
+    @Override
+    public void setSslPrivateKeyFormat(JettySslFileFormat sslPrivateKeyFormat) {
+        this.sslPrivateKeyFormat = sslPrivateKeyFormat;
+    }
+
+    /*
+     * (non-Javadoc)
      * @see org.teknux.jettybootstrap.configuration.IJettyConfiguration#getSslPrivateKeyPath()
      */
     @Override
@@ -266,6 +288,43 @@ public class JettyConfiguration implements IJettyConfiguration {
 
     /*
      * (non-Javadoc)
+     * @see org.teknux.jettybootstrap.configuration.IJettyConfiguration#getSslPrivateKeyPassword()
+     */
+    @Override
+    public String getSslPrivateKeyPassword() {
+        return sslPrivateKeyPassword;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.teknux.jettybootstrap.configuration.IJettyConfiguration#setSslPrivateKeyPassword(java.lang.String)
+     */
+    @Override
+    public void setSslPrivateKeyPassword(String sslPrivateKeyPassword) {
+        this.sslPrivateKeyPassword = sslPrivateKeyPassword;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.teknux.jettybootstrap.configuration.IJettyConfiguration#getSslCertificateFormat()
+     */
+    @Override
+    public JettySslFileFormat getSslCertificateFormat() {
+        return sslCertificateFormat;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.teknux.jettybootstrap.configuration.IJettyConfiguration#setSslCertificateFormat(org.teknux.jettybootstrap.configuration.JettySslFileFormat)
+     */
+    @Override
+    public void setSslCertificateFormat(JettySslFileFormat sslCertificateFormat) {
+        this.sslCertificateFormat = sslCertificateFormat;
+
+    }
+
+    /*
+     * (non-Javadoc)
      * @see org.teknux.jettybootstrap.configuration.IJettyConfiguration#getSslCertificatePath()
      */
     @Override
@@ -280,6 +339,16 @@ public class JettyConfiguration implements IJettyConfiguration {
     @Override
     public void setSslCertificatePath(String sslCertificatePath) {
         this.sslCertificatePath = sslCertificatePath;
+    }
+
+    @Override
+    public String getSslCertificatePassword() {
+        return sslCertificatePassword;
+    }
+
+    @Override
+    public void setSslCertificatePassword(String sslCertificatePassword) {
+        this.sslCertificatePassword = sslCertificatePassword;
     }
 
     /* (non-Javadoc)

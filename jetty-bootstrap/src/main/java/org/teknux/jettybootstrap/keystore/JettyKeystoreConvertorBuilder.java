@@ -231,6 +231,9 @@ public class JettyKeystoreConvertorBuilder extends AbstractJettyKeystore {
 
     private static KeyStore loadKeyStore(InputStream inputStream, String password, String type) throws JettyKeystoreException {
         try {
+            if (password == null) {
+                throw new JettyKeystoreException(JettyKeystoreException.ERROR_LOAD_KEYSTORE, "KeyStore Password can not be null (" + type + ")");
+            }
             KeyStore keystore = KeyStore.getInstance(type);
             keystore.load(inputStream, password.toCharArray());
 

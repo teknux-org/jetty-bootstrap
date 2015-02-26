@@ -614,17 +614,42 @@ public class JettyBootstrap {
                 try {
                     File sslPrivateKeyFile = new File(iJettyConfiguration.getSslPrivateKeyPath());
                     if (!sslPrivateKeyFile.exists() || !sslPrivateKeyFile.canRead()) {
-                        throw new JettyKeystoreException(JettyKeystoreException.ERROR_LOAD_PRIVATE_KEY_PKCS8, "Private key not exists or unreadable");
+                        throw new JettyBootstrapException("Private key not exists or unreadable");
                     }
+
                     File sslCertificateFile = new File(iJettyConfiguration.getSslCertificatePath());
                     if (!sslCertificateFile.exists() || !sslCertificateFile.canRead()) {
-                        throw new JettyKeystoreException(JettyKeystoreException.ERROR_LOAD_CERTIFICATE_PKCS8, "Certificate not exists or unreadable");
+                        throw new JettyBootstrapException("Certificate not exists or unreadable");
                     }
 
                     try (InputStream sslPrivateKeyInputStream = new FileInputStream(sslPrivateKeyFile);
                             InputStream sslCertificateInputStream = new FileInputStream(sslCertificateFile)) {
 
-                        jettyKeystoreConvertorBuilder.setCertificateFromPKCS8(sslCertificateInputStream).setPrivateKeyFromPKCS8(sslPrivateKeyInputStream);
+                        switch (iJettyConfiguration.getSslCertificateFormat()) {
+                            case PKCS8:
+                                jettyKeystoreConvertorBuilder.setCertificateFromPKCS8(sslCertificateInputStream);
+                                break;
+                            case PKCS12:
+                                jettyKeystoreConvertorBuilder.setCertificateFromPKCS12(sslCertificateInputStream, iJettyConfiguration.getSslCertificatePassword());
+                                break;
+                            case UNKNOWN:
+                                throw new JettyBootstrapException("Unknown Certificate Format");
+                            default:
+                                throw new JettyBootstrapException("Certificate Format not setted");
+                        }
+
+                        switch (iJettyConfiguration.getSslPrivateKeyFormat()) {
+                            case PKCS8:
+                                jettyKeystoreConvertorBuilder.setPrivateKeyFromPKCS8(sslPrivateKeyInputStream);
+                                break;
+                            case PKCS12:
+                                jettyKeystoreConvertorBuilder.setPrivateKeyFromPKCS12(sslPrivateKeyInputStream, iJettyConfiguration.getSslPrivateKeyPassword());
+                                break;
+                            case UNKNOWN:
+                                throw new JettyBootstrapException("Unknown Private key Format");
+                            default:
+                                throw new JettyBootstrapException("Private key Format not setted");
+                        }
                     }
 
                     KeyStore keyStore = jettyKeystoreConvertorBuilder.build(iJettyConfiguration.getSslKeyStoreAlias(), iJettyConfiguration.getSslKeyStorePassword());
