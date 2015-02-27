@@ -649,8 +649,9 @@ public class JettyConfiguration implements IJettyConfiguration {
     public String toString() {
         return "JettyConfiguration [autoJoinOnStart=" + autoJoinOnStart + ", maxThreads=" + maxThreads + ", stopAtShutdown=" + stopAtShutdown + ", stopTimeout=" + stopTimeout +
             ", idleTimeout=" + idleTimeout + ", host=" + host + ", port=" + port + ", sslPort=" + sslPort + ", jettyConnectors=" + jettyConnectors +
-            ", redirectWebAppsOnHttpsConnector=" + redirectWebAppsOnHttpsConnector + ", sslKeyStorePath=" + sslKeyStorePath + ", sslKeyStoreDomainName=" + sslKeyStoreDomainName +
-            ", sslKeyStoreAlias=" + sslKeyStoreAlias + ", sslKeyStorePassword=" + sslKeyStorePassword + ", sslKeyStoreAlgorithm=" + sslKeyStoreAlgorithm +
+            ", redirectWebAppsOnHttpsConnector=" + redirectWebAppsOnHttpsConnector + ", sslPrivateKeyFormat=" + sslPrivateKeyFormat + ", sslPrivateKeyPath=" + sslPrivateKeyPath +
+            ", sslCertificateFormat=" + sslCertificateFormat + ", sslCertificatePath=" + sslCertificatePath + ", sslKeyStorePath=" + sslKeyStorePath + ", sslKeyStoreDomainName=" +
+            sslKeyStoreDomainName + ", sslKeyStoreAlias=" + sslKeyStoreAlias + ", sslKeyStorePassword=" + sslKeyStorePassword + ", sslKeyStoreAlgorithm=" + sslKeyStoreAlgorithm +
             ", sslKeyStoreSignatureAlgorithm=" + sslKeyStoreSignatureAlgorithm + ", sslKeyStoreRdnOuValue=" + sslKeyStoreRdnOuValue + ", sslKeyStoreRdnOValue=" +
             sslKeyStoreRdnOValue + ", sslKeyStoreDateNotBeforeNumberOfDays=" + sslKeyStoreDateNotBeforeNumberOfDays + ", sslKeyStoreDateNotAfterNumberOfDays=" +
             sslKeyStoreDateNotAfterNumberOfDays + ", tempDirectory=" + tempDirectory + ", persistAppTempDirectories=" + persistAppTempDirectories + ", cleanTempDir=" +
