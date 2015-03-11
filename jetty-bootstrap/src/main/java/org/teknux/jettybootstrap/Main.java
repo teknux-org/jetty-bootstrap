@@ -27,10 +27,10 @@ import org.slf4j.LoggerFactory;
 
 public class Main {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Main.class);
 
     public static void main(String[] args) throws JettyBootstrapException {
-        LOGGER.debug("Starting Self...");
+        LOG.debug("Starting Self...");
         JettyBootstrap.startSelf();
     }
 }

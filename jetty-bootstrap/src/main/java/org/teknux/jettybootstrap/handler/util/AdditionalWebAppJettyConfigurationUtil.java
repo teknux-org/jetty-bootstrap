@@ -32,7 +32,7 @@ import org.teknux.jettybootstrap.handler.util.AdditionalWebAppJettyConfiguration
 import org.teknux.jettybootstrap.utils.ClassUtil;
 
 public class AdditionalWebAppJettyConfigurationUtil {
-    private final static Logger logger = LoggerFactory.getLogger(AdditionalWebAppJettyConfigurationUtil.class);
+    private final static Logger LOG = LoggerFactory.getLogger(AdditionalWebAppJettyConfigurationUtil.class);
     
     /**
      * Classes that natively supported by JettyBootstrap
@@ -67,7 +67,7 @@ public class AdditionalWebAppJettyConfigurationUtil {
         
         for (AdditionalWebAppJettyConfigurationClass additionalWebappConfigurationClass : optionalAdditionalsWebappConfigurationClasses) {
             if (additionalWebappConfigurationClass.getClasses() == null || additionalWebappConfigurationClass.getPosition() == null) {
-                logger.warn("Bad support class name");
+                LOG.warn("Bad support class name");
             } else {
                 if (ClassUtil.classesExists(additionalWebappConfigurationClass.getClasses())) {
                     int index = 0;
@@ -81,10 +81,10 @@ public class AdditionalWebAppJettyConfigurationUtil {
                         
                         if (index == -1) {
                             if (additionalWebappConfigurationClass.getPosition() == Position.AFTER) {
-                                logger.warn("[{}] reference unreachable, add at the end", additionalWebappConfigurationClass.getReferenceClass());
+                                LOG.warn("[{}] reference unreachable, add at the end", additionalWebappConfigurationClass.getReferenceClass());
                                 index = newConfigurationClasses.size();
                             } else {
-                                logger.warn("[{}] reference unreachable, add at the top", additionalWebappConfigurationClass.getReferenceClass());
+                                LOG.warn("[{}] reference unreachable, add at the top", additionalWebappConfigurationClass.getReferenceClass());
                                 index = 0;
                             }
                         } else {
@@ -97,11 +97,11 @@ public class AdditionalWebAppJettyConfigurationUtil {
                     newConfigurationClasses.addAll(index, additionalWebappConfigurationClass.getClasses());
                     
                     for (String className : additionalWebappConfigurationClass.getClasses()) {
-                        logger.debug("[{}] support added", className);
+                        LOG.debug("[{}] support added", className);
                     }
                 } else {
                     for (String className : additionalWebappConfigurationClass.getClasses()) {
-                        logger.debug("[{}] not available", className);
+                        LOG.debug("[{}] not available", className);
                     }
                 }
             }
@@ -109,7 +109,7 @@ public class AdditionalWebAppJettyConfigurationUtil {
 
         // List configurations
         for (String configurationClasse : newConfigurationClasses) {
-            logger.trace("Jetty WebAppContext Configuration => " + configurationClasse);
+            LOG.trace("Jetty WebAppContext Configuration => " + configurationClasse);
         }
 
         return newConfigurationClasses.toArray(new String[newConfigurationClasses.size()]);

@@ -30,7 +30,7 @@ import org.teknux.jettybootstrap.handler.IJettyHandler;
 
 public class JettyLifeCycleLogListener implements Listener{
 
-	private final static Logger logger = LoggerFactory.getLogger(JettyLifeCycleLogListener.class);
+	private final static Logger LOG = LoggerFactory.getLogger(JettyLifeCycleLogListener.class);
 	
     private IJettyHandler<?> iJettyHandler;
 	
@@ -40,26 +40,26 @@ public class JettyLifeCycleLogListener implements Listener{
 
 	@Override
 	public void lifeCycleStarting(LifeCycle event) {
-	    logger.trace("Starting {}...", iJettyHandler.toString());
+	    LOG.trace("Starting {}...", iJettyHandler.toString());
 	}
 
 	@Override
 	public void lifeCycleStarted(LifeCycle event) {
-	    logger.debug("{} Started", iJettyHandler.toString());
+	    LOG.debug("{} Started", iJettyHandler.toString());
 	}
 
 	@Override
 	public void lifeCycleFailure(LifeCycle event, Throwable cause) {
-	    logger.error("Failure {}", iJettyHandler.toString(), cause);
+	    LOG.error("Failure {}", iJettyHandler.toString(), cause);
 	}
 
 	@Override
 	public void lifeCycleStopping(LifeCycle event) {
-		logger.trace("Stopping {}...", iJettyHandler.toString());
+		LOG.trace("Stopping {}...", iJettyHandler.toString());
 	}
 
 	@Override
 	public void lifeCycleStopped(LifeCycle event) {
-		logger.debug("{} Stopped", iJettyHandler.toString());
+		LOG.debug("{} Stopped", iJettyHandler.toString());
 	}
 }

@@ -34,7 +34,7 @@ import org.teknux.jettybootstrap.JettyBootstrapException;
  */
 public class Main {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Main.class);
     private static final String WAR_FILE_SUFFIX = ".war";
 
     /**
@@ -45,7 +45,7 @@ public class Main {
      */
     public static void main(String[] args) throws JettyBootstrapException {
         if (args.length == 0) {
-            LOGGER.warn("Nothing to deploy, Exiting...");
+            LOG.warn("Nothing to deploy, Exiting...");
         } else {
             JettyBootstrap jettyBootstrap = new JettyBootstrap();
 
@@ -53,7 +53,7 @@ public class Main {
                 File file = new File(arg);
 
                 if (!file.exists()) {
-                    LOGGER.warn("File [{}] doesn't exists. Ignore application", file);
+                    LOG.warn("File [{}] doesn't exists. Ignore application", file);
                 } else {
                     String contextPath = "/";
 
@@ -68,14 +68,14 @@ public class Main {
                     }
 
                     if (file.isDirectory()) {
-                        LOGGER.debug("[{}] exists and is a directory. Adding Exploded War Application...", file);
+                        LOG.debug("[{}] exists and is a directory. Adding Exploded War Application...", file);
                         jettyBootstrap.addExplodedWarApp(file.getPath(), null, contextPath);
                     } else {
                         if (file.isFile() && file.getName().toLowerCase().endsWith(".war")) {
-                            LOGGER.debug("[{}] exists and is a war file. Add War Application...", file);
+                            LOG.debug("[{}] exists and is a war file. Add War Application...", file);
                             jettyBootstrap.addWarApp(file.getPath(), contextPath);
                         } else {
-                            LOGGER.warn("[{}] exists but is an unknown file. Ignore application", file);
+                            LOG.warn("[{}] exists but is an unknown file. Ignore application", file);
                         }
                     }
                 }
