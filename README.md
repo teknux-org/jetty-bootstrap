@@ -30,3 +30,11 @@ Maven dependency to include on your project
 	<version>x.x.x</version>
 </dependency>
 ```
+
+### Sponsor
+- Supported by JetBrains
+- Developed with IntelliJ IDEA
+
+![](https://www.jetbrains.com/company/docs/logo_jetbrains.png)
+
+![](https://www.jetbrains.com/idea/docs/logo_intellij_idea.png)
