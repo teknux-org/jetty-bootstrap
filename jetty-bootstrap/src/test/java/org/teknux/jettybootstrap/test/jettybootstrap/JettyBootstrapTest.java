@@ -21,13 +21,6 @@
  *******************************************************************************/
 package org.teknux.jettybootstrap.test.jettybootstrap;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.junit.Assert;
@@ -37,9 +30,18 @@ import org.junit.runners.MethodSorters;
 import org.teknux.jettybootstrap.JettyBootstrap;
 import org.teknux.jettybootstrap.JettyBootstrapException;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class JettyBootstrapTest extends AbstractJettyBootstrapTest {
+
+	private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
 	@Test
 	public void do01StaticWarTest() throws IllegalStateException, IOException, JettyBootstrapException, KeyManagementException, NoSuchAlgorithmException, KeyStoreException,
@@ -81,8 +83,8 @@ public class JettyBootstrapTest extends AbstractJettyBootstrapTest {
 		jettyBootstrap.addWarApp(file.getPath(), "/servletWar");
 		jettyBootstrap.startServer();
 
-		Assert.assertEquals(new SimpleResponse(200, "Value=value1\n"), get("/servletWar?value=value1"));
-		Assert.assertEquals(new SimpleResponse(200, "Value=value2\n"), get("/servletWar?value=value2"));
+		Assert.assertEquals(new SimpleResponse(200, "Value=value1" + LINE_SEPARATOR), get("/servletWar?value=value1"));
+		Assert.assertEquals(new SimpleResponse(200, "Value=value2" + LINE_SEPARATOR), get("/servletWar?value=value2"));
 	}
 
 	@Test
@@ -95,8 +97,8 @@ public class JettyBootstrapTest extends AbstractJettyBootstrapTest {
 		jettyBootstrap.addWarApp(file.getPath(), "/sslServletWar");
 		jettyBootstrap.startServer();
 
-		Assert.assertEquals(new SimpleResponse(200, "Value=value1\n"), get("/sslServletWar?value=value1"));
-		Assert.assertEquals(new SimpleResponse(200, "Value=value2\n"), get("/sslServletWar?value=value2"));
+		Assert.assertEquals(new SimpleResponse(200, "Value=value1" + LINE_SEPARATOR), get("/sslServletWar?value=value1"));
+		Assert.assertEquals(new SimpleResponse(200, "Value=value2" + LINE_SEPARATOR), get("/sslServletWar?value=value2"));
 	}
 
 	@Test
@@ -130,8 +132,8 @@ public class JettyBootstrapTest extends AbstractJettyBootstrapTest {
 	    jettyBootstrap.addWarAppFromClasspath("/servlet.war", "/servletWarFromClasspath");
 	    jettyBootstrap.startServer();
 
-		Assert.assertEquals(new SimpleResponse(200, "Value=value1\n"), get("/servletWarFromClasspath?value=value1"));
-		Assert.assertEquals(new SimpleResponse(200, "Value=value2\n"), get("/servletWarFromClasspath?value=value2"));
+		Assert.assertEquals(new SimpleResponse(200, "Value=value1" + LINE_SEPARATOR), get("/servletWarFromClasspath?value=value1"));
+		Assert.assertEquals(new SimpleResponse(200, "Value=value2" + LINE_SEPARATOR), get("/servletWarFromClasspath?value=value2"));
 	}
 
 	@Test
@@ -141,8 +143,8 @@ public class JettyBootstrapTest extends AbstractJettyBootstrapTest {
 	    jettyBootstrap.addWarAppFromClasspath("/servlet.war", "/sslServletWarFromClasspath");
 	    jettyBootstrap.startServer();
 
-		Assert.assertEquals(new SimpleResponse(200, "Value=value1\n"), get("/sslServletWarFromClasspath?value=value1"));
-		Assert.assertEquals(new SimpleResponse(200, "Value=value2\n"), get("/sslServletWarFromClasspath?value=value2"));
+		Assert.assertEquals(new SimpleResponse(200, "Value=value1" + LINE_SEPARATOR), get("/sslServletWarFromClasspath?value=value1"));
+		Assert.assertEquals(new SimpleResponse(200, "Value=value2" + LINE_SEPARATOR), get("/sslServletWarFromClasspath?value=value2"));
 	}
 
 	@Test
@@ -267,7 +269,7 @@ public class JettyBootstrapTest extends AbstractJettyBootstrapTest {
 		jettyBootstrap.addHandler(context);
 		jettyBootstrap.startServer();
 
-		Assert.assertEquals(new SimpleResponse(200, "ServletTestContent\n"), get("/handler"));
+		Assert.assertEquals(new SimpleResponse(200, "ServletTestContent" + LINE_SEPARATOR), get("/handler"));
 	}
 
 	@Test
@@ -280,7 +282,7 @@ public class JettyBootstrapTest extends AbstractJettyBootstrapTest {
 		jettyBootstrap.addHandler(context);
 		jettyBootstrap.startServer();
 
-		Assert.assertEquals(new SimpleResponse(200, "ServletTestContent\n"), get("/sslHandler"));
+		Assert.assertEquals(new SimpleResponse(200, "ServletTestContent" + LINE_SEPARATOR), get("/sslHandler"));
 	}
 
 }
