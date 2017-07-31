@@ -21,14 +21,14 @@
  *******************************************************************************/
 package org.teknux.jettybootstrap.handler;
 
-import java.io.File;
-import java.text.MessageFormat;
-
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.teknux.jettybootstrap.JettyBootstrapException;
 import org.teknux.jettybootstrap.configuration.IJettyConfiguration;
 import org.teknux.jettybootstrap.handler.util.AdditionalWebAppJettyConfigurationUtil;
 import org.teknux.jettybootstrap.handler.util.JettyConstraintUtil;
+
+import java.io.File;
+import java.text.MessageFormat;
 
 
 abstract public class AbstractAppJettyHandler extends AbstractJettyHandler<WebAppContext> {
@@ -61,7 +61,7 @@ abstract public class AbstractAppJettyHandler extends AbstractJettyHandler<WebAp
         webAppContext.setParentLoaderPriority(iJettyConfiguration.isParentLoaderPriority());
         webAppContext.setPersistTempDirectory(iJettyConfiguration.isPersistAppTempDirectories());
         webAppContext.setThrowUnavailableOnStartupException(iJettyConfiguration.isThrowIfStartupException());
-        webAppContext.getSessionHandler().getSessionManager().setMaxInactiveInterval(iJettyConfiguration.getMaxInactiveInterval());
+        webAppContext.getSessionHandler().setMaxInactiveInterval(iJettyConfiguration.getMaxInactiveInterval());
         
         // Add redirect to SSL if necessary
         if (iJettyConfiguration.isRedirectWebAppsOnHttpsConnector()) {
