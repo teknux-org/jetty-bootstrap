@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.teknux</groupId>
 		<artifactId>jetty-bootstrap-parent</artifactId>
-		<version>1.0.12-SNAPSHOT</version>
+		<version>1.0.12</version>
 	</parent>
 
 	<artifactId>jetty-bootstrap-servlets</artifactId>
