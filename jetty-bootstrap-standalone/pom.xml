@@ -33,7 +33,7 @@
 								<transformer
 									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
 									<manifestEntries>
-										<Main-Class>org.teknux.jettybootstrap.Main</Main-Class>
+											<Main-Class>org.teknux.jettybootstrap.standalone.Main</Main-Class>
 									</manifestEntries>
 								</transformer>
 							</transformers>
