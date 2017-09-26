@@ -21,12 +21,12 @@
  *******************************************************************************/
 package org.teknux.jettybootstrap.standalone;
 
-import java.io.File;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.teknux.jettybootstrap.JettyBootstrap;
 import org.teknux.jettybootstrap.JettyBootstrapException;
+
+import java.io.File;
 
 
 /**
@@ -55,16 +55,17 @@ public class Main {
                 if (!file.exists()) {
                     LOG.warn("File [{}] doesn't exists. Ignore application", file);
                 } else {
-                    String contextPath = "/";
 
+                    String fileName;
                     if (file.isFile() && file.getName().toLowerCase().endsWith(WAR_FILE_SUFFIX)) {
-                        contextPath += file.getName().substring(0, file.getName().length() - WAR_FILE_SUFFIX.length());
+                        fileName = file.getName().substring(0, file.getName().length() - WAR_FILE_SUFFIX.length());
                     } else {
-                        contextPath += file.getName();
+                        fileName =  file.getName();
                     }
 
-                    if (contextPath.equals("ROOT")) {
-                        contextPath = "/";
+                    String contextPath = "/";
+                    if (! fileName.equals("ROOT")) {
+                        contextPath += fileName;
                     }
 
                     if (file.isDirectory()) {
