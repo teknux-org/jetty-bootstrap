@@ -4,7 +4,7 @@
 
 	<groupId>org.teknux</groupId>
 	<artifactId>jetty-bootstrap-parent</artifactId>
-	<version>1.0.13-SNAPSHOT</version>
+	<version>1.0.13</version>
 	<packaging>pom</packaging>
 
 	<modules>
