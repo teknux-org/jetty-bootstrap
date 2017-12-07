@@ -21,11 +21,11 @@
  *******************************************************************************/
 package org.teknux.jettybootstrap.configuration;
 
+import org.eclipse.jetty.server.AbstractConnector;
+
 import java.io.File;
 import java.security.KeyStore;
 import java.util.Set;
-
-import org.eclipse.jetty.server.AbstractConnector;
 
 
 /**
@@ -105,6 +105,23 @@ public interface IJettyConfiguration extends Cloneable {
      *            long
      */
     void setIdleTimeout(long idleTimeout);
+
+    /**
+     * Get the connectors max blocking time for a connection. This applies to all connectors.
+     *
+     * @see org.eclipse.jetty.server.HttpConfiguration#getBlockingTimeout
+     * @return the blocking time.
+     */
+    long getBlockingTimeout();
+
+    /**
+     * Set the connectors max blocking time for a connection. This applies to all connectors.
+     *
+     * @see org.eclipse.jetty.server.HttpConfiguration#setBlockingTimeout
+     * @param blockingTimeout
+     *            long
+     */
+    void setBlockingTimeout(long blockingTimeout);
 
     /**
      * Get the server host IP/Name.
@@ -488,7 +505,7 @@ public interface IJettyConfiguration extends Cloneable {
     /**
      * @return the max period of inactivity, after which the session is invalidated, in seconds.
      */
-    public int getMaxInactiveInterval();
+    int getMaxInactiveInterval();
 
     /**
      * Sets the max period of inactivity, after which the session is invalidated, in seconds.
@@ -496,5 +513,5 @@ public interface IJettyConfiguration extends Cloneable {
      * @param seconds
      *            the max inactivity period, in seconds.
      */
-    public void setMaxInactiveInterval(int seconds);
+    void setMaxInactiveInterval(int seconds);
 }

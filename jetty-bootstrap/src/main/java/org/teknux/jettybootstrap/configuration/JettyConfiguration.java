@@ -21,13 +21,14 @@
  *******************************************************************************/
 package org.teknux.jettybootstrap.configuration;
 
+import org.teknux.jettybootstrap.keystore.JettyKeystoreGeneratorBuilder;
+
 import java.io.File;
 import java.security.KeyStore;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-
-import org.teknux.jettybootstrap.keystore.JettyKeystoreGeneratorBuilder;
 
 
 /**
@@ -42,11 +43,12 @@ public class JettyConfiguration implements IJettyConfiguration {
     private long stopTimeout = 5000;
 
     private long idleTimeout = 30000;
+    private long blockingTimeout = -1;
     private String host = "0.0.0.0";
     private int port = 8080;
     private int sslPort = 8443;
 
-    private Set<JettyConnector> jettyConnectors = new HashSet<JettyConnector>(Arrays.asList(JettyConnector.HTTP));
+    private Set<JettyConnector> jettyConnectors = new HashSet<>(Collections.singletonList(JettyConnector.HTTP));
     private boolean redirectWebAppsOnHttpsConnector = false;
 
     private JettySslFileFormat sslPrivateKeyFormat = JettySslFileFormat.PKCS8;
@@ -163,6 +165,23 @@ public class JettyConfiguration implements IJettyConfiguration {
     }
 
     /* (non-Javadoc)
+     * @see org.teknux.jettybootstrap.configuration.IJettyConfiguration#getBlockingTimeout()
+     */
+    @Override
+    public long getBlockingTimeout() {
+        return blockingTimeout;
+
+    }
+
+    /* (non-Javadoc)
+     * @see org.teknux.jettybootstrap.configuration.IJettyConfiguration#setBlockingTimeout(long)
+     */
+    @Override
+    public void setBlockingTimeout(long blockingTimeout) {
+        this.blockingTimeout = blockingTimeout;
+    }
+
+    /* (non-Javadoc)
      * @see org.teknux.jettybootstrap.configuration.IJettyConfiguration#getHost()
      */
     @Override
@@ -231,7 +250,7 @@ public class JettyConfiguration implements IJettyConfiguration {
      */
     @Override
     public void setJettyConnectors(JettyConnector... jettyConnectors) {
-        this.jettyConnectors = new HashSet<JettyConnector>(Arrays.asList(jettyConnectors));
+        this.jettyConnectors = new HashSet<>(Arrays.asList(jettyConnectors));
     }
 
     /* (non-Javadoc)

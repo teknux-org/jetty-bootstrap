@@ -21,14 +21,14 @@
  *******************************************************************************/
 package org.teknux.jettybootstrap.test.configuration;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.teknux.jettybootstrap.configuration.IJettyConfiguration;
 import org.teknux.jettybootstrap.configuration.JettyConfiguration;
 import org.teknux.jettybootstrap.configuration.JettyConnector;
+
+import java.util.HashSet;
+import java.util.Set;
 
 
 public class JettyConfigurationTest {
@@ -48,13 +48,13 @@ public class JettyConfigurationTest {
         
         Assert.assertEquals(false, jettyConfiguration.isAutoJoinOnStart());
         Assert.assertEquals("127.0.0.1", jettyConfiguration.getHost());
-        Set<JettyConnector> expectedJettyConnectors = new HashSet<JettyConnector>();
+        Set<JettyConnector> expectedJettyConnectors = new HashSet<>();
         expectedJettyConnectors.add(JettyConnector.HTTP);
         Assert.assertEquals(expectedJettyConnectors, jettyConfiguration.getJettyConnectors());
         
         Assert.assertEquals(true, iJettyConfigurationCloned.isAutoJoinOnStart());
         Assert.assertEquals("0.0.0.0", iJettyConfigurationCloned.getHost());
-        Set<JettyConnector> expectedJettyConnectorsCloned = new HashSet<JettyConnector>();
+        Set<JettyConnector> expectedJettyConnectorsCloned = new HashSet<>();
         expectedJettyConnectorsCloned.add(JettyConnector.HTTPS);
         Assert.assertEquals(expectedJettyConnectorsCloned, iJettyConfigurationCloned.getJettyConnectors());
     }

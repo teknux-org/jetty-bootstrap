@@ -21,12 +21,12 @@
  *******************************************************************************/
 package org.teknux.jettybootstrap.configuration;
 
+import org.teknux.jettybootstrap.utils.PropertiesUtil;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-
-import org.teknux.jettybootstrap.utils.PropertiesUtil;
 
 
 /**
@@ -46,6 +46,7 @@ public class PropertiesJettyConfiguration extends JettyConfiguration {
     public static final String KEY_STOP_AT_SHUTDOWN = "stopAtShutdown";
     public static final String KEY_STOP_TIMEOUT = "stopTimeout";
     public static final String KEY_IDLE_TIMEOUT = "idleTimeout";
+    public static final String KEY_BLOCKING_TIMEOUT = "blockingTimeout";
     public static final String KEY_HOST = "host";
     public static final String KEY_PORT = "port";
     public static final String KEY_SSL_PORT = "sslPort";
@@ -139,6 +140,11 @@ public class PropertiesJettyConfiguration extends JettyConfiguration {
         Long idleTimeout = PropertiesUtil.parseLong(properties, KEY_IDLE_TIMEOUT);
         if (idleTimeout != null) {
             setIdleTimeout(idleTimeout);
+        }
+
+        Long blockingTimeout = PropertiesUtil.parseLong(properties, KEY_BLOCKING_TIMEOUT);
+        if (blockingTimeout != null) {
+            setBlockingTimeout(blockingTimeout);
         }
 
         String host = properties.getProperty(KEY_HOST);
@@ -290,7 +296,7 @@ public class PropertiesJettyConfiguration extends JettyConfiguration {
             return null;
         }
 
-        List<JettyConnector> array = new ArrayList<JettyConnector>();
+        List<JettyConnector> array = new ArrayList<>();
         for (String coonectorString : connectors) {
             try {
                 array.add(JettyConnector.valueOf(coonectorString));

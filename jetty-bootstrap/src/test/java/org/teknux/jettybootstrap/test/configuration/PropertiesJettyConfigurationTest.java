@@ -21,15 +21,15 @@
  *******************************************************************************/
 package org.teknux.jettybootstrap.test.configuration;
 
-import java.io.File;
-import java.util.Properties;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.teknux.jettybootstrap.configuration.JettyConnector;
 import org.teknux.jettybootstrap.configuration.JettySslFileFormat;
 import org.teknux.jettybootstrap.configuration.PropertiesJettyConfiguration;
 import org.teknux.jettybootstrap.keystore.JettyKeystoreGeneratorBuilder;
+
+import java.io.File;
+import java.util.Properties;
 
 
 public class PropertiesJettyConfigurationTest {
@@ -50,6 +50,7 @@ public class PropertiesJettyConfigurationTest {
         System.setProperty(PropertiesJettyConfiguration.KEY_STOP_AT_SHUTDOWN, "false");
         System.setProperty(PropertiesJettyConfiguration.KEY_STOP_TIMEOUT, "2");
         System.setProperty(PropertiesJettyConfiguration.KEY_IDLE_TIMEOUT, "3");
+        System.setProperty(PropertiesJettyConfiguration.KEY_BLOCKING_TIMEOUT, "4");
         System.setProperty(PropertiesJettyConfiguration.KEY_HOST, "localhost1");
         System.setProperty(PropertiesJettyConfiguration.KEY_PORT, "4444");
         System.setProperty(PropertiesJettyConfiguration.KEY_SSL_PORT, "5555");
@@ -76,6 +77,8 @@ public class PropertiesJettyConfigurationTest {
         System.setProperty(PropertiesJettyConfiguration.KEY_PERSIST_APP_TEMP_DIR, "false");
         System.setProperty(PropertiesJettyConfiguration.KEY_CLEAN_TEMP_DIR, "false");
         System.setProperty(PropertiesJettyConfiguration.KEY_PARENT_LOADER_PRIORITY, "true");
+        System.setProperty(PropertiesJettyConfiguration.KEY_THROW_IF_STARTUP_EXCEPTION, "true");
+        System.setProperty(PropertiesJettyConfiguration.KEY_MAX_INACTIVE_INTERVAL, "6666");
 
         //test sys prop config only
         PropertiesJettyConfiguration cfg = new PropertiesJettyConfiguration();
@@ -84,6 +87,7 @@ public class PropertiesJettyConfigurationTest {
         Assert.assertEquals(false, cfg.isStopAtShutdown());
         Assert.assertEquals(2L, cfg.getStopTimeout());
         Assert.assertEquals(3L, cfg.getIdleTimeout());
+        Assert.assertEquals(4L, cfg.getBlockingTimeout());
         Assert.assertEquals("localhost1", cfg.getHost());
         Assert.assertEquals(4444, cfg.getPort());
         Assert.assertEquals(5555, cfg.getSslPort());
@@ -110,6 +114,8 @@ public class PropertiesJettyConfigurationTest {
         Assert.assertEquals(false, cfg.isPersistAppTempDirectories());
         Assert.assertEquals(false, cfg.isCleanTempDir());
         Assert.assertEquals(true, cfg.isParentLoaderPriority());
+        Assert.assertEquals(true, cfg.isThrowIfStartupException());
+        Assert.assertEquals(6666, cfg.getMaxInactiveInterval());
 
         //custom properties
         final Properties properties = new Properties();
@@ -118,6 +124,7 @@ public class PropertiesJettyConfigurationTest {
         properties.setProperty(PropertiesJettyConfiguration.KEY_STOP_AT_SHUTDOWN, "true");
         properties.setProperty(PropertiesJettyConfiguration.KEY_STOP_TIMEOUT, "22");
         properties.setProperty(PropertiesJettyConfiguration.KEY_IDLE_TIMEOUT, "33");
+        properties.setProperty(PropertiesJettyConfiguration.KEY_BLOCKING_TIMEOUT, "44");
         properties.setProperty(PropertiesJettyConfiguration.KEY_HOST, "localhost11");
         properties.setProperty(PropertiesJettyConfiguration.KEY_PORT, "8080");
         properties.setProperty(PropertiesJettyConfiguration.KEY_SSL_PORT, "8443");
@@ -143,6 +150,8 @@ public class PropertiesJettyConfigurationTest {
         properties.setProperty(PropertiesJettyConfiguration.KEY_PERSIST_APP_TEMP_DIR, "true");
         properties.setProperty(PropertiesJettyConfiguration.KEY_CLEAN_TEMP_DIR, "true");
         properties.setProperty(PropertiesJettyConfiguration.KEY_PARENT_LOADER_PRIORITY, "false");
+        properties.setProperty(PropertiesJettyConfiguration.KEY_THROW_IF_STARTUP_EXCEPTION, "false");
+        properties.setProperty(PropertiesJettyConfiguration.KEY_MAX_INACTIVE_INTERVAL, "66");
 
         //test given prop config only
         cfg = new PropertiesJettyConfiguration(properties, true);
@@ -151,6 +160,7 @@ public class PropertiesJettyConfigurationTest {
         Assert.assertEquals(true, cfg.isStopAtShutdown());
         Assert.assertEquals(22L, cfg.getStopTimeout());
         Assert.assertEquals(33L, cfg.getIdleTimeout());
+        Assert.assertEquals(44L, cfg.getBlockingTimeout());
         Assert.assertEquals("localhost11", cfg.getHost());
         Assert.assertEquals(8080, cfg.getPort());
         Assert.assertEquals(8443, cfg.getSslPort());
@@ -178,6 +188,8 @@ public class PropertiesJettyConfigurationTest {
         Assert.assertEquals(true, cfg.isPersistAppTempDirectories());
         Assert.assertEquals(true, cfg.isCleanTempDir());
         Assert.assertEquals(false, cfg.isParentLoaderPriority());
+        Assert.assertEquals(false, cfg.isThrowIfStartupException());
+        Assert.assertEquals(66, cfg.getMaxInactiveInterval());
 
         //test sys prop and custom config with system having higher priority
         cfg = new PropertiesJettyConfiguration(properties);
@@ -186,6 +198,7 @@ public class PropertiesJettyConfigurationTest {
         Assert.assertEquals(false, cfg.isStopAtShutdown());
         Assert.assertEquals(2L, cfg.getStopTimeout());
         Assert.assertEquals(3L, cfg.getIdleTimeout());
+        Assert.assertEquals(4L, cfg.getBlockingTimeout());
         Assert.assertEquals("localhost1", cfg.getHost());
         Assert.assertEquals(4444, cfg.getPort());
         Assert.assertEquals(5555, cfg.getSslPort());
@@ -212,5 +225,7 @@ public class PropertiesJettyConfigurationTest {
         Assert.assertEquals(false, cfg.isPersistAppTempDirectories());
         Assert.assertEquals(false, cfg.isCleanTempDir());
         Assert.assertEquals(true, cfg.isParentLoaderPriority());
+        Assert.assertEquals(true, cfg.isThrowIfStartupException());
+        Assert.assertEquals(6666, cfg.getMaxInactiveInterval());
     }
 }

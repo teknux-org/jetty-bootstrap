@@ -21,6 +21,10 @@
  *******************************************************************************/
 package org.teknux.jettybootstrap.keystore;
 
+import org.apache.commons.io.IOUtils;
+import org.bouncycastle.util.encoders.Base64;
+import org.bouncycastle.util.encoders.DecoderException;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.KeyFactory;
@@ -40,10 +44,6 @@ import java.util.Enumeration;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.apache.commons.io.IOUtils;
-import org.bouncycastle.util.encoders.Base64;
-import org.bouncycastle.util.encoders.DecoderException;
 
 
 public class JettyKeystoreConvertorBuilder extends AbstractJettyKeystore {
@@ -270,7 +270,7 @@ public class JettyKeystoreConvertorBuilder extends AbstractJettyKeystore {
                 Enumeration<String> aliasEnumeration = keystore.aliases();
 
                 while (aliasEnumeration.hasMoreElements()) {
-                    String aliasItem = (String) aliasEnumeration.nextElement();
+                    String aliasItem = aliasEnumeration.nextElement();
 
                     if (keystore.isKeyEntry(aliasItem)) {
                         Entry entry = keystore.getEntry(aliasItem, new KeyStore.PasswordProtection(password.toCharArray()));

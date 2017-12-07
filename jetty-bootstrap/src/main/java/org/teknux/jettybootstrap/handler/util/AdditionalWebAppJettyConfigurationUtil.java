@@ -22,14 +22,14 @@
 
 package org.teknux.jettybootstrap.handler.util;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.teknux.jettybootstrap.handler.util.AdditionalWebAppJettyConfigurationClass.Position;
 import org.teknux.jettybootstrap.utils.ClassUtil;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class AdditionalWebAppJettyConfigurationUtil {
     private final static Logger LOG = LoggerFactory.getLogger(AdditionalWebAppJettyConfigurationUtil.class);
@@ -43,8 +43,8 @@ public class AdditionalWebAppJettyConfigurationUtil {
         return new AdditionalWebAppJettyConfigurationClass[] {
             new AdditionalWebAppJettyConfigurationClass("org.eclipse.jetty.webapp.JettyWebXmlConfiguration", Position.BEFORE, "org.eclipse.jetty.annotations.AnnotationConfiguration")
         };
-    };
-    
+    }
+
     /**
      * Add the classes that natively supported by JettyBootstrap if available (e.g. : Annotations)
      * 
@@ -63,7 +63,7 @@ public class AdditionalWebAppJettyConfigurationUtil {
      * @return String[]
      */
     public static String[] addConfigurationClasses(String[] configurationClasses, AdditionalWebAppJettyConfigurationClass[] optionalAdditionalsWebappConfigurationClasses) {
-        List<String> newConfigurationClasses = new ArrayList<String>(Arrays.asList(configurationClasses));
+        List<String> newConfigurationClasses = new ArrayList<>(Arrays.asList(configurationClasses));
         
         for (AdditionalWebAppJettyConfigurationClass additionalWebappConfigurationClass : optionalAdditionalsWebappConfigurationClasses) {
             if (additionalWebappConfigurationClass.getClasses() == null || additionalWebappConfigurationClass.getPosition() == null) {

@@ -21,14 +21,6 @@
  *******************************************************************************/
 package org.teknux.jettybootstrap.test.jettybootstrap;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.security.InvalidParameterException;
-import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.config.RequestConfig;
@@ -47,6 +39,14 @@ import org.teknux.jettybootstrap.JettyBootstrap;
 import org.teknux.jettybootstrap.JettyBootstrapException;
 import org.teknux.jettybootstrap.configuration.JettyConfiguration;
 import org.teknux.jettybootstrap.configuration.JettyConnector;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.security.InvalidParameterException;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 
 
 public abstract class AbstractJettyBootstrapTest {
@@ -102,8 +102,8 @@ public abstract class AbstractJettyBootstrapTest {
 			KeyManagementException {
 		SimpleResponse simpleResponse = new SimpleResponse();
 
-		CloseableHttpClient httpClient = null;
-		HttpGet httpGet = null;
+		CloseableHttpClient httpClient;
+		HttpGet httpGet;
 		RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(SOCKET_TIMEOUT).build();
 
 		if (ssl) {

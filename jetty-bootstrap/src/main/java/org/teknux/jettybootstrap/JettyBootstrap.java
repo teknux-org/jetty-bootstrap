@@ -21,14 +21,6 @@
  *******************************************************************************/
 package org.teknux.jettybootstrap;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.security.KeyStore;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jetty.http.HttpScheme;
 import org.eclipse.jetty.server.Connector;
@@ -54,6 +46,14 @@ import org.teknux.jettybootstrap.keystore.JettyKeystoreConvertorBuilder;
 import org.teknux.jettybootstrap.keystore.JettyKeystoreException;
 import org.teknux.jettybootstrap.keystore.JettyKeystoreGeneratorBuilder;
 import org.teknux.jettybootstrap.utils.PathUtil;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.KeyStore;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -457,7 +457,7 @@ public class JettyBootstrap {
             server.setHandler(handlers);
 
             if (iJettyConfiguration.isStopAtShutdown()) {
-                createShutdownHook(iJettyConfiguration);
+                createShutdownHook();
             }
         }
     }
@@ -576,7 +576,7 @@ public class JettyBootstrap {
     protected Connector[] createConnectors(IJettyConfiguration iJettyConfiguration, Server server) throws JettyBootstrapException {
         LOG.trace("Creating Jetty Connectors...");
 
-        List<Connector> connectors = new ArrayList<Connector>();
+        List<Connector> connectors = new ArrayList<>();
 
         if (iJettyConfiguration.hasJettyConnector(JettyConnector.HTTP)) {
             LOG.trace("Adding HTTP Connector...");
@@ -587,13 +587,21 @@ public class JettyBootstrap {
                 HttpConfiguration httpConfiguration = new HttpConfiguration();
                 httpConfiguration.setSecurePort(iJettyConfiguration.getSslPort());
                 httpConfiguration.setSecureScheme(HttpScheme.HTTPS.asString());
+                httpConfiguration.setIdleTimeout(iJettyConfiguration.getIdleTimeout());
+                httpConfiguration.setBlockingTimeout(iJettyConfiguration.getBlockingTimeout());
 
                 HttpConnectionFactory httpConnectionFactory = new HttpConnectionFactory(httpConfiguration);
 
                 serverConnector = new ServerConnector(server, httpConnectionFactory);
             } else {
                 serverConnector = new ServerConnector(server);
+
+                serverConnector.getConnectionFactories().stream()
+                        .filter(HttpConnectionFactory.class::isInstance)
+                        .map(HttpConnectionFactory.class::cast)
+                        .forEach(httpConnectionFactory -> httpConnectionFactory.getHttpConfiguration().setBlockingTimeout(iJettyConfiguration.getBlockingTimeout()));
             }
+
             serverConnector.setIdleTimeout(iJettyConfiguration.getIdleTimeout());
             serverConnector.setHost(iJettyConfiguration.getHost());
             serverConnector.setPort(iJettyConfiguration.getPort());
@@ -676,23 +684,17 @@ public class JettyBootstrap {
 
     /**
      * Create Shutdown Hook.
-     * 
-     * @param iJettyConfiguration
-     *            Jetty Configuration
      */
-    private void createShutdownHook(final IJettyConfiguration iJettyConfiguration) {
+    private void createShutdownHook() {
         LOG.trace("Creating Jetty ShutdownHook...");
 
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-
-            public void run() {
-                try {
-                    LOG.debug("Shutting Down...");
-                    stopServer();
-                } catch (Exception e) {
-                    LOG.error("Shutdown", e);
-                }
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try {
+                LOG.debug("Shutting Down...");
+                stopServer();
+            } catch (Exception e) {
+                LOG.error("Shutdown", e);
             }
-        });
+        }));
     }
 }

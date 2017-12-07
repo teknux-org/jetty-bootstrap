@@ -34,11 +34,11 @@ public class Md5Util {
     
     public static String hash(String string) throws NoSuchAlgorithmException {
         MessageDigest messageDigest = MessageDigest.getInstance(HASH_ALGORITHM);
-        StringBuffer stringBuffer = new StringBuffer();
+        StringBuilder stringBuilder = new StringBuilder();
         for (byte byt : messageDigest.digest(string.getBytes())) {
-            stringBuffer.append(String.format("%02x", byt & 0xff));
+            stringBuilder.append(String.format("%02x", byt & 0xff));
         }
 
-        return stringBuffer.toString();
+        return stringBuilder.toString();
     }
 }
