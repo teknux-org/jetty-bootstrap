@@ -2,7 +2,6 @@
 
 http://jetty-bootstrap.io
 
-[![Build Status](https://drone.io/github.com/teknux-org/jetty-bootstrap/status.png)](https://drone.io/github.com/teknux-org/jetty-bootstrap/latest)
 
 ### Description
 Jetty-Bootstrap library make it easy to embed Jetty into your maven project and package a standalone app. Provides a fluent API to expose web application(s) and service(s), configure the server settings and package the whole application with a low footprint.
@@ -35,6 +34,6 @@ Maven dependency to include on your project
 - Supported by JetBrains
 - Developed with IntelliJ IDEA
 
-![](https://www.jetbrains.com/company/docs/logo_jetbrains.png)
+![](https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/JetBrains_Logo_2016.svg/221px-JetBrains_Logo_2016.svg.png)
 
-![](https://www.jetbrains.com/idea/docs/logo_intellij_idea.png)
+![](https://upload.wikimedia.org/wikipedia/commons/d/d5/IntelliJ_IDEA_Logo.svg)
