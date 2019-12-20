@@ -26,3 +26,4 @@ jobs:
           nexus_username: ${{ secrets.nexus_username }}
           nexus_password: ${{ secrets.nexus_password }}
           server_id: ossrh-teknux
+          maven_args: -Dgpg.passphrase=${{ secrets.gpg_passphrase }}
