@@ -5,6 +5,10 @@ on:
     branches:
       - master
       - develop
+  pull_request:
+    branches:
+      - master
+      - develop
 
 jobs:
   deploy:
@@ -18,7 +22,22 @@ jobs:
         with:
           java-version: 8
 
-      - name: Deploy Maven package
+      - name: Get Version
+        id: version
+        run: echo ::set-output name=version::$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+
+      - name: Deploy Snapshot Maven package
+        if: (github.ref == 'refs/heads/develop') && endsWith(steps.version.outputs.version, '-SNAPSHOT')
+        uses: samuelmeuli/action-maven-publish@v1
+        with:
+          gpg_private_key: ${{ secrets.gpg_private_key }}
+          gpg_passphrase: ${{ secrets.gpg_passphrase }}
+          nexus_username: ${{ secrets.nexus_username }}
+          nexus_password: ${{ secrets.nexus_password }}
+          server_id: ossrh-teknux
+
+      - name: Deploy Release Maven package
+        if: (github.ref == 'refs/heads/master') && endsWith(steps.version.outputs.version, '-SNAPSHOT') == false
         uses: samuelmeuli/action-maven-publish@v1
         with:
           gpg_private_key: ${{ secrets.gpg_private_key }}
