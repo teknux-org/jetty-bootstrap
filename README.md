@@ -24,9 +24,9 @@ bootstrap.startServer();
 Maven dependency to include on your project
 ```xml
 <dependency>
-	<groupId>org.teknux</groupId>
-	<artifactId>jetty-bootstrap</artifactId>
-	<version>x.x.x</version>
+   <groupId>org.teknux</groupId>
+   <artifactId>jetty-bootstrap</artifactId>
+   <version>x.x.x</version>
 </dependency>
 ```
 
