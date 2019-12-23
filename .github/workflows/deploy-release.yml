@@ -1,0 +1,35 @@
+name: Deploy Release
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v1
+
+      - name: Install Java and Maven
+        uses: actions/setup-java@v1
+        with:
+          java-version: 8
+
+      - name: Get Version
+        id: version
+        run: echo ::set-output name=version::$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+
+      - name: Create settings.xml
+        if: endsWith(steps.version.outputs.version, '-SNAPSHOT') == false
+        run: echo "<settings><servers><server><id>ossrh-teknux</id><username>${{ secrets.nexus_username }}</username><password>${{ secrets.nexus_password }}</password></server></servers></settings>" > ~/.m2/settings.xml
+
+      - name: Import GPG Key
+        run: echo -e "${{ secrets.gpg_private_key }}" | gpg --import --batch
+
+      - name: Deploy Snapshot Maven package
+        run: mvn --batch-mode -Dgpg.passphrase=${{ secrets.gpg_passphrase }} clean deploy
