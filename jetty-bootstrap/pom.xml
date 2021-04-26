@@ -68,7 +68,7 @@
 	</dependencies>
 
 	<properties>
-		<commons-io.version>2.4</commons-io.version>
+		<commons-io.version>2.7</commons-io.version>
 		<bcpkix-jdk15o.version>1.50</bcpkix-jdk15o.version>
 
 		<junit.version>4.11</junit.version>
