@@ -72,7 +72,7 @@
 		<bcpkix-jdk15o.version>1.50</bcpkix-jdk15o.version>
 
 		<junit.version>4.11</junit.version>
-		<httpclient.version>4.3.6</httpclient.version>
+		<httpclient.version>4.5.13</httpclient.version>
 	</properties>
 
 </project>
